@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ConversationData } from '@/types';
 import {
   DropdownMenu,
@@ -31,6 +31,11 @@ export function ConversationItem({
 }: ConversationItemProps) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [newTitle, setNewTitle] = useState(conversation.title);
+
+  // Sync local state when prop changes (e.g., after title generation)
+  useEffect(() => {
+    setNewTitle(conversation.title);
+  }, [conversation.title]);
 
   const handleRename = () => {
     if (newTitle.trim() && newTitle !== conversation.title) {
