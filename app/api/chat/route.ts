@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
 
                 // Send the text chunk to the client
                 controller.enqueue(
-                  encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
+                  encoder.encode(`data: ${JSON.stringify({ type: 'content', content: text })}\n\n`)
                 );
               }
             } else if (event.type === 'message_stop') {
@@ -168,10 +168,15 @@ export async function POST(request: NextRequest) {
                 data: { updatedAt: new Date() },
               });
 
-              // Send completion signal
+              // Send completion signal with messageId
+              const savedMessage = await prisma.message.findFirst({
+                where: { conversationId: conversation.id },
+                orderBy: { createdAt: 'desc' },
+              });
+
               controller.enqueue(
                 encoder.encode(
-                  `data: ${JSON.stringify({ done: true, conversationId: conversation.id })}\n\n`
+                  `data: ${JSON.stringify({ type: 'done', messageId: savedMessage?.id, conversationId: conversation.id })}\n\n`
                 )
               );
             }
