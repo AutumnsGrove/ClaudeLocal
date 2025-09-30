@@ -17,12 +17,14 @@ import { ChatMessage, CLAUDE_MODELS } from '@/types';
 interface ChatInterfaceProps {
   conversationId: string | null;
   onConversationCreated?: (conversationId: string) => void;
+  onConversationUpdated?: () => void;
   onToggleSidebar?: () => void;
 }
 
 export function ChatInterface({
   conversationId,
   onConversationCreated,
+  onConversationUpdated,
   onToggleSidebar,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -64,6 +66,7 @@ export function ChatInterface({
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage = inputValue.trim();
+    const isFirstMessage = messages.length === 0;
     setInputValue('');
     setIsLoading(true);
 
@@ -180,6 +183,15 @@ export function ChatInterface({
             return updated;
           });
         }
+
+        // Refresh conversation list after streaming completes
+        // This will pick up any title changes from auto-generation
+        if (isFirstMessage) {
+          // First exchange complete, title may have been generated
+          setTimeout(() => {
+            onConversationUpdated?.();
+          }, 2000); // Delay to ensure title generation completes
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -194,7 +206,7 @@ export function ChatInterface({
     } finally {
       setIsLoading(false);
     }
-  }, [inputValue, isLoading, currentConversationId, selectedModel, onConversationCreated]);
+  }, [inputValue, isLoading, currentConversationId, selectedModel, onConversationCreated, onConversationUpdated, messages.length]);
 
   return (
     <div className="flex flex-col h-screen bg-background">

@@ -70,7 +70,8 @@ export function ConversationItem({
       ) : (
         <button
           onClick={() => onSelect(conversation.id)}
-          className="flex-1 truncate text-left"
+          className="flex-1 text-left line-clamp-2"
+          title={conversation.title}
         >
           {conversation.title}
         </button>

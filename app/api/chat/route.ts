@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { getAnthropicApiKey } from '@/lib/secrets';
 import { prisma } from '@/lib/db';
+import { generateConversationTitle } from '@/lib/generate-title';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -175,9 +176,9 @@ export async function POST(request: NextRequest) {
 
               if (messageCount === 2) {
                 // First exchange complete, trigger title generation asynchronously
-                fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/conversations/${conversation.id}/generate-title`, {
-                  method: 'POST',
-                }).catch((err) => console.error('Title generation failed:', err));
+                generateConversationTitle(conversation.id).catch((err) =>
+                  console.error('Title generation failed:', err)
+                );
               }
 
               // Send completion signal with messageId

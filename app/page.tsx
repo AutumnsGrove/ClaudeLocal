@@ -55,6 +55,7 @@ export default function Home() {
         <ChatInterface
           conversationId={currentConversationId}
           onConversationCreated={handleConversationCreated}
+          onConversationUpdated={loadConversations}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
       </main>
