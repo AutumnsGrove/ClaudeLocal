@@ -11,7 +11,8 @@ A fully functional, feature-complete local clone of Claude.ai that runs entirely
 
 ### Chat & Messaging
 - ✅ **Real-time streaming** responses with Server-Sent Events (SSE)
-- ✅ **All Claude models** (3.5 Sonnet, 3.5 Haiku, 3 Opus, 3 Sonnet, 3 Haiku)
+- ✅ **All Claude 4 models** (Sonnet 4.5, Opus 4.1, Opus 4, Sonnet 4) + Claude 3.5 & 3
+- ✅ **Prompt caching** for 90% cost reduction on repeated context
 - ✅ **Markdown rendering** with GitHub Flavored Markdown support
 - ✅ **Syntax highlighting** for 15+ programming languages
 - ✅ **Code copy buttons** with one-click copying
@@ -88,6 +89,20 @@ npm run dev
 ```
 
 **📖 For detailed setup instructions, see [SETUP.md](./SETUP.md)**
+
+## 💰 Prompt Caching - Automatic Cost Optimization
+
+ClaudeLocal automatically implements **Anthropic's Prompt Caching** to save you up to **90% on API costs**:
+
+- 🚀 **Conversation history** cached automatically
+- 📝 **Project instructions** cached across all project conversations
+- ⏱️ **5-minute cache TTL** - perfect for active conversations
+- 💵 **Huge savings** - 20-message conversation costs ~80% less
+- 🔧 **Zero configuration** - works automatically out of the box
+
+**Example**: A 10-message conversation that would normally cost $0.15 now costs ~$0.03!
+
+See [PROMPT_CACHING.md](./PROMPT_CACHING.md) for technical details.
 
 ## 📁 Project Structure
 
