@@ -26,6 +26,7 @@ interface MessageBubbleProps {
   error?: boolean;
   isRetrying?: boolean;
   onRetry?: () => void;
+  onRegenerate?: () => void;
 }
 
 const CodeBlock = ({ children, className }: { children: string; className?: string }) => {
@@ -67,7 +68,7 @@ const CodeBlock = ({ children, className }: { children: string; className?: stri
   );
 };
 
-export function MessageBubble({ role, content, error, isRetrying, onRetry }: MessageBubbleProps) {
+export function MessageBubble({ role, content, error, isRetrying, onRetry, onRegenerate }: MessageBubbleProps) {
   const isUser = role === 'user';
   const [copied, setCopied] = useState(false);
   const { showToast } = useToast();
@@ -189,28 +190,45 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry }: Mes
           )}
         </div>
 
-        {/* Retry button for failed assistant messages */}
-        {!isUser && error && onRetry && (
-          <div className="mt-2 flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRetry}
-              disabled={isRetrying}
-              className="text-xs"
-            >
-              {isRetrying ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Retrying...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Retry
-                </>
-              )}
-            </Button>
+        {/* Action buttons for assistant messages - show on hover */}
+        {!isUser && (onRetry || onRegenerate) && (
+          <div className="mt-2 hidden group-hover:flex justify-end gap-2">
+            {/* Retry button for failed messages */}
+            {error && onRetry && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="text-xs"
+              >
+                {isRetrying ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Retrying...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    Retry
+                  </>
+                )}
+              </Button>
+            )}
+
+            {/* Regenerate button for all assistant messages */}
+            {!error && onRegenerate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRegenerate}
+                disabled={isRetrying}
+                className="text-xs"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Regenerate
+              </Button>
+            )}
           </div>
         )}
       </div>
