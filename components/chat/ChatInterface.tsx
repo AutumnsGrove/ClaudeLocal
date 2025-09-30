@@ -194,12 +194,9 @@ export function ChatInterface({
         // Refresh conversation list after streaming completes
         // This will pick up any title changes from auto-generation
         if (isFirstMessage) {
-          // First exchange complete, title may have been generated
-          console.log('[ChatInterface] First message complete, scheduling title refresh...');
           setTimeout(() => {
-            console.log('[ChatInterface] Refreshing conversation list for title update');
             onConversationUpdated?.();
-          }, 3000); // Delay to ensure title generation completes
+          }, 1500); // Delay to ensure title generation completes (Haiku is fast!)
         }
       }
     } catch (error) {

@@ -17,10 +17,11 @@ export default function Home() {
 
   const loadConversations = async () => {
     try {
-      const response = await fetch('/api/conversations');
+      const response = await fetch(`/api/conversations?_t=${Date.now()}`);
       if (response.ok) {
         const data = await response.json();
-        setConversations(data);
+        // Create new object references to ensure React detects changes
+        setConversations(data.map((conv: ConversationData) => ({ ...conv })));
       }
     } catch (error) {
       console.error('Failed to load conversations:', error);
