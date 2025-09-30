@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ConversationData } from '@/types';
 import { ConversationList } from './ConversationList';
 import { ProjectSelector } from './ProjectSelector';
+import { SettingsDialog } from '@/components/settings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -41,6 +42,7 @@ export function Sidebar({
 }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   // Filter conversations based on search query and selected project
@@ -194,10 +196,12 @@ export function Sidebar({
         {/* Footer */}
         <div className="border-t p-4">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
-            </Button>
+            <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Settings className="h-4 w-4" />
+                Settings
+              </Button>
+            </SettingsDialog>
             <Button
               variant="ghost"
               size="icon"
