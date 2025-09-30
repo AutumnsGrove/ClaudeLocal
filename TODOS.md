@@ -1,16 +1,11 @@
 # ClaudeLocal - Feature TODOs
 
-## Critical Bugs
-
-### 0. Fix Title Generation & Message Display Issues
-- [ ] Fix first user message disappearing from UI after send
-- [ ] Fix title not auto-updating in sidebar after generation
-- [ ] Make all database operations fully async (don't block streaming)
-- [ ] Move title generation to background job/queue system
-- [ ] Ensure message saving doesn't interfere with UI state
-- [ ] Add proper error handling and logging for async operations
-
 ## High Priority
+
+### 0. UI/UX Improvements
+- [ ] Add select button/interface for selecting multiple chats
+- [ ] Add on-hover extra info button about the current chat selected in the right pane
+- [ ] Fix menu collapsing functionality (doesn't actually work)
 
 ### 1. Response Retry Button
 - [ ] Add retry button for failed responses
