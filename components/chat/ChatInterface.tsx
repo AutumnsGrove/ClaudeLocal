@@ -32,10 +32,16 @@ export function ChatInterface({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedModel, setSelectedModel] = useState(CLAUDE_MODELS[0].id);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
+  const [skipNextFetch, setSkipNextFetch] = useState(false);
 
   // Fetch messages when conversationId changes
   useEffect(() => {
     if (conversationId) {
+      // Skip fetch if we just created this conversation (messages already in state)
+      if (skipNextFetch && conversationId === currentConversationId) {
+        setSkipNextFetch(false);
+        return;
+      }
       fetchMessages(conversationId);
       setCurrentConversationId(conversationId);
     } else {
@@ -99,6 +105,7 @@ export function ChatInterface({
         const newConversation = await createResponse.json();
         convId = newConversation.id;
         setCurrentConversationId(convId);
+        setSkipNextFetch(true); // Don't refetch - messages already in state
         if (convId) {
           onConversationCreated?.(convId);
         }
@@ -188,9 +195,11 @@ export function ChatInterface({
         // This will pick up any title changes from auto-generation
         if (isFirstMessage) {
           // First exchange complete, title may have been generated
+          console.log('[ChatInterface] First message complete, scheduling title refresh...');
           setTimeout(() => {
+            console.log('[ChatInterface] Refreshing conversation list for title update');
             onConversationUpdated?.();
-          }, 2000); // Delay to ensure title generation completes
+          }, 3000); // Delay to ensure title generation completes
         }
       }
     } catch (error) {
