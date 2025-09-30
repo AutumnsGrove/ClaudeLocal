@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
+      message,
       messages,
       model = 'claude-sonnet-4-5-20250929',
       temperature = 1.0,
@@ -18,9 +19,28 @@ export async function POST(request: NextRequest) {
       projectId,
     } = body;
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    // Handle both 'message' (single) and 'messages' (array) formats
+    let messagesToProcess = messages;
+
+    if (!messagesToProcess && message) {
+      // If single message provided, need to fetch conversation history first
+      if (conversationId) {
+        const existingMessages = await prisma.message.findMany({
+          where: { conversationId },
+          orderBy: { createdAt: 'asc' },
+        });
+        messagesToProcess = [
+          ...existingMessages.map(m => ({ role: m.role, content: m.content })),
+          { role: 'user', content: message }
+        ];
+      } else {
+        messagesToProcess = [{ role: 'user', content: message }];
+      }
+    }
+
+    if (!messagesToProcess || !Array.isArray(messagesToProcess) || messagesToProcess.length === 0) {
       return NextResponse.json(
-        { error: 'Messages array is required' },
+        { error: 'Message or messages array is required' },
         { status: 400 }
       );
     }
@@ -41,7 +61,7 @@ export async function POST(request: NextRequest) {
       project = conversation?.project;
     } else {
       // Create new conversation
-      const title = messages[0].content.slice(0, 100) || 'New Conversation';
+      const title = messagesToProcess[0].content.slice(0, 100) || 'New Conversation';
       conversation = await prisma.conversation.create({
         data: {
           title,
@@ -63,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save user message
-    const userMessage = messages[messages.length - 1];
+    const userMessage = messagesToProcess[messagesToProcess.length - 1];
     await prisma.message.create({
       data: {
         conversationId: conversation.id,
@@ -74,9 +94,9 @@ export async function POST(request: NextRequest) {
 
     // Prepare messages with prompt caching
     // Mark older messages for caching to save tokens (90% cost reduction!)
-    const formattedMessages = messages.map((msg: any, index: number) => {
-      const isLastUserMessage = index === messages.length - 1;
-      const shouldCache = !isLastUserMessage && messages.length > 2;
+    const formattedMessages = messagesToProcess.map((msg: any, index: number) => {
+      const isLastUserMessage = index === messagesToProcess.length - 1;
+      const shouldCache = !isLastUserMessage && messagesToProcess.length > 2;
 
       return {
         role: msg.role,
@@ -93,13 +113,13 @@ export async function POST(request: NextRequest) {
     });
 
     // Build system message with project instructions (if available)
-    const systemMessages = [];
+    const systemMessages: Array<{ type: 'text'; text: string; cache_control: { type: 'ephemeral' } }> = [];
     if (project?.instructions) {
       // Cache project instructions for huge token savings in multi-turn conversations
       systemMessages.push({
-        type: 'text',
+        type: 'text' as const,
         text: project.instructions,
-        cache_control: { type: 'ephemeral' },
+        cache_control: { type: 'ephemeral' as const },
       });
     }
 
