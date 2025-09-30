@@ -103,10 +103,10 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry }: Mes
         </div>
       )}
 
-      <div className="relative flex-1 max-w-[80%]">
+      <div className="relative max-w-[80%]">
         <div
           className={cn(
-            'rounded-lg px-4 py-3',
+            'rounded-lg px-4 py-3 inline-block',
             isUser
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted text-foreground',
@@ -188,6 +188,31 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry }: Mes
             </div>
           )}
         </div>
+
+        {/* Retry button for failed assistant messages */}
+        {!isUser && error && onRetry && (
+          <div className="mt-2 flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="text-xs"
+            >
+              {isRetrying ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  Retrying...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Retry
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
 
       {isUser && (
