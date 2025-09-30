@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Info, DollarSign, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Info, DollarSign, Zap, Loader2 } from 'lucide-react';
 import { CLAUDE_MODELS } from '@/types';
 import {
   Card,
@@ -19,85 +19,9 @@ interface ModelPricing {
   outputPrice: number; // per million tokens
   cachedInputPrice: number; // per million tokens (90% off)
   generation: 'Claude 4' | 'Claude 3.5' | 'Claude 3';
+  contextWindow: number;
+  maxTokens: number;
 }
-
-const MODEL_PRICING: ModelPricing[] = [
-  // Claude 4 Family
-  {
-    id: 'claude-sonnet-4-5-20250929',
-    name: 'Claude Sonnet 4.5',
-    inputPrice: 3.0,
-    outputPrice: 15.0,
-    cachedInputPrice: 0.3,
-    generation: 'Claude 4',
-  },
-  {
-    id: 'claude-opus-4-1-20250514',
-    name: 'Claude Opus 4.1',
-    inputPrice: 15.0,
-    outputPrice: 75.0,
-    cachedInputPrice: 1.5,
-    generation: 'Claude 4',
-  },
-  {
-    id: 'claude-opus-4-20250514',
-    name: 'Claude Opus 4',
-    inputPrice: 15.0,
-    outputPrice: 75.0,
-    cachedInputPrice: 1.5,
-    generation: 'Claude 4',
-  },
-  {
-    id: 'claude-sonnet-4-20250514',
-    name: 'Claude Sonnet 4',
-    inputPrice: 3.0,
-    outputPrice: 15.0,
-    cachedInputPrice: 0.3,
-    generation: 'Claude 4',
-  },
-  // Claude 3.5 Family
-  {
-    id: 'claude-3-5-sonnet-20241022',
-    name: 'Claude 3.5 Sonnet',
-    inputPrice: 3.0,
-    outputPrice: 15.0,
-    cachedInputPrice: 0.3,
-    generation: 'Claude 3.5',
-  },
-  {
-    id: 'claude-3-5-haiku-20241022',
-    name: 'Claude 3.5 Haiku',
-    inputPrice: 1.0,
-    outputPrice: 5.0,
-    cachedInputPrice: 0.1,
-    generation: 'Claude 3.5',
-  },
-  // Claude 3 Family
-  {
-    id: 'claude-3-opus-20240229',
-    name: 'Claude 3 Opus',
-    inputPrice: 15.0,
-    outputPrice: 75.0,
-    cachedInputPrice: 1.5,
-    generation: 'Claude 3',
-  },
-  {
-    id: 'claude-3-sonnet-20240229',
-    name: 'Claude 3 Sonnet',
-    inputPrice: 3.0,
-    outputPrice: 15.0,
-    cachedInputPrice: 0.3,
-    generation: 'Claude 3',
-  },
-  {
-    id: 'claude-3-haiku-20240307',
-    name: 'Claude 3 Haiku',
-    inputPrice: 0.25,
-    outputPrice: 1.25,
-    cachedInputPrice: 0.025,
-    generation: 'Claude 3',
-  },
-];
 
 function PricingRow({ pricing }: { pricing: ModelPricing }) {
   const model = CLAUDE_MODELS.find((m) => m.id === pricing.id);
@@ -133,13 +57,40 @@ function PricingRow({ pricing }: { pricing: ModelPricing }) {
 }
 
 export function PricingPanel() {
-  const groupedPricing = MODEL_PRICING.reduce((acc, pricing) => {
-    if (!acc[pricing.generation]) {
-      acc[pricing.generation] = [];
+  const [pricingData, setPricingData] = useState<Record<string, ModelPricing[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+
+  useEffect(() => {
+    fetchPricingData();
+  }, []);
+
+  const fetchPricingData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/pricing?grouped=true');
+      const result = await response.json();
+
+      if (result.success) {
+        setPricingData(result.data);
+        setLastUpdated(result.metadata.lastUpdated);
+      }
+    } catch (error) {
+      console.error('Failed to fetch pricing:', error);
+    } finally {
+      setLoading(false);
     }
-    acc[pricing.generation].push(pricing);
-    return acc;
-  }, {} as Record<string, ModelPricing[]>);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const groupedPricing = pricingData;
 
   return (
     <div className="space-y-6">
@@ -233,6 +184,11 @@ export function PricingPanel() {
         <p>
           <strong>Minimum Cache Size:</strong> 1024 tokens. Smaller contexts aren't cached.
         </p>
+        {lastUpdated && (
+          <p>
+            <strong>Pricing Last Updated:</strong> {lastUpdated}
+          </p>
+        )}
         <p className="mt-2">
           See{' '}
           <a

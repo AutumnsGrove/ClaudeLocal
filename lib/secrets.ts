@@ -3,6 +3,7 @@ import { join } from 'path';
 
 interface Secrets {
   anthropic_api_key?: string;
+  openrouter_api_key?: string;
 }
 
 let secrets: Secrets = {};
@@ -26,4 +27,8 @@ export function getAnthropicApiKey(): string {
   }
 
   return apiKey;
+}
+
+export function getOpenRouterApiKey(): string | null {
+  return secrets.openrouter_api_key || process.env.OPENROUTER_API_KEY || null;
 }
