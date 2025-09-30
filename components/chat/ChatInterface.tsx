@@ -96,7 +96,9 @@ export function ChatInterface({
         const newConversation = await createResponse.json();
         convId = newConversation.id;
         setCurrentConversationId(convId);
-        onConversationCreated?.(convId);
+        if (convId) {
+          onConversationCreated?.(convId);
+        }
       }
 
       // Send message with SSE streaming

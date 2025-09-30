@@ -6,11 +6,12 @@ export const dynamic = 'force-dynamic';
 // GET a specific project
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         conversations: {
           orderBy: {
@@ -45,14 +46,15 @@ export async function GET(
 // PATCH update a project
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const body = await request.json();
     const { name, description, instructions } = body;
 
     const project = await prisma.project.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
@@ -73,11 +75,12 @@ export async function PATCH(
 // DELETE a project
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     await prisma.project.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });
