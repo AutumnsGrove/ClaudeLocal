@@ -23,34 +23,33 @@ interface ModelPricing {
   maxTokens: number;
 }
 
-function PricingRow({ pricing }: { pricing: ModelPricing }) {
+function PricingRow({ pricing, isRecommended }: { pricing: ModelPricing; isRecommended?: boolean }) {
   const model = CLAUDE_MODELS.find((m) => m.id === pricing.id);
-  const savings = ((1 - pricing.cachedInputPrice / pricing.inputPrice) * 100).toFixed(0);
 
   return (
-    <div className="grid grid-cols-12 gap-4 py-3 px-4 hover:bg-muted/50 rounded-lg transition-colors">
-      <div className="col-span-4 flex flex-col">
-        <span className="font-medium text-sm">{pricing.name}</span>
+    <div className={`grid grid-cols-12 gap-4 py-3 px-4 rounded-lg transition-colors ${
+      isRecommended
+        ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
+        : 'hover:bg-muted/50'
+    }`}>
+      <div className="col-span-5 flex flex-col">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-sm">{pricing.name}</span>
+          {isRecommended && (
+            <Badge className="text-xs bg-green-600 dark:bg-green-700">Best Value</Badge>
+          )}
+        </div>
         <span className="text-xs text-muted-foreground">{model?.description}</span>
       </div>
-      <div className="col-span-2 flex flex-col justify-center">
-        <span className="text-sm font-mono">${pricing.inputPrice.toFixed(2)}</span>
-        <span className="text-xs text-muted-foreground">per MTok</span>
+      <div className="col-span-3 flex flex-col justify-center">
+        <span className="text-sm font-mono">${pricing.inputPrice.toFixed(2)} / ${pricing.outputPrice.toFixed(2)}</span>
+        <span className="text-xs text-muted-foreground">Input / Output</span>
       </div>
-      <div className="col-span-2 flex flex-col justify-center">
-        <span className="text-sm font-mono">${pricing.outputPrice.toFixed(2)}</span>
-        <span className="text-xs text-muted-foreground">per MTok</span>
-      </div>
-      <div className="col-span-2 flex flex-col justify-center">
-        <span className="text-sm font-mono text-green-600 dark:text-green-400">
-          ${pricing.cachedInputPrice.toFixed(2)}
+      <div className="col-span-4 flex flex-col justify-center">
+        <span className="text-sm font-mono text-green-600 dark:text-green-400 font-semibold">
+          ${pricing.cachedInputPrice.toFixed(2)} / ${pricing.outputPrice.toFixed(2)}
         </span>
-        <span className="text-xs text-muted-foreground">per MTok</span>
-      </div>
-      <div className="col-span-2 flex items-center justify-center">
-        <Badge variant="secondary" className="text-xs">
-          {savings}% off
-        </Badge>
+        <span className="text-xs text-muted-foreground">Cached (90% off input)</span>
       </div>
     </div>
   );
@@ -108,13 +107,44 @@ export function PricingPanel() {
         </div>
       </div>
 
+      {/* Why Prompt Caching Section */}
+      <Card className="border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            Why Prompt Caching?
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p>
+            <strong>Prompt caching</strong> stores your conversation history and system instructions,
+            dramatically reducing costs for multi-turn conversations.
+          </p>
+          <ul className="space-y-1 ml-4 list-disc text-muted-foreground">
+            <li>
+              <strong>90% savings on input tokens</strong> - Cached content is reused across requests
+            </li>
+            <li>
+              <strong>Automatic caching</strong> - ClaudeLocal handles this for you transparently
+            </li>
+            <li>
+              <strong>5-minute cache duration</strong> - Perfect for active conversations
+            </li>
+            <li>
+              <strong>1024 token minimum</strong> - Ensures caching only applies when beneficial
+            </li>
+          </ul>
+          <p className="text-xs text-muted-foreground pt-2">
+            All prices below show cached input pricing, which is what you'll actually pay for ongoing conversations.
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Pricing Table Header */}
       <div className="grid grid-cols-12 gap-4 px-4 pb-2 border-b text-xs font-medium text-muted-foreground">
-        <div className="col-span-4">Model</div>
-        <div className="col-span-2">Input</div>
-        <div className="col-span-2">Output</div>
-        <div className="col-span-2">Cached Input</div>
-        <div className="col-span-2 text-center">Savings</div>
+        <div className="col-span-5">Model</div>
+        <div className="col-span-3">Regular Pricing</div>
+        <div className="col-span-4">With Caching (90% off input)</div>
       </div>
 
       {/* Model Groups */}
@@ -133,13 +163,17 @@ export function PricingPanel() {
               {generation === 'Claude 4'
                 ? 'Latest generation models with advanced reasoning'
                 : generation === 'Claude 3.5'
-                ? 'Previous generation with excellent performance'
+                ? 'Excellent performance with great cost efficiency'
                 : 'Legacy models with proven reliability'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-1">
             {models.map((pricing) => (
-              <PricingRow key={pricing.id} pricing={pricing} />
+              <PricingRow
+                key={pricing.id}
+                pricing={pricing}
+                isRecommended={pricing.id === 'claude-3-5-haiku-20241022'}
+              />
             ))}
           </CardContent>
         </Card>

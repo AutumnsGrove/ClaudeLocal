@@ -81,6 +81,8 @@ export interface ChatMessage {
   content: string;
   createdAt: Date;
   attachments?: FileAttachment[];
+  error?: boolean;
+  isRetrying?: boolean;
 }
 
 export interface FileAttachment {
