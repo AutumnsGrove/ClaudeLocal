@@ -11,9 +11,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       messages,
-      model = 'claude-3-5-sonnet-20241022',
+      model = 'claude-sonnet-4-5-20250929',
       temperature = 1.0,
-      maxTokens = 4096,
+      maxTokens = 8192,
       conversationId,
       projectId,
     } = body;
@@ -31,10 +31,14 @@ export async function POST(request: NextRequest) {
 
     // Create or update conversation
     let conversation;
+    let project = null;
+
     if (conversationId) {
       conversation = await prisma.conversation.findUnique({
         where: { id: conversationId },
+        include: { project: true },
       });
+      project = conversation?.project;
     } else {
       // Create new conversation
       const title = messages[0].content.slice(0, 100) || 'New Conversation';
@@ -46,7 +50,9 @@ export async function POST(request: NextRequest) {
           maxTokens,
           projectId: projectId || null,
         },
+        include: { project: true },
       });
+      project = conversation?.project;
     }
 
     if (!conversation) {
@@ -66,15 +72,44 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Create streaming response
+    // Prepare messages with prompt caching
+    // Mark older messages for caching to save tokens (90% cost reduction!)
+    const formattedMessages = messages.map((msg: any, index: number) => {
+      const isLastUserMessage = index === messages.length - 1;
+      const shouldCache = !isLastUserMessage && messages.length > 2;
+
+      return {
+        role: msg.role,
+        content: shouldCache
+          ? [
+              {
+                type: 'text',
+                text: msg.content,
+                cache_control: { type: 'ephemeral' },
+              },
+            ]
+          : msg.content,
+      };
+    });
+
+    // Build system message with project instructions (if available)
+    const systemMessages = [];
+    if (project?.instructions) {
+      // Cache project instructions for huge token savings in multi-turn conversations
+      systemMessages.push({
+        type: 'text',
+        text: project.instructions,
+        cache_control: { type: 'ephemeral' },
+      });
+    }
+
+    // Create streaming response with prompt caching
     const stream = await anthropic.messages.create({
       model,
       max_tokens: maxTokens,
       temperature,
-      messages: messages.map((msg: any) => ({
-        role: msg.role,
-        content: msg.content,
-      })),
+      ...(systemMessages.length > 0 && { system: systemMessages }),
+      messages: formattedMessages,
       stream: true,
     });
 
