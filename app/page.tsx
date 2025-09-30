@@ -16,12 +16,10 @@ export default function Home() {
   }, []);
 
   const loadConversations = async () => {
-    console.log('[Page] loadConversations called');
     try {
       const response = await fetch('/api/conversations');
       if (response.ok) {
         const data = await response.json();
-        console.log('[Page] Loaded conversations:', data.length);
         setConversations(data);
       }
     } catch (error) {

@@ -11,6 +11,7 @@ import { getCheapestModel } from '@/lib/pricing';
 export async function generateConversationTitle(
   conversationId: string
 ): Promise<string | null> {
+  console.log('[generateTitle] Starting title generation for conversation:', conversationId);
   try {
     // Fetch conversation and its first messages
     const conversation = await prisma.conversation.findUnique({
@@ -24,15 +25,22 @@ export async function generateConversationTitle(
     });
 
     if (!conversation || conversation.messages.length < 2) {
+      console.log('[generateTitle] Not enough messages, skipping generation');
       return null;
     }
 
+    console.log('[generateTitle] Current title:', conversation.title);
+    console.log('[generateTitle] Message count:', conversation.messages.length);
+
     // Don't regenerate if title has been customized (not the default truncated message)
     const firstMessage = conversation.messages[0];
-    if (
-      conversation.title !== firstMessage?.content.slice(0, 100) &&
-      conversation.title !== 'New Conversation'
-    ) {
+    const isDefaultTitle = conversation.title === firstMessage?.content.slice(0, 100) ||
+                          conversation.title === 'New Conversation';
+
+    console.log('[generateTitle] Is default title?', isDefaultTitle);
+
+    if (!isDefaultTitle) {
+      console.log('[generateTitle] Title already customized, skipping');
       return conversation.title;
     }
 
@@ -43,6 +51,7 @@ export async function generateConversationTitle(
       .join('\n\n');
 
     // Use cheapest model for title generation
+    console.log('[generateTitle] Calling Anthropic API for title generation...');
     const anthropic = new Anthropic({
       apiKey: getAnthropicApiKey(),
     });
@@ -64,12 +73,16 @@ export async function generateConversationTitle(
         ? response.content[0].text.trim().replace(/^["']|["']$/g, '')
         : conversation.title;
 
+    console.log('[generateTitle] Generated title:', title);
+
     // Update conversation title
+    console.log('[generateTitle] Updating database with new title...');
     await prisma.conversation.update({
       where: { id: conversationId },
       data: { title },
     });
 
+    console.log('[generateTitle] Title generation complete!');
     return title;
   } catch (error: any) {
     console.error('Title generation error:', error);
