@@ -168,6 +168,18 @@ export async function POST(request: NextRequest) {
                 data: { updatedAt: new Date() },
               });
 
+              // Generate title if this is the first assistant message
+              const messageCount = await prisma.message.count({
+                where: { conversationId: conversation.id },
+              });
+
+              if (messageCount === 2) {
+                // First exchange complete, trigger title generation asynchronously
+                fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/conversations/${conversation.id}/generate-title`, {
+                  method: 'POST',
+                }).catch((err) => console.error('Title generation failed:', err));
+              }
+
               // Send completion signal with messageId
               const savedMessage = await prisma.message.findFirst({
                 where: { conversationId: conversation.id },

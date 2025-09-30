@@ -195,3 +195,12 @@ export function calculateSavingsPercentage(
 ): number {
   return Math.round(((regularPrice - cachedPrice) / regularPrice) * 100);
 }
+
+/**
+ * Get the cheapest/fastest model for title generation
+ * Prioritizes cost efficiency for short, simple tasks
+ */
+export function getCheapestModel(): string {
+  // Claude 3 Haiku is the cheapest at $0.25/$1.25 per million tokens
+  return 'claude-3-haiku-20240307';
+}
