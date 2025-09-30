@@ -17,14 +17,15 @@
 
 ---
 
-### 2. Simplified Pricing Panel
-- [ ] Remove persistent "90% reduction" rate from every row (mention once at top)
-- [ ] Consolidate pricing display
-- [ ] Make pricing table more scannable
-- [ ] Add "Why prompt caching?" explanation section
-- [ ] Highlight cheapest/recommended models
+### 2. Simplified Pricing Panel ✅ COMPLETED
+- [x] Remove persistent "90% reduction" rate from every row (mention once at top)
+- [x] Consolidate pricing display
+- [x] Make pricing table more scannable
+- [x] Add "Why prompt caching?" explanation section
+- [x] Highlight cheapest/recommended models
 
 **Complexity**: Low - UI restructuring and content reorganization
+**Status**: Completed with OpenRouter API integration and fallback
 
 ---
 
@@ -47,19 +48,21 @@
 
 ## Tier 2: Moderate Features (State Management & UI Logic)
 
-### 5. Dark Mode Fix
-- [ ] Debug why dark mode toggle doesn't work
-- [ ] Ensure all components respect theme
-- [ ] Test persistence across page reloads
+### 5. Dark Mode Fix ✅ COMPLETED
+- [x] Debug why dark mode toggle doesn't work
+- [x] Ensure all components respect theme
+- [x] Test persistence across page reloads
 
 **Complexity**: Low-Medium - Debug existing implementation, fix state/storage issues
+**Status**: Completed in PR #4 - Fixed hydration and ToastProvider issues
 
 ---
 
-### 6. Menu Collapsing Functionality Fix
-- [ ] Fix menu collapsing functionality (doesn't actually work)
+### 6. Menu Collapsing Functionality Fix ✅ COMPLETED
+- [x] Fix menu collapsing functionality (doesn't actually work)
 
 **Complexity**: Low-Medium - Debug and fix existing feature
+**Status**: Completed in PR #4
 
 ---
 
@@ -361,6 +364,20 @@ Implement complex features from Tier 3 and 4 based on user feedback.
 
 ### Phase 4: Infrastructure (Ongoing)
 Address Tier 5 and 6 items continuously alongside feature work.
+
+---
+
+## Recently Completed (PRs #1-4)
+
+### ✅ Completed Features:
+1. **Dark Mode Fix** - Fixed hydration and theme persistence
+2. **Menu Collapsing** - Fixed sidebar collapse functionality
+3. **Pricing Panel** - Comprehensive pricing with OpenRouter API integration
+4. **Automatic Titles** - Conversation title generation using cheapest model
+5. **Error Handling** - Missing API routes and comprehensive chat error handling
+6. **SSE Streaming** - Aligned streaming response format
+7. **Toast Notifications** - Added ToastProvider for better UX
+8. **Prompt Caching** - Implemented 90% cost reduction with Claude 4 models
 
 ---
 

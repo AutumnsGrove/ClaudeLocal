@@ -5,7 +5,12 @@
 ### 0. UI/UX Improvements
 - [ ] Add select button/interface for selecting multiple chats
 - [ ] Add on-hover extra info button about the current chat selected in the right pane
-- [ ] Fix menu collapsing functionality (doesn't actually work)
+- [x] Fix menu collapsing functionality (doesn't actually work)
+**Status**: Completed - Fixed in PR #4 with hydration improvements
+- [x] Improve message UX with better error handling
+**Status**: Completed in PR #1 - Added comprehensive chat error handling
+- [x] Add automatic conversation title generation
+**Status**: Completed in PR #3 - Generates titles using cheapest model
 
 ### 1. Response Retry Button
 - [ ] Add retry button for failed responses
@@ -24,9 +29,10 @@
   - [ ] Copy to clipboard
 
 ### 3. Dark Mode Fix
-- [ ] Debug why dark mode toggle doesn't work
-- [ ] Ensure all components respect theme
-- [ ] Test persistence across page reloads
+- [x] Debug why dark mode toggle doesn't work
+- [x] Ensure all components respect theme
+- [x] Test persistence across page reloads
+**Status**: Completed in PR #4 - Fixed hydration issues and ToastProvider
 
 ### 4. UI Icon Enhancement
 - [ ] Add icons to navigation items
@@ -67,11 +73,12 @@ Current settings are too basic. Expand to include:
   - [ ] Links to documentation
 
 ### 6. Simplified Pricing Panel
-- [ ] Remove persistent "90% reduction" rate from every row (mention once at top)
-- [ ] Consolidate pricing display
-- [ ] Make pricing table more scannable
-- [ ] Add "Why prompt caching?" explanation section
-- [ ] Highlight cheapest/recommended models
+- [x] Remove persistent "90% reduction" rate from every row (mention once at top)
+- [x] Consolidate pricing display
+- [x] Make pricing table more scannable
+- [x] Add "Why prompt caching?" explanation section
+- [x] Highlight cheapest/recommended models
+**Status**: Completed - Comprehensive pricing panel added with OpenRouter API integration and fallback
 
 ### 7. Project Management System
 - [ ] Create project entity with:
@@ -166,6 +173,19 @@ Current settings are too basic. Expand to include:
 - [ ] Add database migrations system
 - [ ] Implement proper logging system
 - [ ] Add performance monitoring
+
+---
+
+## Recently Completed Features
+
+### Completed in Recent PRs
+1. **PR #4** - Toast notifications, hydration fixes, message UX improvements
+2. **PR #3** - Automatic conversation title generation
+3. **PR #2** - SSE streaming response alignment
+4. **PR #1** - Missing messages API route and error handling
+5. **Earlier** - Claude 4 models support with prompt caching (90% cost reduction)
+6. **Earlier** - OpenRouter API integration for live pricing data
+7. **Earlier** - Comprehensive pricing panel in Settings
 
 ---
 
