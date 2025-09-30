@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ConversationData } from '@/types';
 import { ConversationList } from './ConversationList';
 import { ProjectSelector } from './ProjectSelector';
@@ -43,7 +43,13 @@ export function Sidebar({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  // Avoid hydration mismatch by only rendering theme toggle after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Filter conversations based on search query and selected project
   const filteredConversations = conversations.filter((conv) => {
@@ -206,12 +212,16 @@ export function Sidebar({
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              title={mounted ? (theme === 'dark' ? 'Light mode' : 'Dark mode') : 'Toggle theme'}
             >
-              {theme === 'dark' ? (
-                <Sun className="h-4 w-4" />
+              {mounted ? (
+                theme === 'dark' ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )
               ) : (
-                <Moon className="h-4 w-4" />
+                <Sun className="h-4 w-4" />
               )}
             </Button>
           </div>

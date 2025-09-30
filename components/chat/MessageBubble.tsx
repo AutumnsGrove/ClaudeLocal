@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Prism from 'prismjs';
-import { User, Bot, Copy, Check } from 'lucide-react';
+import { User, Bot, Copy, Check, RefreshCw, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/toast';
 
 // Import Prism languages
 import 'prismjs/components/prism-javascript';
@@ -22,6 +23,10 @@ import 'prismjs/components/prism-markdown';
 interface MessageBubbleProps {
   role: 'user' | 'assistant';
   content: string;
+  error?: boolean;
+  isRetrying?: boolean;
+  onRetry?: () => void;
+  onRegenerate?: () => void;
 }
 
 const CodeBlock = ({ children, className }: { children: string; className?: string }) => {
@@ -63,13 +68,33 @@ const CodeBlock = ({ children, className }: { children: string; className?: stri
   );
 };
 
-export function MessageBubble({ role, content }: MessageBubbleProps) {
+export function MessageBubble({ role, content, error, isRetrying, onRetry, onRegenerate }: MessageBubbleProps) {
   const isUser = role === 'user';
+  const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(true);
+      showToast('Message copied to clipboard', 'success');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy message:', err);
+      showToast('Failed to copy message', 'error');
+    }
+  };
+
+  const handleRetry = () => {
+    if (onRetry && !isRetrying) {
+      onRetry();
+    }
+  };
 
   return (
     <div
       className={cn(
-        'flex gap-3 mb-4',
+        'flex gap-3 mb-4 group',
         isUser ? 'justify-end' : 'justify-start'
       )}
     >
@@ -79,64 +104,131 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
         </div>
       )}
 
-      <div
-        className={cn(
-          'rounded-lg px-4 py-3 max-w-[80%]',
-          isUser
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-muted text-foreground'
-        )}
-      >
-        {isUser ? (
-          <p className="whitespace-pre-wrap">{content}</p>
-        ) : (
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                code({ node, className, children, ...props }: any) {
-                  const match = /language-(\w+)/.exec(className || '');
-                  const codeString = String(children).replace(/\n$/, '');
-                  const inline = !className;
-
-                  return !inline && match ? (
-                    <CodeBlock className={className}>
-                      {codeString}
-                    </CodeBlock>
-                  ) : (
-                    <code className={cn("bg-muted px-1.5 py-0.5 rounded text-sm", className)} {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-                p({ children }) {
-                  return <p className="mb-2 last:mb-0">{children}</p>;
-                },
-                ul({ children }) {
-                  return <ul className="list-disc list-inside mb-2">{children}</ul>;
-                },
-                ol({ children }) {
-                  return <ol className="list-decimal list-inside mb-2">{children}</ol>;
-                },
-                li({ children }) {
-                  return <li className="mb-1">{children}</li>;
-                },
-                a({ href, children }) {
-                  return (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      {children}
-                    </a>
-                  );
-                },
-              }}
+      <div className="relative max-w-[80%]">
+        <div
+          className={cn(
+            'rounded-lg px-4 py-3 inline-block',
+            isUser
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-foreground',
+            error && 'border-2 border-red-500/50 bg-red-50 dark:bg-red-950/20'
+          )}
+        >
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleCopy}
+              className={cn(
+                "h-7 w-7",
+                isUser
+                  ? "hover:bg-primary-foreground/20"
+                  : "hover:bg-background"
+              )}
             >
-              {content}
-            </ReactMarkdown>
+              {copied ? (
+                <Check className="h-3.5 w-3.5 text-green-500" />
+              ) : (
+                <Copy className={cn(
+                  "h-3.5 w-3.5",
+                  isUser ? "text-primary-foreground" : ""
+                )} />
+              )}
+            </Button>
+          </div>
+          {isUser ? (
+            <p className="whitespace-pre-wrap">{content}</p>
+          ) : (
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code({ node, className, children, ...props }: any) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    const codeString = String(children).replace(/\n$/, '');
+                    const inline = !className;
+
+                    return !inline && match ? (
+                      <CodeBlock className={className}>
+                        {codeString}
+                      </CodeBlock>
+                    ) : (
+                      <code className={cn("bg-muted px-1.5 py-0.5 rounded text-sm", className)} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                  p({ children }) {
+                    return <p className="mb-2 last:mb-0">{children}</p>;
+                  },
+                  ul({ children }) {
+                    return <ul className="list-disc list-inside mb-2">{children}</ul>;
+                  },
+                  ol({ children }) {
+                    return <ol className="list-decimal list-inside mb-2">{children}</ol>;
+                  },
+                  li({ children }) {
+                    return <li className="mb-1">{children}</li>;
+                  },
+                  a({ href, children }) {
+                    return (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {children}
+                      </a>
+                    );
+                  },
+                }}
+              >
+                {content}
+              </ReactMarkdown>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons for assistant messages - show on hover */}
+        {!isUser && (onRetry || onRegenerate) && (
+          <div className="mt-2 hidden group-hover:flex justify-end gap-2">
+            {/* Retry button for failed messages */}
+            {error && onRetry && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="text-xs"
+              >
+                {isRetrying ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Retrying...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    Retry
+                  </>
+                )}
+              </Button>
+            )}
+
+            {/* Regenerate button for all assistant messages */}
+            {!error && onRegenerate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRegenerate}
+                disabled={isRetrying}
+                className="text-xs"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Regenerate
+              </Button>
+            )}
           </div>
         )}
       </div>

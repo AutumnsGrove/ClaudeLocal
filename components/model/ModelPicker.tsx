@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Cpu } from "lucide-react";
 
 interface Model {
   id: string;
@@ -64,7 +65,10 @@ export function ModelPicker({
     <div className={className}>
       <Select value={selectedModel} onValueChange={onModelChange} disabled={loading || !!error}>
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={loading ? "Loading models..." : "Select a model"} />
+          <div className="flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-muted-foreground" />
+            <SelectValue placeholder={loading ? "Loading models..." : "Select a model"} />
+          </div>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
