@@ -73,6 +73,7 @@ export function ChatInterface({
 
     const userMessage = inputValue.trim();
     const isFirstMessage = messages.length === 0;
+    console.log('[ChatInterface] Sending message, isFirstMessage:', isFirstMessage, 'current message count:', messages.length);
     setInputValue('');
     setIsLoading(true);
 
