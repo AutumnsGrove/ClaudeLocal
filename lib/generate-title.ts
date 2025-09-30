@@ -32,18 +32,6 @@ export async function generateConversationTitle(
     console.log('[generateTitle] Current title:', conversation.title);
     console.log('[generateTitle] Message count:', conversation.messages.length);
 
-    // Don't regenerate if title has been customized (not the default truncated message)
-    const firstMessage = conversation.messages[0];
-    const isDefaultTitle = conversation.title === firstMessage?.content.slice(0, 100) ||
-                          conversation.title === 'New Conversation';
-
-    console.log('[generateTitle] Is default title?', isDefaultTitle);
-
-    if (!isDefaultTitle) {
-      console.log('[generateTitle] Title already customized, skipping');
-      return conversation.title;
-    }
-
     // Get conversation context for title generation
     const context = conversation.messages
       .slice(0, 2)
