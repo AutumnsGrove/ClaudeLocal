@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { getAnthropicApiKey } from '@/lib/secrets';
 import { prisma } from '@/lib/db';
+import { generateConversationTitle } from '@/lib/generate-title';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -167,6 +168,18 @@ export async function POST(request: NextRequest) {
                 where: { id: conversation.id },
                 data: { updatedAt: new Date() },
               });
+
+              // Generate title if this is the first assistant message
+              const messageCount = await prisma.message.count({
+                where: { conversationId: conversation.id },
+              });
+
+              if (messageCount === 2) {
+                // First exchange complete, trigger title generation asynchronously
+                generateConversationTitle(conversation.id).catch((err) =>
+                  console.error('Title generation failed:', err)
+                );
+              }
 
               // Send completion signal with messageId
               const savedMessage = await prisma.message.findFirst({

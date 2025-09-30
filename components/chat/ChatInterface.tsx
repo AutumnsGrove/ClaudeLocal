@@ -17,12 +17,14 @@ import { ChatMessage, CLAUDE_MODELS } from '@/types';
 interface ChatInterfaceProps {
   conversationId: string | null;
   onConversationCreated?: (conversationId: string) => void;
+  onConversationUpdated?: () => void;
   onToggleSidebar?: () => void;
 }
 
 export function ChatInterface({
   conversationId,
   onConversationCreated,
+  onConversationUpdated,
   onToggleSidebar,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -30,10 +32,16 @@ export function ChatInterface({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedModel, setSelectedModel] = useState(CLAUDE_MODELS[0].id);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
+  const [skipNextFetch, setSkipNextFetch] = useState(false);
 
   // Fetch messages when conversationId changes
   useEffect(() => {
     if (conversationId) {
+      // Skip fetch if we just created this conversation (messages already in state)
+      if (skipNextFetch && conversationId === currentConversationId) {
+        setSkipNextFetch(false);
+        return;
+      }
       fetchMessages(conversationId);
       setCurrentConversationId(conversationId);
     } else {
@@ -64,6 +72,7 @@ export function ChatInterface({
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage = inputValue.trim();
+    const isFirstMessage = messages.length === 0;
     setInputValue('');
     setIsLoading(true);
 
@@ -96,6 +105,7 @@ export function ChatInterface({
         const newConversation = await createResponse.json();
         convId = newConversation.id;
         setCurrentConversationId(convId);
+        setSkipNextFetch(true); // Don't refetch - messages already in state
         if (convId) {
           onConversationCreated?.(convId);
         }
@@ -180,6 +190,14 @@ export function ChatInterface({
             return updated;
           });
         }
+
+        // Refresh conversation list after streaming completes
+        // This will pick up any title changes from auto-generation
+        if (isFirstMessage) {
+          setTimeout(() => {
+            onConversationUpdated?.();
+          }, 1500); // Delay to ensure title generation completes (Haiku is fast!)
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -194,7 +212,7 @@ export function ChatInterface({
     } finally {
       setIsLoading(false);
     }
-  }, [inputValue, isLoading, currentConversationId, selectedModel, onConversationCreated]);
+  }, [inputValue, isLoading, currentConversationId, selectedModel, onConversationCreated, onConversationUpdated, messages.length]);
 
   return (
     <div className="flex flex-col h-screen bg-background">
