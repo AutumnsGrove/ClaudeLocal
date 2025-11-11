@@ -31,7 +31,7 @@ export function MessageStats({
       <span key="tps" className="flex items-center gap-1">
         <Zap className="h-3 w-3" />
         {tokensPerSecond.toFixed(2)} tok/sec
-      </span>
+      </span>,
     );
   }
 
@@ -41,7 +41,7 @@ export function MessageStats({
       <span key="total" className="flex items-center gap-1">
         <Hash className="h-3 w-3" />
         {totalTokens} tokens
-      </span>
+      </span>,
     );
   }
 
@@ -51,7 +51,7 @@ export function MessageStats({
       <span key="ttft" className="flex items-center gap-1">
         <Clock className="h-3 w-3" />
         {timeToFirstToken.toFixed(2)}s
-      </span>
+      </span>,
     );
   }
 
@@ -60,7 +60,7 @@ export function MessageStats({
     stats.push(
       <span key="stop" className="flex items-center">
         {stopReason}
-      </span>
+      </span>,
     );
   }
 
@@ -68,9 +68,8 @@ export function MessageStats({
   if (cost !== undefined && cost > 0) {
     stats.push(
       <span key="cost" className="flex items-center gap-1">
-        <DollarSign className="h-3 w-3" />
-        ${cost.toFixed(4)}
-      </span>
+        <DollarSign className="h-3 w-3" />${cost.toFixed(4)}
+      </span>,
     );
   }
 
@@ -83,7 +82,7 @@ export function MessageStats({
     <div
       className={cn(
         "flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground mt-2",
-        className
+        className,
       )}
     >
       {stats.map((stat, index) => (
