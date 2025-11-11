@@ -1,14 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Sidebar } from '@/components/sidebar/Sidebar';
-import { ChatInterface } from '@/components/chat/ChatInterface';
-import { ConversationData } from '@/types';
+import { useState, useEffect } from "react";
+import { Sidebar } from "@/components/sidebar/Sidebar";
+import { ChatInterface } from "@/components/chat/ChatInterface";
+import { ConversationData } from "@/types";
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
   const [conversations, setConversations] = useState<ConversationData[]>([]);
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null
+  >(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Wait for client-side mount to avoid hydration mismatches
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load conversations on mount
   useEffect(() => {
@@ -24,7 +32,7 @@ export default function Home() {
         setConversations(data.map((conv: ConversationData) => ({ ...conv })));
       }
     } catch (error) {
-      console.error('Failed to load conversations:', error);
+      console.error("Failed to load conversations:", error);
     }
   };
 
@@ -40,6 +48,11 @@ export default function Home() {
     setCurrentConversationId(conversationId);
     loadConversations();
   };
+
+  // Don't render until client-side to avoid hydration mismatches
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="flex h-screen bg-background">
