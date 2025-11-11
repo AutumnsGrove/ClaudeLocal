@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     // Prepare messages with prompt caching
     // Mark older messages for caching to save tokens (90% cost reduction!)
     const formattedMessages = messagesToProcess.map(
-      (msg: any, index: number) => {
+      (msg: { role: "user" | "assistant"; content: string }, index: number) => {
         const isLastUserMessage = index === messagesToProcess.length - 1;
         const shouldCache = !isLastUserMessage && messagesToProcess.length > 2;
 
@@ -114,9 +114,9 @@ export async function POST(request: NextRequest) {
           content: shouldCache
             ? [
                 {
-                  type: "text",
+                  type: "text" as const,
                   text: msg.content,
-                  cache_control: { type: "ephemeral" },
+                  cache_control: { type: "ephemeral" as const },
                 },
               ]
             : msg.content,
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
     let fullResponse = "";
 
     // Metrics tracking object
-    let metrics = {
+    const metrics = {
       startTime: Date.now(),
       firstTokenTime: null as number | null,
       totalTokens: 0,
@@ -172,7 +172,13 @@ export async function POST(request: NextRequest) {
 
         try {
           for await (const event of stream) {
-            if (event.type === "content_block_start") {
+            if (event.type === "message_start") {
+              // Capture initial usage data from message start
+              if (event.message?.usage) {
+                metrics.inputTokens = event.message.usage.input_tokens || 0;
+                metrics.outputTokens = event.message.usage.output_tokens || 0;
+              }
+            } else if (event.type === "content_block_start") {
               // Track block type for thinking content
               currentBlockType = event.content_block.type;
             } else if (event.type === "content_block_delta") {
@@ -198,22 +204,19 @@ export async function POST(request: NextRequest) {
                   ),
                 );
               }
-            } else if (event.type === "message_stop") {
-              // Capture usage data from the stop event
-              if (event.usage) {
-                metrics.inputTokens = event.usage.input_tokens || 0;
-                metrics.outputTokens = event.usage.output_tokens || 0;
-                metrics.cachedTokens = event.usage.cache_read_input_tokens || 0;
+            } else if (event.type === "message_delta") {
+              // Capture cumulative output tokens from message delta
+              if (event.usage?.output_tokens) {
+                metrics.outputTokens = event.usage.output_tokens;
                 metrics.totalTokens =
                   metrics.inputTokens + metrics.outputTokens;
               }
-
-              // Capture stop reason
-              if (event.message?.stop_reason) {
-                metrics.stopReason = event.message.stop_reason;
+              // Capture stop reason from message delta
+              if (event.delta?.stop_reason) {
+                metrics.stopReason = event.delta.stop_reason;
               }
-
-              // Calculate performance metrics
+            } else if (event.type === "message_stop") {
+              // Calculate performance metrics after message is complete
               const duration = (Date.now() - metrics.startTime) / 1000; // in seconds
               const tokensPerSecond =
                 metrics.totalTokens > 0 ? metrics.totalTokens / duration : 0;
@@ -298,11 +301,10 @@ export async function POST(request: NextRequest) {
         Connection: "keep-alive",
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chat API error:", error);
-    return NextResponse.json(
-      { error: error.message || "Internal server error" },
-      { status: 500 },
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
