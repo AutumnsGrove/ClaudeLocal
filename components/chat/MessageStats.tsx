@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Zap, Hash, Clock, DollarSign } from "lucide-react";
+import { Zap, Hash, Clock, DollarSign, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MessageStatsProps {
@@ -12,6 +12,8 @@ interface MessageStatsProps {
   timeToFirstToken?: number;
   stopReason?: string;
   cost?: number;
+  thinkingDuration?: number | null;
+  thinkingTokens?: number;
   className?: string;
 }
 
@@ -21,6 +23,8 @@ export function MessageStats({
   timeToFirstToken,
   stopReason,
   cost,
+  thinkingDuration,
+  thinkingTokens,
   className,
 }: MessageStatsProps) {
   const stats = [];
@@ -69,6 +73,26 @@ export function MessageStats({
     stats.push(
       <span key="cost" className="flex items-center gap-1">
         <DollarSign className="h-3 w-3" />${cost.toFixed(4)}
+      </span>,
+    );
+  }
+
+  // Thinking duration
+  if (thinkingDuration !== undefined && thinkingDuration !== null && thinkingDuration > 0) {
+    stats.push(
+      <span key="thinking-duration" className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+        <Brain className="h-3 w-3" />
+        {thinkingDuration.toFixed(1)}s thinking
+      </span>,
+    );
+  }
+
+  // Thinking tokens
+  if (thinkingTokens !== undefined && thinkingTokens > 0) {
+    stats.push(
+      <span key="thinking-tokens" className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+        <Hash className="h-3 w-3" />
+        {thinkingTokens} thinking tok
       </span>,
     );
   }

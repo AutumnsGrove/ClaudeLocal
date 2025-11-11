@@ -59,7 +59,9 @@ model Message {
   cost            Float?
 
   // Thinking
-  thinkingContent String?      // Store model thinking blocks
+  thinkingContent  String?      // Store model thinking blocks
+  thinkingDuration Float?       // How long (in seconds) the model spent thinking
+  thinkingTokens   Int?         // Estimated tokens used for thinking
 
   @@index([conversationId])
   @@index([createdAt])

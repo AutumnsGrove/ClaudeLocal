@@ -116,6 +116,7 @@ export function ChatInterface({
       }
 
       // Send message with SSE streaming
+      console.log("[DEBUG] 🚀 Sending message to API with thinkingEnabled:", thinkingEnabled);
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -143,6 +144,7 @@ export function ChatInterface({
           role: "assistant",
           content: "",
           createdAt: new Date(),
+          thinkingContent: "", // Explicitly initialize to empty string
         };
         setMessages((prev) => [...prev, assistantMsgTemp]);
 
@@ -158,20 +160,24 @@ export function ChatInterface({
               const data = line.slice(6).trim();
 
               if (data === "[DONE]") {
+                console.log("[DEBUG] ✅ SSE stream completed [DONE]");
                 break;
               }
 
               try {
                 const parsed = JSON.parse(data);
+                console.log("[DEBUG] 📨 SSE event received:", parsed.type, parsed);
 
                 if (parsed.type === "thinking") {
                   // Update thinking content in real-time
+                  console.log("[DEBUG] Thinking chunk received:", parsed.content);
                   setMessages((prev) => {
                     const updated = [...prev];
                     const lastMsg = updated[updated.length - 1];
                     if (lastMsg.role === "assistant") {
                       lastMsg.thinkingContent =
                         (lastMsg.thinkingContent || "") + parsed.content;
+                      console.log("[DEBUG] Updated thinkingContent:", lastMsg.thinkingContent);
                     }
                     return updated;
                   });
@@ -215,6 +221,13 @@ export function ChatInterface({
             const lastMsg = updated[updated.length - 1];
             if (lastMsg.role === "assistant") {
               lastMsg.id = assistantMessageId;
+              console.log("[DEBUG] 💬 Final message object:", {
+                id: lastMsg.id,
+                hasThinkingContent: !!lastMsg.thinkingContent,
+                thinkingContentLength: lastMsg.thinkingContent?.length || 0,
+                hasContent: !!lastMsg.content,
+                contentLength: lastMsg.content?.length || 0,
+              });
             }
             return updated;
           });

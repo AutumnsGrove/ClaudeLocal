@@ -39,6 +39,8 @@ interface MessageBubbleProps {
   timeToFirstToken?: number;
   stopReason?: string;
   cost?: number;
+  thinkingDuration?: number | null;
+  thinkingTokens?: number;
 }
 
 const CodeBlock = ({
@@ -102,6 +104,8 @@ export function MessageBubble({
   timeToFirstToken,
   stopReason,
   cost,
+  thinkingDuration,
+  thinkingTokens,
 }: MessageBubbleProps) {
   const isUser = role === "user";
   const [copied, setCopied] = useState(false);
@@ -140,11 +144,25 @@ export function MessageBubble({
 
       <div className="relative max-w-[80%]">
         {/* Display thinking content for assistant messages */}
-        {!isUser && thinkingContent && (
-          <div className="mb-3">
-            <ThinkingSection content={thinkingContent} hasContent={!!content} />
-          </div>
-        )}
+        {!isUser &&
+          thinkingContent &&
+          thinkingContent.trim() &&
+          (() => {
+            console.log(
+              "[DEBUG] MessageBubble thinkingContent:",
+              thinkingContent,
+              "hasContent:",
+              !!content,
+            );
+            return (
+              <div className="mb-3">
+                <ThinkingSection
+                  content={thinkingContent}
+                  hasContent={!!content}
+                />
+              </div>
+            );
+          })()}
 
         <div
           className={cn(
@@ -253,6 +271,8 @@ export function MessageBubble({
             timeToFirstToken={timeToFirstToken}
             stopReason={stopReason}
             cost={cost}
+            thinkingDuration={thinkingDuration}
+            thinkingTokens={thinkingTokens}
             className="mt-2"
           />
         )}

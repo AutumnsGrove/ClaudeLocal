@@ -1,7 +1,7 @@
 # ClaudeLocal - Feature TODOs
 
-> **Last Updated:** 2025-11-11 (Phase 3 Complete, Extended Thinking In Progress)
-> **Next Review:** Fix thinking display, then Phase 4 (Settings redesign)
+> **Last Updated:** 2025-11-11 (Extended Thinking ✅ COMPLETE!)
+> **Next Session:** Add STOP button, remove debug logs, then Phase 4 (Settings redesign)
 
 ---
 
@@ -18,25 +18,35 @@
 
 ---
 
-### 2. Extended Thinking - Full Implementation
+### 2. Extended Thinking - Full Implementation ✅ COMPLETED!
 
 #### Backend (✅ COMPLETED)
-- [x] Add thinking toggle button to MessageInput (Brain icon)
+- [x] Add thinking toggle button to MessageInput (Brain icon with purple highlight)
 - [x] Pass thinkingEnabled to chat API
 - [x] Configure extended thinking with Anthropic API (10k token budget)
 - [x] Fix max_tokens validation (16384 when thinking enabled)
 - [x] Stream thinking content via SSE in real-time
-- [x] Auto-collapse thinking section when regular content starts
+- [x] Auto-collapse thinking section when regular content starts (1s delay)
+- [x] **FIXED**: Handle `thinking_delta` events (was only handling `text_delta`)
+- [x] Track thinking duration and estimated token count
+- [x] Database schema updated with thinkingDuration and thinkingTokens
 
-#### Frontend Display (🔄 IN PROGRESS - NOT WORKING)
-- [ ] **FIX**: Thinking content not displaying in UI despite streaming
-- [ ] Debug SSE event handling for "thinking" events
-- [ ] Verify ThinkingSection receives and displays content
-- [ ] Test auto-collapse behavior when content starts
+#### Frontend Display (✅ WORKING!)
+- [x] Thinking content displays in collapsible purple ThinkingSection
+- [x] SSE event handling for "thinking" and "thinking_done" events
+- [x] ThinkingSection auto-collapses after 1 second when content starts
+- [x] Purple brain icon pulses when enabled
+- [x] Thinking metrics display (duration, estimated tokens)
 
-**Priority**: HIGH - Backend works, frontend display broken ⚠️ NEEDS FIX
-**Effort**: Medium
-**Files**: `components/chat/MessageInput.tsx`, `app/api/chat/route.ts`, `components/chat/ChatInterface.tsx`, `components/chat/ThinkingSection.tsx`, `components/chat/MessageBubble.tsx`
+#### Known Issues / Notes:
+- [ ] **Thinking token count is estimate only** - Anthropic includes thinking tokens in `output_tokens`, not separate
+- [ ] **Consider removing thinking token estimate** - redundant since included in output_tokens
+- [ ] Debug logs still active - remove after final testing
+- [ ] **STOP button needed** - for long thinking sessions (15k+ tokens)
+
+**Priority**: HIGH ✅ **COMPLETED** - Thinking fully working!
+**Bug Found**: Was only handling `text_delta`, needed to handle `thinking_delta` with `delta.thinking` property
+**Files**: `components/chat/MessageInput.tsx`, `app/api/chat/route.ts`, `components/chat/ChatInterface.tsx`, `components/chat/ThinkingSection.tsx`, `components/chat/MessageBubble.tsx`, `types/index.ts`, `prisma/schema.prisma`
 
 ---
 
@@ -267,6 +277,21 @@ Features needed:
 **Priority**: MEDIUM (Future feature)
 **Effort**: VERY HIGH (Complex multi-turn interaction)
 **Status**: Added to long-term roadmap (Tier 4)
+
+---
+
+### 🆕 NEXT SESSION: Cleanup & STOP Button
+
+- [ ] **Add STOP button** to abort streaming (critical for long thinking)
+  - Button appears during streaming
+  - Cancels SSE stream
+  - Saves partial response
+- [ ] **Remove debug logs** from thinking implementation
+  - Remove console.log statements added for debugging
+  - Keep only error logging
+- [ ] **Optional: Remove thinking token estimate**
+  - Since Anthropic includes them in output_tokens
+  - Or keep as "estimated thinking tokens" for UX
 
 ---
 

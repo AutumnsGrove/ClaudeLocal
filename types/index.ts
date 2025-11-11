@@ -71,6 +71,8 @@ export interface ChatMessage {
   modelConfig?: string;
   cost?: number;
   thinkingContent?: string;
+  thinkingDuration?: number | null;
+  thinkingTokens?: number;
 }
 
 export interface FileAttachment {

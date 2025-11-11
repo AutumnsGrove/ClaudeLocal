@@ -17,15 +17,25 @@ export function ThinkingSection({
 }: ThinkingSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Auto-collapse when regular content starts streaming
+  // Auto-collapse when regular content starts streaming (with delay)
   useEffect(() => {
     if (hasContent) {
-      setIsExpanded(false);
+      console.log("[DEBUG] ThinkingSection scheduling auto-collapse in 1s, hasContent:", hasContent);
+      // Wait 1 second before collapsing to let user see thinking
+      const timer = setTimeout(() => {
+        console.log("[DEBUG] ThinkingSection auto-collapsing now");
+        setIsExpanded(false);
+      }, 1000);
+
+      return () => clearTimeout(timer);
     }
   }, [hasContent]);
 
+  console.log("[DEBUG] ThinkingSection received content:", content, "length:", content?.length, "trimmed:", content?.trim().length);
+
   // Return null if content is empty or whitespace
   if (!content || !content.trim()) {
+    console.log("[DEBUG] ThinkingSection returning null - empty content");
     return null;
   }
 

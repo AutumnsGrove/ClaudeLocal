@@ -156,11 +156,20 @@ export async function POST(request: NextRequest) {
 
     // Add thinking parameter if enabled
     if (thinkingEnabled) {
+      console.log("[API DEBUG] 🧠 Extended thinking ENABLED - configuring with 10k token budget");
       streamParams.thinking = {
         type: "enabled",
         budget_tokens: 10000,
       };
+    } else {
+      console.log("[API DEBUG] Extended thinking disabled");
     }
+
+    console.log("[API DEBUG] 📡 Creating Anthropic stream with params:", {
+      model: streamParams.model,
+      max_tokens: streamParams.max_tokens,
+      hasThinking: !!streamParams.thinking,
+    });
 
     const stream = (await anthropic.messages.create(
       streamParams,
@@ -178,6 +187,9 @@ export async function POST(request: NextRequest) {
       cachedTokens: 0,
       stopReason: "",
       thinkingContent: [] as string[],
+      thinkingStartTime: null as number | null,
+      thinkingDuration: null as number | null,
+      thinkingTokens: 0,
     };
 
     let currentBlockType: string | null = null;
@@ -189,6 +201,8 @@ export async function POST(request: NextRequest) {
 
         try {
           for await (const event of stream) {
+            console.log("[API DEBUG] 📩 Anthropic event:", event.type, event);
+
             if (event.type === "message_start") {
               // Capture initial usage data from message start
               if (event.message?.usage) {
@@ -198,42 +212,67 @@ export async function POST(request: NextRequest) {
             } else if (event.type === "content_block_start") {
               // Track block type for thinking content
               currentBlockType = event.content_block.type;
+              console.log("[API DEBUG] 📝 Content block started:", currentBlockType);
             } else if (event.type === "content_block_delta") {
-              if (event.delta.type === "text_delta") {
+              // Capture first token time
+              if (metrics.firstTokenTime === null) {
+                metrics.firstTokenTime = Date.now();
+              }
+
+              // Handle thinking_delta - thinking content comes with delta.thinking
+              if (event.delta.type === "thinking_delta") {
+                const thinkingText = event.delta.thinking;
+
+                // Track when thinking starts
+                if (metrics.thinkingStartTime === null) {
+                  metrics.thinkingStartTime = Date.now();
+                  console.log("[API DEBUG] 💭 Thinking started");
+                }
+
+                console.log("[API DEBUG] 💭 Thinking delta received:", thinkingText);
+                metrics.thinkingContent.push(thinkingText);
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ type: "thinking", content: thinkingText })}\n\n`,
+                  ),
+                );
+              }
+              // Handle text_delta - regular response content comes with delta.text
+              else if (event.delta.type === "text_delta") {
                 const text = event.delta.text;
-
-                // Capture first token time
-                if (metrics.firstTokenTime === null) {
-                  metrics.firstTokenTime = Date.now();
-                }
-
-                // Stream thinking content to frontend in real-time
-                if (currentBlockType === "thinking") {
-                  metrics.thinkingContent.push(text);
-                  controller.enqueue(
-                    encoder.encode(
-                      `data: ${JSON.stringify({ type: "thinking", content: text })}\n\n`,
-                    ),
-                  );
-                } else {
-                  fullResponse += text;
-                  // Send the text chunk to the client
-                  controller.enqueue(
-                    encoder.encode(
-                      `data: ${JSON.stringify({ type: "content", content: text })}\n\n`,
-                    ),
-                  );
-                }
+                fullResponse += text;
+                // Send the text chunk to the client
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ type: "content", content: text })}\n\n`,
+                  ),
+                );
               }
             } else if (event.type === "content_block_stop") {
               // Send thinking_done event when thinking block completes
               if (currentBlockType === "thinking") {
+                // Calculate thinking duration
+                if (metrics.thinkingStartTime !== null) {
+                  metrics.thinkingDuration = (Date.now() - metrics.thinkingStartTime) / 1000; // Convert to seconds
+                }
+
+                // Estimate thinking tokens (rough approximation: 1 token ≈ 4 characters)
+                const thinkingText = metrics.thinkingContent.join("");
+                metrics.thinkingTokens = Math.ceil(thinkingText.length / 4);
+
+                console.log("[API DEBUG] ✅ Thinking block completed:", {
+                  duration: metrics.thinkingDuration,
+                  tokens: metrics.thinkingTokens,
+                  chunks: metrics.thinkingContent.length,
+                });
+
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({ type: "thinking_done" })}\n\n`,
                   ),
                 );
               }
+              console.log("[API DEBUG] 🛑 Content block stopped:", currentBlockType);
               currentBlockType = null;
             } else if (event.type === "message_delta") {
               // Capture cumulative output tokens from message delta
@@ -283,6 +322,8 @@ export async function POST(request: NextRequest) {
                   }),
                   cost,
                   thinkingContent: metrics.thinkingContent.join(""),
+                  thinkingDuration: metrics.thinkingDuration,
+                  thinkingTokens: metrics.thinkingTokens,
                 },
               });
 
@@ -323,6 +364,8 @@ export async function POST(request: NextRequest) {
                         maxTokens,
                       }),
                       cost,
+                      thinkingDuration: metrics.thinkingDuration,
+                      thinkingTokens: metrics.thinkingTokens,
                       thinkingContent: metrics.thinkingContent.join(""),
                     },
                   })}\n\n`,
