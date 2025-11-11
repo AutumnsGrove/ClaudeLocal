@@ -273,6 +273,31 @@ export async function POST(request: NextRequest) {
                 );
               }
 
+              // Send statistics before completion
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({
+                    type: "statistics",
+                    statistics: {
+                      tokensPerSecond,
+                      totalTokens: metrics.totalTokens,
+                      inputTokens: metrics.inputTokens,
+                      outputTokens: metrics.outputTokens,
+                      cachedTokens: metrics.cachedTokens,
+                      timeToFirstToken,
+                      stopReason: metrics.stopReason,
+                      modelConfig: JSON.stringify({
+                        model,
+                        temperature,
+                        maxTokens,
+                      }),
+                      cost,
+                      thinkingContent: metrics.thinkingContent.join(""),
+                    },
+                  })}\n\n`,
+                ),
+              );
+
               // Send completion signal with messageId
               controller.enqueue(
                 encoder.encode(
