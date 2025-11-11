@@ -140,10 +140,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // If thinking is enabled, we need a larger max_tokens to accommodate both thinking and response
+    // max_tokens must be greater than thinking.budget_tokens
+    const effectiveMaxTokens = thinkingEnabled ? 16384 : maxTokens;
+
     // Create streaming response with prompt caching
     const streamParams: any = {
       model,
-      max_tokens: maxTokens,
+      max_tokens: effectiveMaxTokens,
       temperature,
       ...(systemMessages.length > 0 && { system: systemMessages }),
       messages: formattedMessages,
