@@ -36,6 +36,7 @@ export function ChatInterface({
     string | null
   >(conversationId);
   const [skipNextFetch, setSkipNextFetch] = useState(false);
+  const [thinkingEnabled, setThinkingEnabled] = useState(false);
 
   // Fetch messages when conversationId changes
   useEffect(() => {
@@ -122,6 +123,7 @@ export function ChatInterface({
           conversationId: convId,
           message: userMessage,
           model: selectedModel,
+          thinkingEnabled,
         }),
       });
 
@@ -162,7 +164,21 @@ export function ChatInterface({
               try {
                 const parsed = JSON.parse(data);
 
-                if (parsed.type === "content") {
+                if (parsed.type === "thinking") {
+                  // Update thinking content in real-time
+                  setMessages((prev) => {
+                    const updated = [...prev];
+                    const lastMsg = updated[updated.length - 1];
+                    if (lastMsg.role === "assistant") {
+                      lastMsg.thinkingContent =
+                        (lastMsg.thinkingContent || "") + parsed.content;
+                    }
+                    return updated;
+                  });
+                } else if (parsed.type === "thinking_done") {
+                  // Thinking is complete, regular content will start
+                  // No action needed - auto-collapse will be handled by ThinkingSection
+                } else if (parsed.type === "content") {
                   assistantMessage += parsed.content;
                   setMessages((prev) => {
                     const updated = [...prev];
@@ -231,6 +247,7 @@ export function ChatInterface({
     isLoading,
     currentConversationId,
     selectedModel,
+    thinkingEnabled,
     onConversationCreated,
     onConversationUpdated,
     messages.length,
@@ -290,6 +307,8 @@ export function ChatInterface({
         onChange={setInputValue}
         onSubmit={handleSendMessage}
         disabled={isLoading}
+        thinkingEnabled={thinkingEnabled}
+        onThinkingToggle={setThinkingEnabled}
       />
     </div>
   );

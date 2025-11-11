@@ -142,7 +142,7 @@ export function MessageBubble({
         {/* Display thinking content for assistant messages */}
         {!isUser && thinkingContent && (
           <div className="mb-3">
-            <ThinkingSection content={thinkingContent} />
+            <ThinkingSection content={thinkingContent} hasContent={!!content} />
           </div>
         )}
 

@@ -1,16 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronRight, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ThinkingSectionProps {
   content: string;
   className?: string;
+  hasContent?: boolean;
 }
 
-export function ThinkingSection({ content, className }: ThinkingSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function ThinkingSection({ content, className, hasContent }: ThinkingSectionProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  // Auto-collapse when regular content starts streaming
+  useEffect(() => {
+    if (hasContent && isExpanded) {
+      setIsExpanded(false);
+    }
+  }, [hasContent]);
 
   // Return null if content is empty or whitespace
   if (!content || !content.trim()) {
