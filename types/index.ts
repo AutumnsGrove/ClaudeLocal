@@ -36,6 +36,21 @@ export const CLAUDE_MODELS: ClaudeModel[] = [
     maxTokens: 8192,
     contextWindow: 200000,
   },
+  {
+    id: "claude-haiku-4-5-20251001",
+    name: "Claude Haiku 4.5",
+    description: "Fast and efficient, Sonnet-4 level coding performance",
+    maxTokens: 8192,
+    contextWindow: 200000,
+  },
+  // Claude 3.5 Family
+  {
+    id: "claude-3-5-haiku-20241022",
+    name: "Claude 3.5 Haiku",
+    description: "Previous generation fast model",
+    maxTokens: 8192,
+    contextWindow: 200000,
+  },
 ];
 
 export interface ChatMessage {
