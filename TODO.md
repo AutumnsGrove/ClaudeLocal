@@ -1,7 +1,7 @@
 # ClaudeLocal - Feature TODOs
 
-> **Last Updated:** 2025-11-11 (Phase 2 Complete)
-> **Next Review:** After Phase 3 (UI display components)
+> **Last Updated:** 2025-11-11 (Phase 3 Complete, Extended Thinking In Progress)
+> **Next Review:** Fix thinking display, then Phase 4 (Settings redesign)
 
 ---
 
@@ -18,16 +18,25 @@
 
 ---
 
-### 2. Thinking Sections - Make Visible
+### 2. Extended Thinking - Full Implementation
 
-- [x] Display model thinking content in chat messages
-- [x] Make thinking sections collapsible/expandable
-- [x] Add visual indicator when model is thinking
-- [x] Style thinking sections differently from regular content
+#### Backend (✅ COMPLETED)
+- [x] Add thinking toggle button to MessageInput (Brain icon)
+- [x] Pass thinkingEnabled to chat API
+- [x] Configure extended thinking with Anthropic API (10k token budget)
+- [x] Fix max_tokens validation (16384 when thinking enabled)
+- [x] Stream thinking content via SSE in real-time
+- [x] Auto-collapse thinking section when regular content starts
 
-**Priority**: HIGH - User can see model is thinking but can't view the content ✅ COMPLETED
+#### Frontend Display (🔄 IN PROGRESS - NOT WORKING)
+- [ ] **FIX**: Thinking content not displaying in UI despite streaming
+- [ ] Debug SSE event handling for "thinking" events
+- [ ] Verify ThinkingSection receives and displays content
+- [ ] Test auto-collapse behavior when content starts
+
+**Priority**: HIGH - Backend works, frontend display broken ⚠️ NEEDS FIX
 **Effort**: Medium
-**Files**: `components/chat/MessageBubble.tsx`, `app/api/chat/route.ts`, `components/chat/ThinkingSection.tsx`
+**Files**: `components/chat/MessageInput.tsx`, `app/api/chat/route.ts`, `components/chat/ChatInterface.tsx`, `components/chat/ThinkingSection.tsx`, `components/chat/MessageBubble.tsx`
 
 ---
 
@@ -54,43 +63,43 @@ Keep only:
 
 ### 4. Cost Tracking System
 
-#### 4a. Session-Wide Cost Tracker
+#### 4a. Session-Wide Cost Tracker ✅ COMPLETED
 
-- [ ] Add cost tracker in top left of UI
-- [ ] Track all API usage across current browser session
-- [ ] Calculate cost based on:
-  - Input tokens
-  - Output tokens
-  - Cached tokens (90% discount)
-  - Model pricing
-- [ ] Display running total: `$X.XX spent this session`
-- [ ] Persist in localStorage/sessionStorage
-- [ ] Reset button or automatic reset on page reload
+- [x] Add cost tracker in top right of UI (SessionCostTracker component)
+- [x] Track all API usage across current conversation
+- [x] Calculate cost based on:
+  - [x] Input tokens
+  - [x] Output tokens
+  - [x] Cached tokens (90% discount)
+  - [x] Model pricing
+- [x] Display running total: `Session: $X.XXXX`
+- [ ] Persist in localStorage/sessionStorage (future enhancement)
+- [ ] Reset button or automatic reset on page reload (future enhancement)
 
-#### 4b. Per-Chat Cost Tracker
+#### 4b. Per-Chat Cost Tracker ✅ COMPLETED
 
-- [ ] Add cost display per conversation
-- [ ] Show total cost for entire conversation
-- [ ] Calculate from message metadata (tokens + model)
-- [ ] Display in conversation header or info panel
+- [x] Add cost display per conversation (in header)
+- [x] Show total cost for entire conversation
+- [x] Calculate from message metadata (tokens + model)
+- [x] Display in conversation header
 
-**Priority**: HIGH - User wants visibility into API costs
+**Priority**: HIGH ✅ COMPLETED - Fully implemented and working
 **Effort**: Medium-High
-**Dependencies**: Message stats storage (see #5)
-**Files**: New cost calculation utilities, message components, database schema
+**Files**: `components/chat/SessionCostTracker.tsx`, `components/chat/ChatInterface.tsx`, `lib/cost-calculator.ts`
 
 ---
 
 ### 5. Detailed Message Statistics (LM Studio Style)
 
-#### 5a. Basic Stats (Always Visible)
+#### 5a. Basic Stats (Always Visible) ✅ COMPLETED
 
 Display below each assistant message:
 
-- [ ] Tokens per second (e.g., "24.37 tok/sec")
-- [ ] Total tokens (e.g., "102 tokens")
-- [ ] Time to first token (e.g., "0.46s to first token")
-- [ ] Stop reason (e.g., "end_turn", "max_tokens")
+- [x] Tokens per second (e.g., "24.37 tok/sec")
+- [x] Total tokens (e.g., "102 tokens")
+- [x] Time to first token (e.g., "0.46s to first token")
+- [x] Stop reason (e.g., "end_turn", "max_tokens")
+- [x] Message cost (e.g., "$0.0015")
 
 #### 5b. Advanced Stats (Behind Lightbulb/Info Icon)
 
@@ -125,17 +134,18 @@ Display below each assistant message:
 - [x] Calculate and store cost per message
 - [x] Capture and store thinking content
 
-**Priority**: HIGH - Rich analytics like LM Studio
+**Priority**: HIGH ✅ COMPLETED - Rich analytics like LM Studio
 **Effort**: HIGH (requires DB changes, API updates, UI components)
-**Status**: Phase 2 (Backend) COMPLETED - Phase 3 (UI Display) TODO
+**Status**: Phase 2 (Backend) COMPLETED - Phase 3 (UI Display) COMPLETED
 **Files**:
 
 - `prisma/schema.prisma` ✅
 - `app/api/chat/route.ts` ✅
 - `lib/cost-calculator.ts` ✅
 - `types/index.ts` ✅
-- `components/chat/MessageBubble.tsx` (needs MessageStats display)
-- `components/chat/MessageStats.tsx` (new - TODO)
+- `components/chat/MessageBubble.tsx` ✅
+- `components/chat/MessageStats.tsx` ✅
+- `components/chat/MessageList.tsx` ✅
 
 ---
 
@@ -262,13 +272,34 @@ Features needed:
 
 ## 📋 HIGH PRIORITY FEATURES
 
-### Response Retry Button
+### Response Retry/Regenerate Button ⭐ NEW REQUEST
 
-- [ ] Add retry button for failed responses
-- [ ] Allow retry with same parameters
-- [ ] Show loading state during retry
+**Feature**: Add retry button to regenerate assistant responses from a specific point in the conversation.
 
-**Effort**: Low-Medium
+**Requirements**:
+- [ ] Add "Regenerate" button below each assistant message
+- [ ] When clicked, regenerates response from that point forward
+- [ ] Discards all messages after the clicked message
+- [ ] Re-sends the same user message to get a new response
+- [ ] Shows loading state during regeneration
+- [ ] Works for both successful and failed messages
+
+**Use Cases**:
+- User wants a different response to the same question
+- Response was cut off or incomplete
+- User wants to try again with thinking enabled/disabled
+- Original response had an error
+
+**UI/UX**:
+- Small button below message (similar to MessageStats)
+- Icon: RefreshCw from lucide-react
+- Text: "Regenerate response"
+- Only show on hover (like copy button)
+- Disable during loading/streaming
+
+**Effort**: Medium
+**Priority**: HIGH - Requested by user
+**Files**: `components/chat/MessageBubble.tsx`, `components/chat/ChatInterface.tsx`
 
 ---
 
@@ -279,10 +310,10 @@ Features needed:
   - [ ] Delete button
   - [ ] Copy to clipboard
 - [ ] **Assistant Messages**
-  - [ ] Regenerate button (retry with same prompt)
+  - [x] Copy to clipboard ✅ IMPLEMENTED
+  - [ ] Regenerate button (see "Response Retry/Regenerate Button" above)
   - [ ] Rate response (thumbs up/down)
   - [ ] Fork conversation (branch from this point)
-  - [ ] Copy to clipboard
 
 **Effort**: Medium
 
@@ -406,12 +437,26 @@ Features needed:
 4. ✅ TypeScript types updated
 5. ✅ ThinkingSection component created and integrated
 
-### Phase 3: UI Display Components (NEXT)
+### Phase 3: UI Display Components ✅ COMPLETED
 
-1. Create MessageStats component to display metrics
-2. Implement cost tracking (session + per-chat)
-3. Add stats display to MessageBubble
-4. Build session cost tracker (top-left UI)
+1. ✅ Create MessageStats component to display metrics
+2. ✅ Implement cost tracking (session + per-chat)
+3. ✅ Add stats display to MessageBubble
+4. ✅ Build session cost tracker (header UI)
+5. ✅ Stream statistics to frontend via SSE
+6. ✅ Complete data pipeline: API → Frontend → Display
+
+**Commits**: 8 total (Phase 3: a118c62, aff4679, cd5c41b, 64597b6, 8304230 + Thinking: 01f62e0, 1a16717, 6ca16b8, 2e20383)
+
+### Phase 3.5: Extended Thinking (IN PROGRESS)
+
+1. ✅ Add thinking toggle UI (Brain icon button)
+2. ✅ Backend API configuration and streaming
+3. ✅ Fix max_tokens validation
+4. ⚠️ **BLOCKED**: Frontend display not working - needs debugging
+5. ⏭️ Auto-collapse behavior (implemented but not tested)
+
+**Next**: Debug why thinking content isn't displaying in ThinkingSection
 
 ### Phase 4: Settings & Advanced Features (Future)
 
@@ -443,6 +488,20 @@ Features needed:
 ---
 
 ## ✅ RECENTLY COMPLETED FEATURES
+
+### Completed Today (2025-11-11) - Phase 3 Session
+
+1. **Phase 3**: Message statistics display (8 commits)
+   - MessageStats component with performance metrics
+   - SessionCostTracker in header
+   - Real-time streaming of statistics via SSE
+   - Cost tracking per message and per conversation
+2. **Extended Thinking**: Backend implementation (4 commits)
+   - Thinking toggle button (Brain icon)
+   - API configuration with 10k token budget
+   - Real-time thinking content streaming
+   - Auto-collapse functionality
+   - ⚠️ Frontend display broken - needs fix
 
 ### Completed in Recent PRs
 
