@@ -1,7 +1,7 @@
 # ClaudeLocal - Feature TODOs
 
-> **Last Updated:** 2025-11-11 (User testing session)
-> **Next Review:** After Phase 1 completion
+> **Last Updated:** 2025-11-11 (Phase 2 Complete)
+> **Next Review:** After Phase 3 (UI display components)
 
 ---
 
@@ -20,14 +20,14 @@
 
 ### 2. Thinking Sections - Make Visible
 
-- [ ] Display model thinking content in chat messages
-- [ ] Make thinking sections collapsible/expandable
-- [ ] Add visual indicator when model is thinking
-- [ ] Style thinking sections differently from regular content
+- [x] Display model thinking content in chat messages
+- [x] Make thinking sections collapsible/expandable
+- [x] Add visual indicator when model is thinking
+- [x] Style thinking sections differently from regular content
 
-**Priority**: HIGH - User can see model is thinking but can't view the content
+**Priority**: HIGH - User can see model is thinking but can't view the content ✅ COMPLETED
 **Effort**: Medium
-**Files**: `components/chat/MessageBubble.tsx`, `app/api/chat/route.ts`
+**Files**: `components/chat/MessageBubble.tsx`, `app/api/chat/route.ts`, `components/chat/ThinkingSection.tsx`
 
 ---
 
@@ -103,9 +103,9 @@ Display below each assistant message:
 - [ ] Request/response metadata
 - [ ] Cache hit information
 
-#### 5c. Database Schema Updates
+#### 5c. Database Schema Updates ✅ COMPLETED
 
-- [ ] Add `Message` fields:
+- [x] Add `Message` fields:
   - `tokensPerSecond` (float)
   - `totalTokens` (int)
   - `inputTokens` (int)
@@ -115,22 +115,27 @@ Display below each assistant message:
   - `stopReason` (string)
   - `modelConfig` (JSON)
   - `cost` (float)
+  - `thinkingContent` (string) - BONUS: Added for thinking blocks
 
-#### 5d. API Route Updates
+#### 5d. API Route Updates ✅ COMPLETED
 
-- [ ] Capture streaming metrics during `/api/chat` response
-- [ ] Calculate tokens/sec from streaming events
-- [ ] Store all metrics when message is complete
-- [ ] Return metrics to frontend for display
+- [x] Capture streaming metrics during `/api/chat` response
+- [x] Calculate tokens/sec from streaming events
+- [x] Store all metrics when message is complete
+- [x] Calculate and store cost per message
+- [x] Capture and store thinking content
 
 **Priority**: HIGH - Rich analytics like LM Studio
 **Effort**: HIGH (requires DB changes, API updates, UI components)
+**Status**: Phase 2 (Backend) COMPLETED - Phase 3 (UI Display) TODO
 **Files**:
 
-- `prisma/schema.prisma`
-- `app/api/chat/route.ts`
-- `components/chat/MessageBubble.tsx`
-- `components/chat/MessageStats.tsx` (new)
+- `prisma/schema.prisma` ✅
+- `app/api/chat/route.ts` ✅
+- `lib/cost-calculator.ts` ✅
+- `types/index.ts` ✅
+- `components/chat/MessageBubble.tsx` (needs MessageStats display)
+- `components/chat/MessageStats.tsx` (new - TODO)
 
 ---
 
@@ -386,35 +391,49 @@ Features needed:
 
 ## 🎯 IMPLEMENTATION ROADMAP
 
-### Phase 1: Critical Fixes (Days 1-3)
+### Phase 1: Critical Fixes ✅ COMPLETED
 
-1. Investigate and fix console error
-2. Display thinking sections (collapsible)
-3. Remove deprecated models
-4. Quick Settings page improvements
+1. ✅ Investigate and fix console error (React hydration)
+2. ✅ Display thinking sections (collapsible ThinkingSection component)
+3. ✅ Remove deprecated models (Claude 3 family)
+4. ⏭️ Quick Settings page improvements (deferred to Phase 4)
 
-### Phase 2: Core Features (Week 1-2)
+### Phase 2: Database & Backend ✅ COMPLETED
 
-1. Implement cost tracking (session + per-chat)
-2. Add detailed message statistics
-3. Complete Settings page redesign
-4. Build chat settings right panel
+1. ✅ Database schema updates (10 new fields for statistics + thinking)
+2. ✅ API metrics capture (streaming, tokens, cost, thinking)
+3. ✅ Cost calculation utility (all Claude 4 models)
+4. ✅ TypeScript types updated
+5. ✅ ThinkingSection component created and integrated
 
-### Phase 3: UX Polish (Week 2-3)
+### Phase 3: UI Display Components (NEXT)
+
+1. Create MessageStats component to display metrics
+2. Implement cost tracking (session + per-chat)
+3. Add stats display to MessageBubble
+4. Build session cost tracker (top-left UI)
+
+### Phase 4: Settings & Advanced Features (Future)
+
+1. Complete Settings page redesign
+2. Build chat settings right panel
+3. Multi-provider support preparation
+
+### Phase 5: UX Polish (Future)
 
 1. Message interaction buttons (edit, delete, copy, regenerate)
 2. Response retry functionality
 3. UI icons throughout
 4. Enhanced error handling
 
-### Phase 4: Advanced Features (Week 3+)
+### Phase 6: Advanced Features (Future)
 
 1. Project management system
 2. Conversation export
 3. Tool calling support (research phase)
 4. Multi-provider support (OpenRouter, LM Studio)
 
-### Phase 5: Infrastructure (Ongoing)
+### Phase 7: Infrastructure (Ongoing)
 
 1. Testing framework
 2. CI/CD pipeline
