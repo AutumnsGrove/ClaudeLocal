@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
-import { getAnthropicApiKey } from '@/lib/secrets';
-import { prisma } from '@/lib/db';
-import { generateConversationTitle } from '@/lib/generate-title';
+import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+import { getAnthropicApiKey } from "@/lib/secrets";
+import { prisma } from "@/lib/db";
+import { generateConversationTitle } from "@/lib/generate-title";
+import { calculateMessageCost } from "@/lib/cost-calculator";
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
     const {
       message,
       messages,
-      model = 'claude-sonnet-4-5-20250929',
+      model = "claude-sonnet-4-5-20250929",
       temperature = 1.0,
       maxTokens = 8192,
       conversationId,
@@ -28,21 +29,28 @@ export async function POST(request: NextRequest) {
       if (conversationId) {
         const existingMessages = await prisma.message.findMany({
           where: { conversationId },
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: "asc" },
         });
         messagesToProcess = [
-          ...existingMessages.map(m => ({ role: m.role, content: m.content })),
-          { role: 'user', content: message }
+          ...existingMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          { role: "user", content: message },
         ];
       } else {
-        messagesToProcess = [{ role: 'user', content: message }];
+        messagesToProcess = [{ role: "user", content: message }];
       }
     }
 
-    if (!messagesToProcess || !Array.isArray(messagesToProcess) || messagesToProcess.length === 0) {
+    if (
+      !messagesToProcess ||
+      !Array.isArray(messagesToProcess) ||
+      messagesToProcess.length === 0
+    ) {
       return NextResponse.json(
-        { error: 'Message or messages array is required' },
-        { status: 400 }
+        { error: "Message or messages array is required" },
+        { status: 400 },
       );
     }
 
@@ -62,7 +70,8 @@ export async function POST(request: NextRequest) {
       project = conversation?.project;
     } else {
       // Create new conversation
-      const title = messagesToProcess[0].content.slice(0, 100) || 'New Conversation';
+      const title =
+        messagesToProcess[0].content.slice(0, 100) || "New Conversation";
       conversation = await prisma.conversation.create({
         data: {
           title,
@@ -78,8 +87,8 @@ export async function POST(request: NextRequest) {
 
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Conversation not found' },
-        { status: 404 }
+        { error: "Conversation not found" },
+        { status: 404 },
       );
     }
 
@@ -88,39 +97,45 @@ export async function POST(request: NextRequest) {
     await prisma.message.create({
       data: {
         conversationId: conversation.id,
-        role: 'user',
+        role: "user",
         content: userMessage.content,
       },
     });
 
     // Prepare messages with prompt caching
     // Mark older messages for caching to save tokens (90% cost reduction!)
-    const formattedMessages = messagesToProcess.map((msg: any, index: number) => {
-      const isLastUserMessage = index === messagesToProcess.length - 1;
-      const shouldCache = !isLastUserMessage && messagesToProcess.length > 2;
+    const formattedMessages = messagesToProcess.map(
+      (msg: any, index: number) => {
+        const isLastUserMessage = index === messagesToProcess.length - 1;
+        const shouldCache = !isLastUserMessage && messagesToProcess.length > 2;
 
-      return {
-        role: msg.role,
-        content: shouldCache
-          ? [
-              {
-                type: 'text',
-                text: msg.content,
-                cache_control: { type: 'ephemeral' },
-              },
-            ]
-          : msg.content,
-      };
-    });
+        return {
+          role: msg.role,
+          content: shouldCache
+            ? [
+                {
+                  type: "text",
+                  text: msg.content,
+                  cache_control: { type: "ephemeral" },
+                },
+              ]
+            : msg.content,
+        };
+      },
+    );
 
     // Build system message with project instructions (if available)
-    const systemMessages: Array<{ type: 'text'; text: string; cache_control: { type: 'ephemeral' } }> = [];
+    const systemMessages: Array<{
+      type: "text";
+      text: string;
+      cache_control: { type: "ephemeral" };
+    }> = [];
     if (project?.instructions) {
       // Cache project instructions for huge token savings in multi-turn conversations
       systemMessages.push({
-        type: 'text' as const,
+        type: "text" as const,
         text: project.instructions,
-        cache_control: { type: 'ephemeral' as const },
+        cache_control: { type: "ephemeral" as const },
       });
     }
 
@@ -134,7 +149,21 @@ export async function POST(request: NextRequest) {
       stream: true,
     });
 
-    let fullResponse = '';
+    let fullResponse = "";
+
+    // Metrics tracking object
+    let metrics = {
+      startTime: Date.now(),
+      firstTokenTime: null as number | null,
+      totalTokens: 0,
+      inputTokens: 0,
+      outputTokens: 0,
+      cachedTokens: 0,
+      stopReason: "",
+      thinkingContent: [] as string[],
+    };
+
+    let currentBlockType: string | null = null;
 
     // Create a ReadableStream for the response
     const readableStream = new ReadableStream({
@@ -143,23 +172,83 @@ export async function POST(request: NextRequest) {
 
         try {
           for await (const event of stream) {
-            if (event.type === 'content_block_delta') {
-              if (event.delta.type === 'text_delta') {
+            if (event.type === "content_block_start") {
+              // Track block type for thinking content
+              currentBlockType = event.content_block.type;
+            } else if (event.type === "content_block_delta") {
+              if (event.delta.type === "text_delta") {
                 const text = event.delta.text;
-                fullResponse += text;
+
+                // Capture first token time
+                if (metrics.firstTokenTime === null) {
+                  metrics.firstTokenTime = Date.now();
+                }
+
+                // Capture thinking content separately
+                if (currentBlockType === "thinking") {
+                  metrics.thinkingContent.push(text);
+                } else {
+                  fullResponse += text;
+                }
 
                 // Send the text chunk to the client
                 controller.enqueue(
-                  encoder.encode(`data: ${JSON.stringify({ type: 'content', content: text })}\n\n`)
+                  encoder.encode(
+                    `data: ${JSON.stringify({ type: "content", content: text })}\n\n`,
+                  ),
                 );
               }
-            } else if (event.type === 'message_stop') {
-              // Save assistant message to database
-              await prisma.message.create({
+            } else if (event.type === "message_stop") {
+              // Capture usage data from the stop event
+              if (event.usage) {
+                metrics.inputTokens = event.usage.input_tokens || 0;
+                metrics.outputTokens = event.usage.output_tokens || 0;
+                metrics.cachedTokens = event.usage.cache_read_input_tokens || 0;
+                metrics.totalTokens =
+                  metrics.inputTokens + metrics.outputTokens;
+              }
+
+              // Capture stop reason
+              if (event.message?.stop_reason) {
+                metrics.stopReason = event.message.stop_reason;
+              }
+
+              // Calculate performance metrics
+              const duration = (Date.now() - metrics.startTime) / 1000; // in seconds
+              const tokensPerSecond =
+                metrics.totalTokens > 0 ? metrics.totalTokens / duration : 0;
+              const timeToFirstToken = metrics.firstTokenTime
+                ? (metrics.firstTokenTime - metrics.startTime) / 1000
+                : 0;
+
+              // Calculate cost
+              const cost = calculateMessageCost({
+                model,
+                inputTokens: metrics.inputTokens,
+                outputTokens: metrics.outputTokens,
+                cachedTokens: metrics.cachedTokens,
+              });
+
+              // Save assistant message to database with all metrics
+              const assistantMessage = await prisma.message.create({
                 data: {
                   conversationId: conversation.id,
-                  role: 'assistant',
+                  role: "assistant",
                   content: fullResponse,
+                  tokensPerSecond,
+                  totalTokens: metrics.totalTokens,
+                  inputTokens: metrics.inputTokens,
+                  outputTokens: metrics.outputTokens,
+                  cachedTokens: metrics.cachedTokens,
+                  timeToFirstToken,
+                  stopReason: metrics.stopReason,
+                  modelConfig: JSON.stringify({
+                    model,
+                    temperature,
+                    maxTokens,
+                  }),
+                  cost,
+                  thinkingContent: metrics.thinkingContent.join(""),
                 },
               });
 
@@ -177,29 +266,24 @@ export async function POST(request: NextRequest) {
               if (messageCount === 2) {
                 // First exchange complete, trigger title generation asynchronously
                 generateConversationTitle(conversation.id).catch((err) =>
-                  console.error('Title generation failed:', err)
+                  console.error("Title generation failed:", err),
                 );
               }
 
               // Send completion signal with messageId
-              const savedMessage = await prisma.message.findFirst({
-                where: { conversationId: conversation.id },
-                orderBy: { createdAt: 'desc' },
-              });
-
               controller.enqueue(
                 encoder.encode(
-                  `data: ${JSON.stringify({ type: 'done', messageId: savedMessage?.id, conversationId: conversation.id })}\n\n`
-                )
+                  `data: ${JSON.stringify({ type: "done", messageId: assistantMessage.id, conversationId: conversation.id })}\n\n`,
+                ),
               );
             }
           }
         } catch (error) {
-          console.error('Streaming error:', error);
+          console.error("Streaming error:", error);
           controller.enqueue(
             encoder.encode(
-              `data: ${JSON.stringify({ error: 'Streaming failed' })}\n\n`
-            )
+              `data: ${JSON.stringify({ error: "Streaming failed" })}\n\n`,
+            ),
           );
         } finally {
           controller.close();
@@ -209,16 +293,16 @@ export async function POST(request: NextRequest) {
 
     return new Response(readableStream, {
       headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
       },
     });
   } catch (error: any) {
-    console.error('Chat API error:', error);
+    console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
+      { error: error.message || "Internal server error" },
+      { status: 500 },
     );
   }
 }
