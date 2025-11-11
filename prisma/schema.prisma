@@ -47,6 +47,20 @@ model Message {
   createdAt      DateTime     @default(now())
   attachments    Attachment[]
 
+  // Statistics
+  tokensPerSecond Float?
+  totalTokens     Int?
+  inputTokens     Int?
+  outputTokens    Int?
+  cachedTokens    Int?
+  timeToFirstToken Float?
+  stopReason      String?
+  modelConfig     String?      // JSON string
+  cost            Float?
+
+  // Thinking
+  thinkingContent String?      // Store model thinking blocks
+
   @@index([conversationId])
   @@index([createdAt])
 }
