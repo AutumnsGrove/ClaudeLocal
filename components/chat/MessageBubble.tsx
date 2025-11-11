@@ -1,37 +1,45 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Prism from 'prismjs';
-import { User, Bot, Copy, Check, RefreshCw, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/toast';
+import React, { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Prism from "prismjs";
+import { User, Bot, Copy, Check, RefreshCw, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { ThinkingSection } from "./ThinkingSection";
 
 // Import Prism languages
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-jsx';
-import 'prismjs/components/prism-tsx';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-markdown';
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-markdown";
 
 interface MessageBubbleProps {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
+  thinkingContent?: string;
   error?: boolean;
   isRetrying?: boolean;
   onRetry?: () => void;
   onRegenerate?: () => void;
 }
 
-const CodeBlock = ({ children, className }: { children: string; className?: string }) => {
+const CodeBlock = ({
+  children,
+  className,
+}: {
+  children: string;
+  className?: string;
+}) => {
   const [copied, setCopied] = useState(false);
-  const language = className?.replace('language-', '') || 'text';
+  const language = className?.replace("language-", "") || "text";
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(children);
@@ -40,7 +48,7 @@ const CodeBlock = ({ children, className }: { children: string; className?: stri
   };
 
   useEffect(() => {
-    if (language !== 'text') {
+    if (language !== "text") {
       Prism.highlightAll();
     }
   }, [language]);
@@ -68,8 +76,16 @@ const CodeBlock = ({ children, className }: { children: string; className?: stri
   );
 };
 
-export function MessageBubble({ role, content, error, isRetrying, onRetry, onRegenerate }: MessageBubbleProps) {
-  const isUser = role === 'user';
+export function MessageBubble({
+  role,
+  content,
+  thinkingContent,
+  error,
+  isRetrying,
+  onRetry,
+  onRegenerate,
+}: MessageBubbleProps) {
+  const isUser = role === "user";
   const [copied, setCopied] = useState(false);
   const { showToast } = useToast();
 
@@ -77,11 +93,11 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry, onReg
     try {
       await navigator.clipboard.writeText(content);
       setCopied(true);
-      showToast('Message copied to clipboard', 'success');
+      showToast("Message copied to clipboard", "success");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy message:', err);
-      showToast('Failed to copy message', 'error');
+      console.error("Failed to copy message:", err);
+      showToast("Failed to copy message", "error");
     }
   };
 
@@ -94,8 +110,8 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry, onReg
   return (
     <div
       className={cn(
-        'flex gap-3 mb-4 group',
-        isUser ? 'justify-end' : 'justify-start'
+        "flex gap-3 mb-4 group",
+        isUser ? "justify-end" : "justify-start",
       )}
     >
       {!isUser && (
@@ -105,13 +121,20 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry, onReg
       )}
 
       <div className="relative max-w-[80%]">
+        {/* Display thinking content for assistant messages */}
+        {!isUser && thinkingContent && (
+          <div className="mb-3">
+            <ThinkingSection content={thinkingContent} />
+          </div>
+        )}
+
         <div
           className={cn(
-            'rounded-lg px-4 py-3 inline-block',
+            "rounded-lg px-4 py-3 inline-block",
             isUser
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-foreground',
-            error && 'border-2 border-red-500/50 bg-red-50 dark:bg-red-950/20'
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-foreground",
+            error && "border-2 border-red-500/50 bg-red-50 dark:bg-red-950/20",
           )}
         >
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
@@ -123,16 +146,18 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry, onReg
                 "h-7 w-7",
                 isUser
                   ? "hover:bg-primary-foreground/20"
-                  : "hover:bg-background"
+                  : "hover:bg-background",
               )}
             >
               {copied ? (
                 <Check className="h-3.5 w-3.5 text-green-500" />
               ) : (
-                <Copy className={cn(
-                  "h-3.5 w-3.5",
-                  isUser ? "text-primary-foreground" : ""
-                )} />
+                <Copy
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    isUser ? "text-primary-foreground" : "",
+                  )}
+                />
               )}
             </Button>
           </div>
@@ -144,16 +169,20 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry, onReg
                 remarkPlugins={[remarkGfm]}
                 components={{
                   code({ node, className, children, ...props }: any) {
-                    const match = /language-(\w+)/.exec(className || '');
-                    const codeString = String(children).replace(/\n$/, '');
+                    const match = /language-(\w+)/.exec(className || "");
+                    const codeString = String(children).replace(/\n$/, "");
                     const inline = !className;
 
                     return !inline && match ? (
-                      <CodeBlock className={className}>
-                        {codeString}
-                      </CodeBlock>
+                      <CodeBlock className={className}>{codeString}</CodeBlock>
                     ) : (
-                      <code className={cn("bg-muted px-1.5 py-0.5 rounded text-sm", className)} {...props}>
+                      <code
+                        className={cn(
+                          "bg-muted px-1.5 py-0.5 rounded text-sm",
+                          className,
+                        )}
+                        {...props}
+                      >
                         {children}
                       </code>
                     );
@@ -162,10 +191,16 @@ export function MessageBubble({ role, content, error, isRetrying, onRetry, onReg
                     return <p className="mb-2 last:mb-0">{children}</p>;
                   },
                   ul({ children }) {
-                    return <ul className="list-disc list-inside mb-2">{children}</ul>;
+                    return (
+                      <ul className="list-disc list-inside mb-2">{children}</ul>
+                    );
                   },
                   ol({ children }) {
-                    return <ol className="list-decimal list-inside mb-2">{children}</ol>;
+                    return (
+                      <ol className="list-decimal list-inside mb-2">
+                        {children}
+                      </ol>
+                    );
                   },
                   li({ children }) {
                     return <li className="mb-1">{children}</li>;
