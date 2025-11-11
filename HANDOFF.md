@@ -1,13 +1,13 @@
 # ClaudeLocal - Session Handoff Document
 
 > **Date**: 2025-11-11
-> **Session**: Phase 1 Complete → Phase 2 Ready
+> **Session**: Phase 2 Complete → Phase 3 Ready
 > **Branch**: master
 > **Dev Server**: Running on port 3000
 
 ---
 
-## ✅ COMPLETED WORK (4 commits on master)
+## ✅ COMPLETED WORK (11 commits on master)
 
 ### 1. Fixed React Hydration Error (Commit: 8bbacc1)
 
@@ -33,366 +33,85 @@
 - **File**: `TODO.md` - Marked Phase 1 items as completed
 - **Status**: Phase 1 quick fixes complete
 
+### 4. Phase 2: Database & Backend Implementation (Commits: 5e42dc6, abfbc61, 2e299b3, 83720b3, 2df98db, 75c734b, b8a88cc)
+
+- **Database Schema** (`prisma/schema.prisma`) - Added 10 new fields to Message model:
+  - Statistics: tokensPerSecond, totalTokens, inputTokens, outputTokens, cachedTokens, timeToFirstToken, stopReason, modelConfig, cost
+  - Thinking: thinkingContent
+- **Migration**: `add_message_statistics_and_thinking` applied successfully
+- **TypeScript Types** (`types/index.ts`) - Updated ChatMessage interface with all new fields
+- **Cost Calculator** (`lib/cost-calculator.ts`) - Created utility with pricing for all Claude 4 models
+- **API Metrics** (`app/api/chat/route.ts`) - Captures streaming metrics, token usage, thinking content, and calculates costs
+- **ThinkingSection Component** (`components/chat/ThinkingSection.tsx`) - Collapsible purple-themed UI with Brain icon
+- **MessageBubble Integration** - ThinkingSection displays before message content when available
+- **ESLint Config** (`eslint.config.mjs`) - Added Next.js 15 flat config format
+- **Result**: All message statistics and thinking content now captured and stored in database
+
 ---
 
-## 🎯 NEXT TASK: Phase 2 - Database Schema for Message Statistics
+## 🎯 NEXT TASK: Phase 3 - UI Display Components
 
 ### Overview
 
-Design and implement database schema changes to support:
+Now that all message statistics are being captured and stored in the database, we need to display them to the user. Phase 3 focuses on creating UI components to show:
 
-1. **Message Statistics** (tokens/sec, time to first token, stop reason, etc.)
-2. **Cost Tracking** (input/output/cached tokens, calculated cost)
-3. **Thinking Content** (store model thinking blocks for display)
+1. **MessageStats Component** - Display metrics below each assistant message
+2. **Session Cost Tracker** - Top-left UI element showing total session cost
+3. **Per-Chat Cost Display** - Show total conversation cost in header
+4. **Fetch and Display Data** - Update MessageBubble to fetch and show stats
 
 ### Implementation Strategy
 
 **IMPORTANT**: Follow the subagent-driven development approach per `ClaudeUsage/subagent_usage.md`:
 
-- Use **haiku-coder** subagent for quick schema changes (0-250 lines)
+- Use **haiku-coder** subagent for component creation (0-250 lines)
 - Each subagent commits its work atomically
-- Include commit hash in completion artifact
+- Test after each commit to verify display works correctly
 
 ---
 
-## 📋 PHASE 2 DETAILED PLAN
+## 📋 PHASE 3 DETAILED PLAN
 
-### Step 1: Design Database Schema (Documentation Phase)
-
-**Subagent Type**: `haiku-coder` or direct implementation
-**Files to Modify**: `prisma/schema.prisma`
-
-**Schema Changes Needed**:
-
-```prisma
-model Message {
-  id             String   @id @default(cuid())
-  conversationId String
-  role           String
-  content        String
-  createdAt      DateTime @default(now())
-
-  // NEW FIELDS FOR STATISTICS
-  tokensPerSecond Float?
-  totalTokens     Int?
-  inputTokens     Int?
-  outputTokens    Int?
-  cachedTokens    Int?
-  timeToFirstToken Float?
-  stopReason      String?
-  modelConfig     String? // JSON string
-  cost            Float?
-
-  // NEW FIELD FOR THINKING CONTENT
-  thinkingContent String? // Store model thinking blocks
-
-  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@index([conversationId])
-}
-```
-
-**Migration Command**:
-
-```bash
-npx prisma migrate dev --name add_message_statistics_and_thinking
-```
-
-**Validation**:
-
-```bash
-npx prisma studio  # Verify schema in Prisma Studio
-```
-
-**Commit Message Format**:
-
-```
-feat: Add message statistics and thinking fields to schema
-
-Added fields to Message model:
-- Statistics: tokensPerSecond, totalTokens, inputTokens, outputTokens,
-  cachedTokens, timeToFirstToken, stopReason, modelConfig, cost
-- Thinking: thinkingContent for storing model thinking blocks
-
-Migration: add_message_statistics_and_thinking
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
----
-
-### Step 2: Update API Route to Capture Metrics
+### Step 1: Create MessageStats Component
 
 **Subagent Type**: `haiku-coder`
-**File to Modify**: `app/api/chat/route.ts`
-
-**Changes Needed**:
-
-1. **Import Anthropic SDK types** for usage metadata:
-
-```typescript
-import Anthropic from "@anthropic-ai/sdk";
-```
-
-2. **Track streaming metrics**:
-
-```typescript
-let metrics = {
-  startTime: Date.now(),
-  firstTokenTime: null as number | null,
-  totalTokens: 0,
-  inputTokens: 0,
-  outputTokens: 0,
-  cachedTokens: 0,
-  stopReason: "",
-  thinkingContent: [] as string[],
-};
-```
-
-3. **Capture thinking blocks** during streaming:
-
-```typescript
-// In the streaming loop, detect thinking blocks
-if (
-  event.type === "content_block_start" &&
-  event.content_block.type === "thinking"
-) {
-  // Start capturing thinking content
-}
-if (event.type === "content_block_delta" && currentBlockType === "thinking") {
-  metrics.thinkingContent.push(event.delta.thinking);
-}
-```
-
-4. **Calculate tokens per second**:
-
-```typescript
-const duration = (Date.now() - metrics.startTime) / 1000; // seconds
-const tokensPerSecond = metrics.totalTokens / duration;
-const timeToFirstToken = metrics.firstTokenTime
-  ? (metrics.firstTokenTime - metrics.startTime) / 1000
-  : null;
-```
-
-5. **Calculate cost** (use pricing from `lib/pricing.ts`):
-
-```typescript
-import { calculateMessageCost } from "@/lib/pricing";
-
-const cost = calculateMessageCost({
-  model: selectedModel,
-  inputTokens: metrics.inputTokens,
-  outputTokens: metrics.outputTokens,
-  cachedTokens: metrics.cachedTokens,
-});
-```
-
-6. **Save metrics to database**:
-
-```typescript
-await prisma.message.update({
-  where: { id: assistantMessage.id },
-  data: {
-    tokensPerSecond,
-    totalTokens: metrics.totalTokens,
-    inputTokens: metrics.inputTokens,
-    outputTokens: metrics.outputTokens,
-    cachedTokens: metrics.cachedTokens,
-    timeToFirstToken,
-    stopReason: metrics.stopReason,
-    modelConfig: JSON.stringify({
-      model: selectedModel,
-      temperature,
-      maxTokens,
-    }),
-    cost,
-    thinkingContent: metrics.thinkingContent.join(""),
-  },
-});
-```
-
-**Commit Message Format**:
-
-```
-feat: Capture message statistics and thinking content
-
-Updated chat API to track and store:
-- Streaming metrics (tokens/sec, time to first token)
-- Token usage (input, output, cached)
-- Model thinking content
-- Calculated cost per message
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
----
-
-### Step 3: Create Cost Calculation Utility
-
-**Subagent Type**: `haiku-coder`
-**File to Create**: `lib/cost-calculator.ts`
+**File to Create**: `components/chat/MessageStats.tsx`
 
 **Implementation**:
 
+Create a component that displays message statistics below assistant messages:
+- Tokens per second (e.g., "24.37 tok/sec")
+- Total tokens (e.g., "102 tokens")
+- Time to first token (e.g., "0.46s")
+- Stop reason (e.g., "end_turn")
+- Cost (e.g., "$0.0015")
+
+**Props interface**:
 ```typescript
-// Pricing per million tokens (as of 2025-11-11)
-const MODEL_PRICING = {
-  "claude-sonnet-4-5-20250929": {
-    input: 3.0,
-    output: 15.0,
-    cached: 0.3, // 90% discount
-  },
-  "claude-opus-4-1-20250514": {
-    input: 15.0,
-    output: 75.0,
-    cached: 1.5,
-  },
-  "claude-opus-4-20250514": {
-    input: 15.0,
-    output: 75.0,
-    cached: 1.5,
-  },
-  "claude-sonnet-4-20250514": {
-    input: 3.0,
-    output: 15.0,
-    cached: 0.3,
-  },
-  "claude-haiku-4-5-20251001": {
-    input: 1.0,
-    output: 5.0,
-    cached: 0.1,
-  },
-  "claude-3-5-haiku-20241022": {
-    input: 1.0,
-    output: 5.0,
-    cached: 0.1,
-  },
-} as const;
-
-interface CostCalculationParams {
-  model: string;
-  inputTokens: number;
-  outputTokens: number;
-  cachedTokens: number;
-}
-
-export function calculateMessageCost(params: CostCalculationParams): number {
-  const { model, inputTokens, outputTokens, cachedTokens } = params;
-  const pricing = MODEL_PRICING[model as keyof typeof MODEL_PRICING];
-
-  if (!pricing) {
-    console.warn(`No pricing found for model: ${model}`);
-    return 0;
-  }
-
-  const inputCost = (inputTokens / 1_000_000) * pricing.input;
-  const outputCost = (outputTokens / 1_000_000) * pricing.output;
-  const cachedCost = (cachedTokens / 1_000_000) * pricing.cached;
-
-  return inputCost + outputCost + cachedCost;
-}
-
-export function formatCost(cost: number): string {
-  return `$${cost.toFixed(4)}`;
-}
-```
-
-**Commit Message Format**:
-
-```
-feat: Add cost calculation utilities
-
-Created cost calculator with current model pricing:
-- Pricing per million tokens for all Claude 4 models
-- 90% discount for cached tokens
-- Helper functions for calculating and formatting costs
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
----
-
-### Step 4: Create ThinkingSection Component
-
-**Subagent Type**: `haiku-coder`
-**File to Create**: `components/chat/ThinkingSection.tsx`
-
-**Implementation**:
-
-```typescript
-'use client';
-
-import { useState } from 'react';
-import { ChevronDown, ChevronRight, Brain } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-interface ThinkingSectionProps {
-  content: string;
+interface MessageStatsProps {
+  tokensPerSecond?: number;
+  totalTokens?: number;
+  timeToFirstToken?: number;
+  stopReason?: string;
+  cost?: number;
   className?: string;
 }
-
-export function ThinkingSection({ content, className }: ThinkingSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  if (!content || content.trim() === '') {
-    return null;
-  }
-
-  return (
-    <div className={cn('mb-3 border-l-2 border-purple-500/50 bg-purple-50/50 dark:bg-purple-950/20 rounded', className)}>
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-100/50 dark:hover:bg-purple-900/30 transition-colors"
-      >
-        <Brain className="h-4 w-4" />
-        <span>Model Thinking</span>
-        {isExpanded ? (
-          <ChevronDown className="h-4 w-4 ml-auto" />
-        ) : (
-          <ChevronRight className="h-4 w-4 ml-auto" />
-        )}
-      </button>
-
-      {isExpanded && (
-        <div className="px-3 py-2 text-sm text-muted-foreground border-t border-purple-200/50 dark:border-purple-800/50">
-          <pre className="whitespace-pre-wrap font-mono text-xs">
-            {content}
-          </pre>
-        </div>
-      )}
-    </div>
-  );
-}
 ```
 
-**Usage in MessageBubble**:
+**UI Requirements**:
+- Small, subtle text (text-xs, text-muted-foreground)
+- Horizontal layout with separators
+- Icons from lucide-react (Zap, Hash, Clock, DollarSign)
+- Only show stats that are available (conditional rendering)
 
-```typescript
-// In MessageBubble.tsx, add:
-import { ThinkingSection } from './ThinkingSection';
-
-// Before rendering content:
-{message.thinkingContent && (
-  <ThinkingSection content={message.thinkingContent} />
-)}
+**Commit Message**:
 ```
+feat: Add message statistics display component
 
-**Commit Message Format**:
-
-```
-feat: Add collapsible thinking section component
-
-Created ThinkingSection component with:
-- Collapsible/expandable UI
-- Visual distinction (purple theme)
-- Brain icon indicator
-- Integrated with MessageBubble
+Created MessageStats component to display:
+- Performance metrics (tokens/sec, time to first token)
+- Token count and stop reason
+- Message cost
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -401,16 +120,97 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-## 📊 SUCCESS CRITERIA FOR PHASE 2
+### Step 2: Integrate MessageStats with MessageBubble
 
-- [ ] Database schema updated with all new fields
-- [ ] Migration runs successfully (`npx prisma migrate dev`)
-- [ ] Chat API captures all metrics during streaming
-- [ ] Cost calculation utility created and working
-- [ ] ThinkingSection component created and integrated
-- [ ] All changes committed atomically (5-6 commits total)
+**Subagent Type**: `haiku-coder`
+**File to Modify**: `components/chat/MessageBubble.tsx`
+
+**Changes Needed**:
+1. Import MessageStats component
+2. Display MessageStats below message content for assistant messages
+3. Pass all statistics props from message object
+
+**Commit Message**:
+```
+feat: Display message statistics in chat
+
+Integrated MessageStats component into MessageBubble:
+- Shows performance metrics below assistant messages
+- Displays token usage and cost information
+- Conditional rendering based on available data
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+---
+
+### Step 3: Update API to Return Stats to Frontend
+
+**Subagent Type**: `haiku-coder`
+**File to Modify**: `app/api/conversations/[id]/messages/route.ts`
+
+**Changes Needed**:
+Ensure the messages API returns all the new statistics fields when fetching conversation messages. The fields should already be in the database from Phase 2, just need to make sure they're included in the query response.
+
+**Commit Message**:
+```
+feat: Include message statistics in API responses
+
+Updated messages API to return all statistics fields:
+- Performance metrics, token usage, cost, thinking content
+- Enables frontend display of message statistics
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+---
+
+### Step 4: Create Session Cost Tracker Component
+
+**Subagent Type**: `haiku-coder`
+**File to Create**: `components/chat/SessionCostTracker.tsx`
+
+**Implementation**:
+
+Create a component for top-left of UI that tracks total session cost:
+- Calculates sum of all message costs in current conversation
+- Displays total with dollar sign
+- Updates in real-time as messages are added
+- Small, unobtrusive design
+
+**Commit Message**:
+```
+feat: Add session cost tracker component
+
+Created SessionCostTracker for top-left UI:
+- Real-time cost tracking for current conversation
+- Calculates sum of all message costs
+- Updates automatically as messages are added
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+---
+
+---
+
+## 📊 SUCCESS CRITERIA FOR PHASE 3
+
+- [ ] MessageStats component created and displays correctly
+- [ ] MessageStats integrated into MessageBubble for assistant messages
+- [ ] API returns all statistics fields when fetching messages
+- [ ] SessionCostTracker component created and positioned in UI
+- [ ] All statistics visible and updating in real-time
+- [ ] All changes committed atomically (4 commits total)
 - [ ] `npm run build` succeeds with no errors
 - [ ] Dev server runs without errors
+- [ ] UI displays statistics without layout issues
 
 ---
 
