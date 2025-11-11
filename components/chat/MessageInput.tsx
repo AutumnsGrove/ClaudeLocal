@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, KeyboardEvent } from 'react';
-import { Send, Paperclip } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import React, { useRef, useEffect, useState, KeyboardEvent } from "react";
+import { Send, Paperclip, Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 interface MessageInputProps {
   value: string;
@@ -12,6 +12,8 @@ interface MessageInputProps {
   onSubmit: () => void;
   disabled?: boolean;
   placeholder?: string;
+  thinkingEnabled?: boolean;
+  onThinkingToggle?: (enabled: boolean) => void;
 }
 
 export function MessageInput({
@@ -19,20 +21,23 @@ export function MessageInput({
   onChange,
   onSubmit,
   disabled = false,
-  placeholder = 'Type your message...',
+  placeholder = "Type your message...",
+  thinkingEnabled = false,
+  onThinkingToggle,
 }: MessageInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isThinkingEnabled, setIsThinkingEnabled] = useState(thinkingEnabled);
 
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [value]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim() && !disabled) {
         onSubmit();
@@ -44,6 +49,12 @@ export function MessageInput({
     if (value.trim() && !disabled) {
       onSubmit();
     }
+  };
+
+  const handleThinkingToggle = () => {
+    const newValue = !isThinkingEnabled;
+    setIsThinkingEnabled(newValue);
+    onThinkingToggle?.(newValue);
   };
 
   return (
@@ -59,6 +70,21 @@ export function MessageInput({
           <Paperclip className="h-5 w-5" />
         </Button>
 
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleThinkingToggle}
+          disabled={disabled}
+          className={cn(
+            "h-10 w-10 flex-shrink-0",
+            isThinkingEnabled && "bg-primary/10 text-primary",
+          )}
+          title="Enable extended thinking"
+        >
+          <Brain className="h-5 w-5" />
+        </Button>
+
         <div className="flex-1 relative">
           <Textarea
             ref={textareaRef}
@@ -68,15 +94,13 @@ export function MessageInput({
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              'min-h-[60px] max-h-[200px] resize-none pr-12',
-              disabled && 'opacity-50 cursor-not-allowed'
+              "min-h-[60px] max-h-[200px] resize-none pr-12",
+              disabled && "opacity-50 cursor-not-allowed",
             )}
             rows={1}
           />
           <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
-            {value.length > 0 && (
-              <span>{value.length} chars</span>
-            )}
+            {value.length > 0 && <span>{value.length} chars</span>}
           </div>
         </div>
 

@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       maxTokens = 8192,
       conversationId,
       projectId,
+      thinkingEnabled,
     } = body;
 
     // Handle both 'message' (single) and 'messages' (array) formats
@@ -140,14 +141,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Create streaming response with prompt caching
-    const stream = await anthropic.messages.create({
+    const streamParams: any = {
       model,
       max_tokens: maxTokens,
       temperature,
       ...(systemMessages.length > 0 && { system: systemMessages }),
       messages: formattedMessages,
       stream: true,
-    });
+    };
+
+    // Add thinking parameter if enabled
+    if (thinkingEnabled) {
+      streamParams.thinking = {
+        type: "enabled",
+        budget_tokens: 10000,
+      };
+    }
+
+    const stream = (await anthropic.messages.create(
+      streamParams,
+    )) as unknown as AsyncIterable<any>;
 
     let fullResponse = "";
 
@@ -190,20 +203,34 @@ export async function POST(request: NextRequest) {
                   metrics.firstTokenTime = Date.now();
                 }
 
-                // Capture thinking content separately
+                // Stream thinking content to frontend in real-time
                 if (currentBlockType === "thinking") {
                   metrics.thinkingContent.push(text);
+                  controller.enqueue(
+                    encoder.encode(
+                      `data: ${JSON.stringify({ type: "thinking", content: text })}\n\n`,
+                    ),
+                  );
                 } else {
                   fullResponse += text;
+                  // Send the text chunk to the client
+                  controller.enqueue(
+                    encoder.encode(
+                      `data: ${JSON.stringify({ type: "content", content: text })}\n\n`,
+                    ),
+                  );
                 }
-
-                // Send the text chunk to the client
+              }
+            } else if (event.type === "content_block_stop") {
+              // Send thinking_done event when thinking block completes
+              if (currentBlockType === "thinking") {
                 controller.enqueue(
                   encoder.encode(
-                    `data: ${JSON.stringify({ type: "content", content: text })}\n\n`,
+                    `data: ${JSON.stringify({ type: "thinking_done" })}\n\n`,
                   ),
                 );
               }
+              currentBlockType = null;
             } else if (event.type === "message_delta") {
               // Capture cumulative output tokens from message delta
               if (event.usage?.output_tokens) {
