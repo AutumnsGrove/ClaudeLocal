@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import { MessageBubble } from './MessageBubble';
-import { ChatMessage } from '@/types';
-import { Loader2 } from 'lucide-react';
+import React, { useEffect, useRef } from "react";
+import { MessageBubble } from "./MessageBubble";
+import { ChatMessage } from "@/types";
+import { Loader2 } from "lucide-react";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -17,7 +17,7 @@ export function MessageList({ messages, isLoading = false }: MessageListProps) {
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isLoading]);
 
@@ -26,22 +26,32 @@ export function MessageList({ messages, isLoading = false }: MessageListProps) {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center text-muted-foreground">
           <p className="text-lg mb-2">No messages yet</p>
-          <p className="text-sm">Start a conversation by sending a message below</p>
+          <p className="text-sm">
+            Start a conversation by sending a message below
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="flex-1 overflow-y-auto p-4 space-y-4"
-    >
+    <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
       {messages.map((message) => (
         <MessageBubble
           key={message.id}
           role={message.role}
           content={message.content}
+          thinkingContent={message.thinkingContent}
+          error={message.error}
+          // Statistics props
+          tokensPerSecond={message.tokensPerSecond}
+          totalTokens={message.totalTokens}
+          inputTokens={message.inputTokens}
+          outputTokens={message.outputTokens}
+          cachedTokens={message.cachedTokens}
+          timeToFirstToken={message.timeToFirstToken}
+          stopReason={message.stopReason}
+          cost={message.cost}
         />
       ))}
 

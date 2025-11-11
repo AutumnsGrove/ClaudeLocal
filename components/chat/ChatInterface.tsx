@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
+import { SessionCostTracker } from "./SessionCostTracker";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -268,12 +269,15 @@ export function ChatInterface({
           </Select>
         </div>
 
-        <div className="text-sm text-muted-foreground">
-          {currentConversationId ? (
-            <span>{messages.length} messages</span>
-          ) : (
-            <span>New conversation</span>
-          )}
+        <div className="flex items-center gap-4">
+          <SessionCostTracker messages={messages} />
+          <div className="text-sm text-muted-foreground">
+            {currentConversationId ? (
+              <span>{messages.length} messages</span>
+            ) : (
+              <span>New conversation</span>
+            )}
+          </div>
         </div>
       </div>
 
