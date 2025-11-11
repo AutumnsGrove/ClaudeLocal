@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { ThinkingSection } from "./ThinkingSection";
+import { MessageStats } from "./MessageStats";
 
 // Import Prism languages
 import "prismjs/components/prism-javascript";
@@ -29,6 +30,15 @@ interface MessageBubbleProps {
   isRetrying?: boolean;
   onRetry?: () => void;
   onRegenerate?: () => void;
+  // Statistics fields
+  tokensPerSecond?: number;
+  totalTokens?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  cachedTokens?: number;
+  timeToFirstToken?: number;
+  stopReason?: string;
+  cost?: number;
 }
 
 const CodeBlock = ({
@@ -84,6 +94,14 @@ export function MessageBubble({
   isRetrying,
   onRetry,
   onRegenerate,
+  tokensPerSecond,
+  totalTokens,
+  inputTokens,
+  outputTokens,
+  cachedTokens,
+  timeToFirstToken,
+  stopReason,
+  cost,
 }: MessageBubbleProps) {
   const isUser = role === "user";
   const [copied, setCopied] = useState(false);
@@ -224,6 +242,20 @@ export function MessageBubble({
             </div>
           )}
         </div>
+
+        {/* Message statistics for assistant messages */}
+        {!isUser && (
+          <MessageStats
+            tokensPerSecond={tokensPerSecond}
+            totalTokens={totalTokens}
+            inputTokens={inputTokens}
+            outputTokens={outputTokens}
+            timeToFirstToken={timeToFirstToken}
+            stopReason={stopReason}
+            cost={cost}
+            className="mt-2"
+          />
+        )}
 
         {/* Action buttons for assistant messages - show on hover */}
         {!isUser && (onRetry || onRegenerate) && (
