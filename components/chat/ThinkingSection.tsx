@@ -10,12 +10,16 @@ interface ThinkingSectionProps {
   hasContent?: boolean;
 }
 
-export function ThinkingSection({ content, className, hasContent }: ThinkingSectionProps) {
+export function ThinkingSection({
+  content,
+  className,
+  hasContent,
+}: ThinkingSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   // Auto-collapse when regular content starts streaming
   useEffect(() => {
-    if (hasContent && isExpanded) {
+    if (hasContent) {
       setIsExpanded(false);
     }
   }, [hasContent]);
