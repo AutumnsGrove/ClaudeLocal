@@ -8,16 +8,18 @@
 ## 🔥 IMMEDIATE PRIORITIES (Based on User Testing Session)
 
 ### 1. Console Error Investigation
-- [ ] Check browser console for the "1 error" showing in bottom left
-- [ ] Fix any console errors/warnings
-- [ ] Ensure clean console on app load
 
-**Priority**: CRITICAL
+- [x] Check browser console for the "1 error" showing in bottom left
+- [x] Fix any console errors/warnings (React hydration mismatch)
+- [x] Ensure clean console on app load
+
+**Priority**: CRITICAL ✅ COMPLETED
 **Effort**: Quick investigation
 
 ---
 
 ### 2. Thinking Sections - Make Visible
+
 - [ ] Display model thinking content in chat messages
 - [ ] Make thinking sections collapsible/expandable
 - [ ] Add visual indicator when model is thinking
@@ -30,26 +32,30 @@
 ---
 
 ### 3. Remove Deprecated Claude Models
+
 Models to remove:
-- [ ] Claude 3 Sonnet (deprecated)
-- [ ] Claude 3.5 Sonnet (both versions - deprecated)
-- [ ] Claude Opus 3 (deprecated)
+
+- [x] Claude 3 Sonnet (deprecated)
+- [x] Claude 3.5 Sonnet (both versions - deprecated)
+- [x] Claude Opus 3 (deprecated)
 
 Keep only:
+
 - ✅ Claude Sonnet 4.5 (latest)
 - ✅ Claude Opus 4.1
 - ✅ Claude Opus 4
 - ✅ Claude Sonnet 4
 
-**Priority**: HIGH - Cleanup deprecated models
+**Priority**: HIGH ✅ COMPLETED - Cleanup deprecated models
 **Effort**: Low
-**Files**: `lib/models.ts` or similar model configuration
+**Files**: `types/index.ts` (CLAUDE_MODELS array)
 
 ---
 
 ### 4. Cost Tracking System
 
 #### 4a. Session-Wide Cost Tracker
+
 - [ ] Add cost tracker in top left of UI
 - [ ] Track all API usage across current browser session
 - [ ] Calculate cost based on:
@@ -62,6 +68,7 @@ Keep only:
 - [ ] Reset button or automatic reset on page reload
 
 #### 4b. Per-Chat Cost Tracker
+
 - [ ] Add cost display per conversation
 - [ ] Show total cost for entire conversation
 - [ ] Calculate from message metadata (tokens + model)
@@ -77,13 +84,16 @@ Keep only:
 ### 5. Detailed Message Statistics (LM Studio Style)
 
 #### 5a. Basic Stats (Always Visible)
+
 Display below each assistant message:
+
 - [ ] Tokens per second (e.g., "24.37 tok/sec")
 - [ ] Total tokens (e.g., "102 tokens")
 - [ ] Time to first token (e.g., "0.46s to first token")
 - [ ] Stop reason (e.g., "end_turn", "max_tokens")
 
 #### 5b. Advanced Stats (Behind Lightbulb/Info Icon)
+
 - [ ] Model identifier used
 - [ ] Model configuration (JSON):
   - Context length (e.g., 8192)
@@ -94,6 +104,7 @@ Display below each assistant message:
 - [ ] Cache hit information
 
 #### 5c. Database Schema Updates
+
 - [ ] Add `Message` fields:
   - `tokensPerSecond` (float)
   - `totalTokens` (int)
@@ -106,6 +117,7 @@ Display below each assistant message:
   - `cost` (float)
 
 #### 5d. API Route Updates
+
 - [ ] Capture streaming metrics during `/api/chat` response
 - [ ] Calculate tokens/sec from streaming events
 - [ ] Store all metrics when message is complete
@@ -114,6 +126,7 @@ Display below each assistant message:
 **Priority**: HIGH - Rich analytics like LM Studio
 **Effort**: HIGH (requires DB changes, API updates, UI components)
 **Files**:
+
 - `prisma/schema.prisma`
 - `app/api/chat/route.ts`
 - `components/chat/MessageBubble.tsx`
@@ -124,12 +137,14 @@ Display below each assistant message:
 ### 6. Settings Page Redesign
 
 #### Current Issues:
+
 - ❌ Opens directly to Pricing (not actual settings)
 - ❌ Too much information at once (overwhelming)
 - ❌ No actual configurable settings (read-only)
 - ❌ Doesn't allow changing anything
 
 #### New Structure:
+
 - [ ] **General Tab** (default view)
   - App preferences
   - Default model selection
@@ -163,6 +178,7 @@ Display below each assistant message:
 **Priority**: HIGH - Core UX improvement
 **Effort**: HIGH
 **Files**:
+
 - `components/settings/SettingsDialog.tsx`
 - New settings components for each tab
 - Settings context/state management
@@ -174,6 +190,7 @@ Display below each assistant message:
 Add a right sidebar panel for per-conversation settings:
 
 #### Panel Contents:
+
 - [ ] **System Prompt**
   - Text area for custom system prompt
   - Save per conversation
@@ -198,6 +215,7 @@ Add a right sidebar panel for per-conversation settings:
   - Custom headers (for future OpenRouter/LMStudio support)
 
 #### UI/UX:
+
 - [ ] Toggle button to show/hide panel
 - [ ] Panel slides in from right
 - [ ] Sticky position while scrolling
@@ -209,6 +227,7 @@ Add a right sidebar panel for per-conversation settings:
 **Effort**: HIGH
 **Dependencies**: Settings system, database schema updates
 **Files**:
+
 - `components/chat/ChatSettingsPanel.tsx` (new)
 - `prisma/schema.prisma` (add fields to Conversation)
 - Layout components
@@ -217,9 +236,10 @@ Add a right sidebar panel for per-conversation settings:
 
 ### 8. Tool Calling Support
 
-*Add to roadmap for future implementation*
+_Add to roadmap for future implementation_
 
 Features needed:
+
 - [ ] Define tool/function schemas
 - [ ] Pass tools to Claude API
 - [ ] Handle tool use responses
@@ -238,6 +258,7 @@ Features needed:
 ## 📋 HIGH PRIORITY FEATURES
 
 ### Response Retry Button
+
 - [ ] Add retry button for failed responses
 - [ ] Allow retry with same parameters
 - [ ] Show loading state during retry
@@ -247,6 +268,7 @@ Features needed:
 ---
 
 ### Message Interaction Buttons
+
 - [ ] **User Messages**
   - [ ] Edit button (allow inline editing)
   - [ ] Delete button
@@ -262,6 +284,7 @@ Features needed:
 ---
 
 ### UI Icon Enhancement
+
 - [ ] Add icons to navigation items
 - [ ] Add icons to buttons (send, regenerate, edit, etc.)
 - [ ] Add icons to sidebar actions
@@ -275,6 +298,7 @@ Features needed:
 ## 📦 MEDIUM PRIORITY FEATURES
 
 ### Project Management System
+
 - [ ] Create project entity with:
   - [ ] Name and description
   - [ ] Custom instructions (system prompt)
@@ -289,6 +313,7 @@ Features needed:
 ---
 
 ### Move Conversations to Projects
+
 - [ ] Add "Move to Project" option in conversation menu
 - [ ] Bulk move multiple conversations
 - [ ] Filter conversations by project
@@ -300,6 +325,7 @@ Features needed:
 ---
 
 ### Conversation Export
+
 - [ ] Export single conversation as Markdown
 - [ ] Export format with metadata
 - [ ] Export all conversations in project
@@ -313,6 +339,7 @@ Features needed:
 ## 🔮 LOW PRIORITY / FUTURE IDEAS
 
 ### Additional Features
+
 - [ ] Conversation search functionality
 - [ ] Tags/labels for conversations
 - [ ] Favorite/pin important conversations
@@ -325,6 +352,7 @@ Features needed:
 - [ ] Conversation analytics dashboard
 
 ### Performance & Optimization
+
 - [ ] Lazy load old messages
 - [ ] Virtual scrolling for long conversations
 - [ ] Message pagination
@@ -332,6 +360,7 @@ Features needed:
 - [ ] Cache frequently accessed data
 
 ### Accessibility
+
 - [ ] Keyboard navigation improvements
 - [ ] Screen reader support
 - [ ] High contrast mode
@@ -358,30 +387,35 @@ Features needed:
 ## 🎯 IMPLEMENTATION ROADMAP
 
 ### Phase 1: Critical Fixes (Days 1-3)
+
 1. Investigate and fix console error
 2. Display thinking sections (collapsible)
 3. Remove deprecated models
 4. Quick Settings page improvements
 
 ### Phase 2: Core Features (Week 1-2)
+
 1. Implement cost tracking (session + per-chat)
 2. Add detailed message statistics
 3. Complete Settings page redesign
 4. Build chat settings right panel
 
 ### Phase 3: UX Polish (Week 2-3)
+
 1. Message interaction buttons (edit, delete, copy, regenerate)
 2. Response retry functionality
 3. UI icons throughout
 4. Enhanced error handling
 
 ### Phase 4: Advanced Features (Week 3+)
+
 1. Project management system
 2. Conversation export
 3. Tool calling support (research phase)
 4. Multi-provider support (OpenRouter, LM Studio)
 
 ### Phase 5: Infrastructure (Ongoing)
+
 1. Testing framework
 2. CI/CD pipeline
 3. Performance optimization
@@ -392,6 +426,7 @@ Features needed:
 ## ✅ RECENTLY COMPLETED FEATURES
 
 ### Completed in Recent PRs
+
 1. **PR #4** - Toast notifications, hydration fixes, message UX improvements
 2. **PR #3** - Automatic conversation title generation
 3. **PR #2** - SSE streaming response alignment
