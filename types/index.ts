@@ -61,6 +61,16 @@ export interface ChatMessage {
   attachments?: FileAttachment[];
   error?: boolean;
   isRetrying?: boolean;
+  tokensPerSecond?: number;
+  totalTokens?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  cachedTokens?: number;
+  timeToFirstToken?: number;
+  stopReason?: string;
+  modelConfig?: string;
+  cost?: number;
+  thinkingContent?: string;
 }
 
 export interface FileAttachment {
