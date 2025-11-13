@@ -1,7 +1,7 @@
 # ClaudeLocal - Feature TODOs
 
-> **Last Updated:** 2025-11-11 (Extended Thinking ✅ COMPLETE!)
-> **Next Session:** Add STOP button, remove debug logs, then Phase 4 (Settings redesign)
+> **Last Updated:** 2025-11-13 (STOP Button, Token Breakdown, Regenerate ✅ COMPLETE!)
+> **Next Session:** Phase 4 (Settings redesign) or Message Interaction Features
 
 ---
 
@@ -42,10 +42,10 @@
 
 #### Known Issues / Notes:
 
-- [ ] **Thinking token count is estimate only** - Anthropic includes thinking tokens in `output_tokens`, not separate
-- [ ] **Consider removing thinking token estimate** - redundant since included in output_tokens
-- [ ] Debug logs still active - remove after final testing
-- [ ] **STOP button needed** - for long thinking sessions (15k+ tokens)
+- [x] **STOP button** - ✅ IMPLEMENTED! AbortController aborts streaming for long sessions
+- [x] **Debug logs removed** - ✅ COMPLETE! All thinking debug logs cleaned up
+- [x] **Token breakdown added** - ✅ Shows thinking, response, and total tokens separately
+- [x] **responseTokens field** - ✅ Added to DB schema (outputTokens - thinkingTokens)
 
 **Priority**: HIGH ✅ **COMPLETED** - Thinking fully working!
 **Bug Found**: Was only handling `text_delta`, needed to handle `thinking_delta` with `delta.thinking` property
@@ -283,54 +283,67 @@ Features needed:
 
 ---
 
-### 🆕 NEXT SESSION: Cleanup & STOP Button
+### ✅ COMPLETED THIS SESSION (2025-11-13)
 
-- [ ] **Add STOP button** to abort streaming (critical for long thinking)
-  - Button appears during streaming
-  - Cancels SSE stream
-  - Saves partial response
-- [ ] **Remove debug logs** from thinking implementation
-  - Remove console.log statements added for debugging
-  - Keep only error logging
-- [ ] **Optional: Remove thinking token estimate**
-  - Since Anthropic includes them in output_tokens
-  - Or keep as "estimated thinking tokens" for UX
+- [x] **STOP button implementation** ✅
+  - Red STOP button appears during streaming (replaces Send button)
+  - Uses AbortController to cancel SSE stream
+  - Gracefully handles partial responses
+  - Works for both regular and thinking streams
+- [x] **Debug log cleanup** ✅
+  - Removed all [API DEBUG] console.log statements (19 total)
+  - Removed thinking-related debug logs from components
+  - Kept error logging intact
+- [x] **Token breakdown display** ✅
+  - Added `responseTokens` field to database schema
+  - Calculates responseTokens = outputTokens - thinkingTokens
+  - MessageStats now shows three separate stats:
+    - Thinking tokens (purple text)
+    - Response tokens (normal text)
+    - Total tokens (normal text)
+- [x] **Regenerate button** ✅
+  - Regenerate button on assistant messages (shows on hover)
+  - Deletes messages from regeneration point onwards
+  - Auto-repopulates and sends previous user message
+  - New DELETE endpoint for removing messages by ID
+  - Works with current thinking toggle state
+
+**Commits:** 3 total (a057e1d formatting, 0c7a8f9 main implementation)
 
 ---
 
 ## 📋 HIGH PRIORITY FEATURES
 
-### Response Retry/Regenerate Button ⭐ NEW REQUEST
+### Response Retry/Regenerate Button ✅ COMPLETED (2025-11-13)
 
-**Feature**: Add retry button to regenerate assistant responses from a specific point in the conversation.
+**Feature**: Retry button to regenerate assistant responses from a specific point in the conversation.
 
-**Requirements**:
+**Implemented**:
 
-- [ ] Add "Regenerate" button below each assistant message
-- [ ] When clicked, regenerates response from that point forward
-- [ ] Discards all messages after the clicked message
-- [ ] Re-sends the same user message to get a new response
-- [ ] Shows loading state during regeneration
-- [ ] Works for both successful and failed messages
+- [x] Add "Regenerate" button below each assistant message
+- [x] When clicked, regenerates response from that point forward
+- [x] Discards all messages after the clicked message
+- [x] Re-sends the same user message to get a new response
+- [x] Shows loading state during regeneration
+- [x] Works for both successful and failed messages
+- [x] DELETE API endpoint for removing messages by ID
 
-**Use Cases**:
+**Use Cases** (All Supported):
 
-- User wants a different response to the same question
-- Response was cut off or incomplete
-- User wants to try again with thinking enabled/disabled
-- Original response had an error
+- User wants a different response to the same question ✓
+- Response was cut off or incomplete ✓
+- User wants to try again with thinking enabled/disabled ✓
+- Original response had an error ✓
 
-**UI/UX**:
+**UI/UX** (Implemented):
 
-- Small button below message (similar to MessageStats)
-- Icon: RefreshCw from lucide-react
-- Text: "Regenerate response"
-- Only show on hover (like copy button)
-- Disable during loading/streaming
+- RefreshCw icon button ✓
+- Shows on hover only ✓
+- Disabled during loading/streaming ✓
+- Auto-sends after deletion ✓
 
-**Effort**: Medium
-**Priority**: HIGH - Requested by user
-**Files**: `components/chat/MessageBubble.tsx`, `components/chat/ChatInterface.tsx`
+**Status**: ✅ COMPLETED
+**Files**: `components/chat/MessageBubble.tsx`, `components/chat/ChatInterface.tsx`, `components/chat/MessageList.tsx`, `app/api/conversations/[id]/messages/route.ts`
 
 ---
 
