@@ -15,6 +15,7 @@ import {
   Pencil,
   Archive,
   Trash2,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -105,6 +106,12 @@ export function ConversationItem({
           <DropdownMenuItem onClick={() => setIsRenaming(true)}>
             <Pencil className="mr-2 h-4 w-4" />
             Rename
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => console.log("Export conversation", conversation.id)}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onArchive(conversation.id)}>
             <Archive className="mr-2 h-4 w-4" />

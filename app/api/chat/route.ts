@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
     const {
       message,
       messages,
-      model = "claude-sonnet-4-5-20250929",
-      temperature = 1.0,
-      maxTokens = 8192,
+      model: requestModel = "claude-sonnet-4-5-20250929",
+      temperature: requestTemperature = 1.0,
+      maxTokens: requestMaxTokens = 8192,
       conversationId,
       projectId,
       thinkingEnabled,
@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
       conversation = await prisma.conversation.create({
         data: {
           title,
-          model,
-          temperature,
-          maxTokens,
+          model: requestModel,
+          temperature: requestTemperature,
+          maxTokens: requestMaxTokens,
           projectId: projectId || null,
         },
         include: { project: true },
@@ -92,6 +92,11 @@ export async function POST(request: NextRequest) {
         { status: 404 },
       );
     }
+
+    // Use conversation's stored values, fall back to request values
+    const model = conversation.model || requestModel;
+    const temperature = conversation.temperature ?? requestTemperature;
+    const maxTokens = conversation.maxTokens ?? requestMaxTokens;
 
     // Save user message
     const userMessage = messagesToProcess[messagesToProcess.length - 1];

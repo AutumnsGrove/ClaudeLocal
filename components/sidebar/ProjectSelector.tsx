@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Folder } from "lucide-react";
+import { Folder, FolderOpen, FolderPlus } from "lucide-react";
 
 interface ProjectSelectorProps {
   selectedProjectId: string | null;
@@ -51,7 +51,7 @@ export function ProjectSelector({
   };
 
   return (
-    <div className="px-3">
+    <div className="px-3 space-y-2">
       <Select
         value={selectedProjectId || "all"}
         onValueChange={handleValueChange}
@@ -59,7 +59,11 @@ export function ProjectSelector({
       >
         <SelectTrigger className="w-full">
           <div className="flex items-center gap-2">
-            <Folder className="h-4 w-4 text-muted-foreground" />
+            {selectedProjectId ? (
+              <FolderOpen className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Folder className="h-4 w-4 text-muted-foreground" />
+            )}
             <SelectValue placeholder="Select project" />
           </div>
         </SelectTrigger>
@@ -79,6 +83,13 @@ export function ProjectSelector({
           ))}
         </SelectContent>
       </Select>
+      <button
+        onClick={() => console.log("Create new project")}
+        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      >
+        <FolderPlus className="h-4 w-4" />
+        Create Project
+      </button>
     </div>
   );
 }

@@ -94,3 +94,35 @@ model ProjectFile {
 
   @@index([projectId])
 }
+
+model AppSettings {
+  id Int @id @default(1) // Singleton: only 1 row allowed
+
+  // General Settings
+  defaultModel        String  @default("claude-sonnet-4-20250514")
+  startupBehavior     String  @default("last_conversation") // "last_conversation" | "new_chat"
+
+  // Appearance Settings
+  themePreference     String  @default("system") // "light" | "dark" | "system"
+  fontSize            String  @default("medium") // "small" | "medium" | "large"
+  codeFontFamily      String  @default("monospace")
+  messageDensity      String  @default("comfortable") // "compact" | "comfortable" | "spacious"
+
+  // Model & API Settings
+  apiTimeout          Int     @default(120000) // milliseconds
+  enabledModels       String? // JSON string array of enabled model IDs
+
+  // Advanced Settings
+  defaultTemperature  Float   @default(1.0)
+  defaultMaxTokens    Int     @default(4096)
+  enableThinking      Boolean @default(false)
+  enableCaching       Boolean @default(true)
+
+  // Experimental
+  experimentalFeatures String? // JSON string object for feature flags
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_settings")
+}

@@ -4,7 +4,19 @@ import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Prism from "prismjs";
-import { User, Bot, Copy, Check, RefreshCw, Loader2 } from "lucide-react";
+import {
+  User,
+  Bot,
+  Copy,
+  Check,
+  RefreshCw,
+  Loader2,
+  Pencil,
+  Trash2,
+  GitBranch,
+  ThumbsUp,
+  ThumbsDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
@@ -42,6 +54,13 @@ interface MessageBubbleProps {
   thinkingDuration?: number | null;
   thinkingTokens?: number;
   responseTokens?: number;
+  // Message action callbacks
+  onEdit?: (messageId: string) => void;
+  onDelete?: (messageId: string) => void;
+  onFork?: (messageId: string) => void;
+  onRate?: (messageId: string, rating: "up" | "down") => void;
+  messageId?: string;
+  isStreaming?: boolean;
 }
 
 const CodeBlock = ({
@@ -108,6 +127,12 @@ export function MessageBubble({
   thinkingDuration,
   thinkingTokens,
   responseTokens,
+  onEdit,
+  onDelete,
+  onFork,
+  onRate,
+  messageId,
+  isStreaming,
 }: MessageBubbleProps) {
   const isUser = role === "user";
   const [copied, setCopied] = useState(false);
@@ -162,6 +187,122 @@ export function MessageBubble({
           )}
         >
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+            {/* Edit button - User messages only */}
+            {isUser && (
+              <button
+                onClick={() => {
+                  if (onEdit && messageId) {
+                    onEdit(messageId);
+                  } else {
+                    console.log("Edit message", messageId || "no-id");
+                  }
+                }}
+                disabled={isStreaming}
+                className={cn(
+                  "p-1.5 rounded-md transition-colors",
+                  isUser ? "hover:bg-primary-foreground/20" : "hover:bg-accent",
+                  isStreaming && "opacity-50 cursor-not-allowed",
+                )}
+                title="Edit message"
+              >
+                <Pencil
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    isUser ? "text-primary-foreground" : "",
+                  )}
+                />
+              </button>
+            )}
+
+            {/* Delete button - All messages */}
+            <button
+              onClick={() => {
+                if (onDelete && messageId) {
+                  onDelete(messageId);
+                } else {
+                  console.log("Delete message", messageId || "no-id");
+                }
+              }}
+              disabled={isStreaming}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                isUser
+                  ? "hover:bg-primary-foreground/20"
+                  : "hover:bg-accent hover:text-destructive",
+                isStreaming && "opacity-50 cursor-not-allowed",
+              )}
+              title="Delete message"
+            >
+              <Trash2
+                className={cn(
+                  "h-3.5 w-3.5",
+                  isUser ? "text-primary-foreground" : "",
+                )}
+              />
+            </button>
+
+            {/* Fork button - Assistant messages only */}
+            {!isUser && (
+              <button
+                onClick={() => {
+                  if (onFork && messageId) {
+                    onFork(messageId);
+                  } else {
+                    console.log("Fork conversation", messageId || "no-id");
+                  }
+                }}
+                disabled={isStreaming}
+                className={cn(
+                  "p-1.5 rounded-md hover:bg-accent transition-colors",
+                  isStreaming && "opacity-50 cursor-not-allowed",
+                )}
+                title="Fork conversation from here"
+              >
+                <GitBranch className="h-3.5 w-3.5" />
+              </button>
+            )}
+
+            {/* Rating buttons - Assistant messages only */}
+            {!isUser && (
+              <>
+                <button
+                  onClick={() => {
+                    if (onRate && messageId) {
+                      onRate(messageId, "up");
+                    } else {
+                      console.log("Rate up", messageId || "no-id");
+                    }
+                  }}
+                  disabled={isStreaming}
+                  className={cn(
+                    "p-1.5 rounded-md hover:bg-accent transition-colors",
+                    isStreaming && "opacity-50 cursor-not-allowed",
+                  )}
+                  title="Good response"
+                >
+                  <ThumbsUp className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={() => {
+                    if (onRate && messageId) {
+                      onRate(messageId, "down");
+                    } else {
+                      console.log("Rate down", messageId || "no-id");
+                    }
+                  }}
+                  disabled={isStreaming}
+                  className={cn(
+                    "p-1.5 rounded-md hover:bg-accent transition-colors",
+                    isStreaming && "opacity-50 cursor-not-allowed",
+                  )}
+                  title="Poor response"
+                >
+                  <ThumbsDown className="h-3.5 w-3.5" />
+                </button>
+              </>
+            )}
+
+            {/* Copy button - All messages */}
             <Button
               variant="ghost"
               size="icon"

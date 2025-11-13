@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
 import { SessionCostTracker } from "./SessionCostTracker";
-import { Menu } from "lucide-react";
+import { Menu, Sliders, MoreVertical, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -37,8 +37,40 @@ export function ChatInterface({
   >(conversationId);
   const [skipNextFetch, setSkipNextFetch] = useState(false);
   const [thinkingEnabled, setThinkingEnabled] = useState(false);
+  const [appSettings, setAppSettings] = useState<any>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const shouldAutoSendRef = useRef(false);
+
+  // Load app settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch("/api/settings");
+        if (response.ok) {
+          const data = await response.json();
+          setAppSettings(data);
+        }
+      } catch (error) {
+        console.error("Failed to load settings:", error);
+      }
+    };
+
+    loadSettings();
+  }, []);
+
+  // Apply default model from settings for new conversations
+  useEffect(() => {
+    if (appSettings?.defaultModel && !currentConversationId) {
+      setSelectedModel(appSettings.defaultModel);
+    }
+  }, [appSettings, currentConversationId]);
+
+  // Apply default thinking mode from settings
+  useEffect(() => {
+    if (appSettings?.enableThinking !== undefined && !currentConversationId) {
+      setThinkingEnabled(appSettings.enableThinking);
+    }
+  }, [appSettings, currentConversationId]);
 
   // Fetch messages when conversationId changes
   useEffect(() => {
@@ -175,6 +207,8 @@ export function ChatInterface({
           body: JSON.stringify({
             model: selectedModel,
             title: userMessage.slice(0, 50),
+            temperature: appSettings?.defaultTemperature ?? 1.0,
+            maxTokens: appSettings?.defaultMaxTokens ?? 4096,
           }),
         });
 
@@ -335,6 +369,8 @@ export function ChatInterface({
     currentConversationId,
     selectedModel,
     thinkingEnabled,
+    appSettings?.defaultMaxTokens,
+    appSettings?.defaultTemperature,
     onConversationCreated,
     onConversationUpdated,
     messages.length,
@@ -390,6 +426,38 @@ export function ChatInterface({
               <span>New conversation</span>
             )}
           </div>
+
+          {/* Header action buttons - only show when conversation exists */}
+          {currentConversationId && (
+            <div className="flex items-center gap-2 ml-2">
+              <button
+                onClick={() => console.log("Toggle chat settings panel")}
+                className="p-2 rounded-md hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Chat settings"
+                disabled={isLoading}
+              >
+                <Sliders className="h-5 w-5" />
+              </button>
+
+              <button
+                onClick={() => console.log("Export conversation")}
+                className="p-2 rounded-md hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Export conversation"
+                disabled={isLoading}
+              >
+                <Download className="h-5 w-5" />
+              </button>
+
+              <button
+                onClick={() => console.log("More options")}
+                className="p-2 rounded-md hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="More options"
+                disabled={isLoading}
+              >
+                <MoreVertical className="h-5 w-5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
