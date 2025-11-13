@@ -1,6 +1,7 @@
 # Quick Restart & Cache Clear
 
 ## Full Reset (Nuclear Option)
+
 ```bash
 # Kill all dev servers
 pkill -f "next dev"
@@ -16,6 +17,7 @@ npm run dev
 ```
 
 ## Standard Restart
+
 ```bash
 # Kill dev server
 pkill -f "next dev"
@@ -28,12 +30,14 @@ npm run dev
 ```
 
 ## Quick Restart (No Cache Clear)
+
 ```bash
 # Kill and restart
 pkill -f "next dev" && npm run dev
 ```
 
 ## Database Reset
+
 ```bash
 # Delete database
 rm -f prisma/dev.db prisma/dev.db-journal

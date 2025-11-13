@@ -52,6 +52,7 @@ model Message {
   totalTokens     Int?
   inputTokens     Int?
   outputTokens    Int?
+  responseTokens  Int?         // Tokens used for actual response (excluding thinking)
   cachedTokens    Int?
   timeToFirstToken Float?
   stopReason      String?

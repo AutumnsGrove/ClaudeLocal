@@ -7,6 +7,7 @@ Proper secrets management prevents credential leaks and keeps your API keys secu
 **Quick Start**: Use `secrets.json` for local development with environment variable fallbacks.
 
 **For Advanced Topics**: See [secrets_advanced.md](secrets_advanced.md) for:
+
 - Advanced loading patterns with validation
 - .env file integration
 - Automated testing
@@ -71,6 +72,7 @@ ANTHROPIC_API_KEY=sk-ant-api03-...
 ### 1. Create secrets.json
 
 **In your project root:**
+
 ```bash
 # Create secrets.json
 cat > secrets.json << 'EOF'
@@ -92,6 +94,7 @@ echo "*.key" >> .gitignore
 ```
 
 **Verify it's ignored:**
+
 ```bash
 git status  # secrets.json should NOT appear
 ```
@@ -99,6 +102,7 @@ git status  # secrets.json should NOT appear
 ### 3. Create Template for Team
 
 **secrets_template.json:**
+
 ```json
 {
   "anthropic_api_key": "sk-ant-api03-YOUR_KEY_HERE",
@@ -108,6 +112,7 @@ git status  # secrets.json should NOT appear
 ```
 
 **Commit the template** (not the actual secrets):
+
 ```bash
 git add secrets_template.json
 git commit -m "Add secrets template for project setup"
@@ -196,6 +201,7 @@ if __name__ == "__main__":
    - Use consistent naming
 
 2. **Add to .gitignore immediately**
+
    ```bash
    echo "secrets.json" >> .gitignore
    echo ".env" >> .gitignore
@@ -217,6 +223,7 @@ if __name__ == "__main__":
 ### DON'T ❌
 
 1. **Never hardcode API keys**
+
    ```python
    # BAD
    API_KEY = "sk-ant-api03-actual-key"
@@ -230,6 +237,7 @@ if __name__ == "__main__":
    - Use `git status` to verify
 
 3. **Never log full API keys**
+
    ```python
    # BAD
    print(f"Using API key: {API_KEY}")
@@ -249,12 +257,14 @@ if __name__ == "__main__":
 ### Basic Testing
 
 **Test with secrets.json present:**
+
 ```bash
 # Verify file loads correctly
 python -c "from main import load_secrets; print(load_secrets())"
 ```
 
 **Test with secrets.json missing:**
+
 ```bash
 # Rename file temporarily
 mv secrets.json secrets.json.bak
@@ -270,6 +280,7 @@ mv secrets.json.bak secrets.json
 ```
 
 **Test API connection:**
+
 ```python
 def test_api_connection(api_key: str) -> bool:
     """Test if API key works."""
@@ -296,6 +307,7 @@ def test_api_connection(api_key: str) -> bool:
 ### Issue: "secrets.json not found"
 
 **Solution:**
+
 1. Check file exists in correct directory
 2. Verify file name is exactly "secrets.json"
 3. Check file permissions
@@ -303,11 +315,13 @@ def test_api_connection(api_key: str) -> bool:
 ### Issue: "JSONDecodeError"
 
 **Solution:**
+
 1. Validate JSON at jsonlint.com
 2. Remove trailing commas
 3. Use double quotes (not single)
 
 **Example fix:**
+
 ```json
 # Bad
 {
@@ -323,6 +337,7 @@ def test_api_connection(api_key: str) -> bool:
 ### Issue: "API key appears invalid"
 
 **Solution:**
+
 1. Check key format:
    - Anthropic: starts with `sk-ant-`
    - OpenRouter: starts with `sk-or-v1-`
@@ -334,6 +349,7 @@ def test_api_connection(api_key: str) -> bool:
 ### Issue: "Environment variable not found"
 
 **Solution:**
+
 ```bash
 # Verify variable is set
 echo $ANTHROPIC_API_KEY
@@ -413,4 +429,4 @@ git commit -m "Add secrets management setup"
 
 ---
 
-*Last updated: 2025-10-19*
+_Last updated: 2025-10-19_

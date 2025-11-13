@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { CLAUDE_MODELS } from '@/types';
+import { NextResponse } from "next/server";
+import { CLAUDE_MODELS } from "@/types";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET all available Claude models
 export async function GET() {

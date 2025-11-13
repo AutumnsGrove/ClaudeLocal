@@ -62,6 +62,7 @@ uv pip freeze                     # List installed packages
 ## Installation and Setup
 
 **Install UV:**
+
 ```bash
 # macOS/Linux (recommended)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -80,6 +81,7 @@ uv --version
 ```
 
 UV works out of the box with no configuration needed. Optional environment variables:
+
 ```bash
 export UV_PYTHON_PREFERENCE=3.12      # Default Python version
 export UV_CACHE_DIR="$HOME/.cache/uv"  # Cache location
@@ -106,6 +108,7 @@ uv python install 3.12
 ```
 
 **Created structure includes:**
+
 - `.python-version`: Python version specification
 - `pyproject.toml`: Project configuration
 - `.venv/`: Virtual environment (created on first use)
@@ -215,28 +218,29 @@ echo -e ".venv/\n__pycache__/\n*.pyc\n.pytest_cache/" >> .gitignore
 
 ## Common Commands Reference
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `uv init` | Create new project | `uv init my-project` |
-| `uv add` | Add dependency | `uv add requests` |
-| `uv add --dev` | Add dev dependency | `uv add --dev pytest` |
-| `uv remove` | Remove dependency | `uv remove requests` |
-| `uv sync` | Sync dependencies | `uv sync` |
-| `uv lock` | Update lock file | `uv lock` |
-| `uv run` | Run script/command | `uv run script.py` |
-| `uv python install` | Install Python version | `uv python install 3.12` |
-| `uv python list` | List Python versions | `uv python list` |
-| `uv pip install` | Install package (pip-like) | `uv pip install package` |
-| `uv pip freeze` | List packages | `uv pip freeze` |
-| `uv venv` | Create virtual environment | `uv venv` |
-| `uv tree` | Show dependency tree | `uv tree` |
-| `uv cache clean` | Clear package cache | `uv cache clean` |
+| Command             | Description                | Example                  |
+| ------------------- | -------------------------- | ------------------------ |
+| `uv init`           | Create new project         | `uv init my-project`     |
+| `uv add`            | Add dependency             | `uv add requests`        |
+| `uv add --dev`      | Add dev dependency         | `uv add --dev pytest`    |
+| `uv remove`         | Remove dependency          | `uv remove requests`     |
+| `uv sync`           | Sync dependencies          | `uv sync`                |
+| `uv lock`           | Update lock file           | `uv lock`                |
+| `uv run`            | Run script/command         | `uv run script.py`       |
+| `uv python install` | Install Python version     | `uv python install 3.12` |
+| `uv python list`    | List Python versions       | `uv python list`         |
+| `uv pip install`    | Install package (pip-like) | `uv pip install package` |
+| `uv pip freeze`     | List packages              | `uv pip freeze`          |
+| `uv venv`           | Create virtual environment | `uv venv`                |
+| `uv tree`           | Show dependency tree       | `uv tree`                |
+| `uv cache clean`    | Clear package cache        | `uv cache clean`         |
 
 ---
 
 ## Migration from pip/requirements.txt
 
 **Migrate existing requirements.txt project:**
+
 ```bash
 # Create new project
 uv init my-project
@@ -268,6 +272,7 @@ For comprehensive Docker integration patterns with UV, including basic Dockerfil
 ### Common Issues
 
 **1. "No virtual environment found"**
+
 ```bash
 uv venv  # Create explicitly
 # Or use uv run which creates automatically
@@ -275,6 +280,7 @@ uv run script.py
 ```
 
 **2. "Python version not found"**
+
 ```bash
 uv python install 3.12  # Install required version
 # Or specify different version
@@ -282,18 +288,21 @@ uv venv --python 3.11
 ```
 
 **3. "Lock file out of sync"**
+
 ```bash
 uv lock  # Regenerate lock file
 uv sync  # Sync dependencies
 ```
 
 **4. "Package resolution conflicts"**
+
 ```bash
 uv tree  # See dependency tree
 uv lock --upgrade-package problematic-package  # Update specific package
 ```
 
 **5. "Slow first run or dependency issues"**
+
 ```bash
 uv cache clean  # Clear cache and rebuild
 uv --verbose add package  # Use verbose mode for debugging
@@ -330,5 +339,5 @@ uv --verbose add package  # Use verbose mode for debugging
 
 ---
 
-*Last Updated: 2025-10-19*
-*UV Version: 0.x.x (check with `uv --version`)*
+_Last Updated: 2025-10-19_
+_UV Version: 0.x.x (check with `uv --version`)_

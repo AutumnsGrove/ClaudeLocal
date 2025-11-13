@@ -68,29 +68,34 @@ The application will be available at [http://localhost:3000](http://localhost:30
 ## Features Available
 
 ✅ **Chat Interface**
+
 - Real-time streaming responses from Claude
 - Multiple Claude model support (Sonnet, Opus, Haiku)
 - Markdown rendering with syntax highlighting
 - Code blocks with copy functionality
 
 ✅ **Conversation Management**
+
 - Create, rename, archive, and delete conversations
 - Search and filter conversations
 - Date-grouped conversation history
 - Project-based organization
 
 ✅ **Projects**
+
 - Create projects with custom instructions
 - Filter conversations by project
 - Project knowledge base (file upload)
 
 ✅ **File Previews**
+
 - PDF viewer with zoom and navigation
 - Image viewer with zoom and lightbox
 - Markdown preview
 - Code syntax highlighting
 
 ✅ **UI/UX**
+
 - Dark/light theme toggle
 - Responsive design (mobile-friendly)
 - Collapsible sidebar
@@ -162,6 +167,7 @@ cat secrets.json
 ```
 
 Should show:
+
 ```json
 {
   "anthropic_api_key": "sk-ant-api03-...",

@@ -1,4 +1,5 @@
 # Title Generation Feature - Progress Log
+
 **Date:** 2025-09-30
 **Branch:** `feature/auto-generate-titles`
 **PR:** #3
@@ -6,6 +7,7 @@
 ## ✅ Completed
 
 ### Core Functionality
+
 - [x] Created `lib/generate-title.ts` utility function for reusable title generation
 - [x] Added `/api/conversations/[id]/generate-title` endpoint
 - [x] Integrated title generation trigger in `/api/chat` route after first message exchange
@@ -14,6 +16,7 @@
 - [x] Titles are being generated and saved to database successfully
 
 ### Bug Fixes
+
 - [x] Fixed streaming response format mismatch (SSE events)
 - [x] Fixed user message disappearing on submit (skipNextFetch flag)
 - [x] Fixed title not auto-updating in sidebar (useEffect sync in ConversationItem)
@@ -24,12 +27,14 @@
 ## 🐛 Known Issues
 
 ### ✅ RESOLVED: UI Not Auto-Refreshing After Title Generation
+
 **Status:** FIXED
 
 **Root Cause:**
 React wasn't detecting state changes due to object reference equality. When `loadConversations()` fetched new data, it passed the same object references from the API response, so React's shallow comparison didn't trigger re-renders.
 
 **Solution Implemented:**
+
 1. Modified `loadConversations()` in `app/page.tsx` to create new object references using spread operator:
    ```tsx
    setConversations(data.map((conv: ConversationData) => ({ ...conv })));
@@ -41,12 +46,13 @@ React wasn't detecting state changes due to object reference equality. When `loa
 3. Removed all debug console.log statements from codebase
 
 **Files Modified:**
+
 - `app/page.tsx` - Fixed loadConversations with new references + cache-busting
 - `components/chat/ChatInterface.tsx` - Removed debug logs
 - `lib/generate-title.ts` - Removed debug logs
 
-
 ## 📊 Database Schema
+
 ```sql
 Conversation {
   id: string
@@ -63,12 +69,14 @@ Conversation {
 ## 🔧 Files Modified
 
 ### New Files
+
 - `lib/generate-title.ts` - Core title generation logic
 - `app/api/conversations/[id]/generate-title/route.ts` - API endpoint
 - `TODOS.md` - Feature roadmap
 - `RESTART.md` - Server restart commands
 
 ### Modified Files
+
 - `app/api/chat/route.ts` - Triggers title generation after first exchange
 - `app/page.tsx` - Added onConversationUpdated callback
 - `components/chat/ChatInterface.tsx` - Calls callback after streaming
@@ -78,6 +86,7 @@ Conversation {
 ## 🧪 Testing
 
 ### Manual Test Steps
+
 1. Create new conversation
 2. Send any message (even "hello")
 3. Wait for response to complete
@@ -85,6 +94,7 @@ Conversation {
 5. **Actual:** Title only updates after manual page refresh (F5)
 
 ### Debug Logs Show
+
 ```
 [ChatInterface] Sending message, isFirstMessage: true current message count: 0
 [ChatInterface] First message complete, scheduling title refresh...
@@ -125,5 +135,6 @@ Conversation {
 - Next.js 15 SSE Streaming: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
 
 ---
+
 **Last Updated:** 2025-09-30 22:15 UTC
 **Status:** 100% Complete - All issues resolved, ready for testing and merge

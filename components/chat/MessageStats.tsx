@@ -14,6 +14,7 @@ interface MessageStatsProps {
   cost?: number;
   thinkingDuration?: number | null;
   thinkingTokens?: number;
+  responseTokens?: number;
   className?: string;
 }
 
@@ -25,6 +26,7 @@ export function MessageStats({
   cost,
   thinkingDuration,
   thinkingTokens,
+  responseTokens,
   className,
 }: MessageStatsProps) {
   const stats = [];
@@ -39,14 +41,49 @@ export function MessageStats({
     );
   }
 
-  // Total tokens
+  // Token breakdown: thinking, response, and total
   if (totalTokens !== undefined && totalTokens > 0) {
-    stats.push(
-      <span key="total" className="flex items-center gap-1">
-        <Hash className="h-3 w-3" />
-        {totalTokens} tokens
-      </span>,
-    );
+    // Show detailed breakdown if thinking tokens are present
+    if (thinkingTokens !== undefined && thinkingTokens > 0) {
+      // Calculate response tokens if not provided
+      const calculatedResponseTokens =
+        responseTokens ?? totalTokens - thinkingTokens;
+
+      stats.push(
+        <span
+          key="thinking-tokens-breakdown"
+          className="flex items-center gap-1 text-purple-600 dark:text-purple-400"
+        >
+          <Hash className="h-3 w-3" />
+          {thinkingTokens} thinking tokens
+        </span>,
+      );
+
+      stats.push(
+        <span
+          key="response-tokens-breakdown"
+          className="flex items-center gap-1"
+        >
+          <Hash className="h-3 w-3" />
+          {calculatedResponseTokens} response tokens
+        </span>,
+      );
+
+      stats.push(
+        <span key="total" className="flex items-center gap-1">
+          <Hash className="h-3 w-3" />
+          {totalTokens} total tokens
+        </span>,
+      );
+    } else {
+      // Simple display when no thinking
+      stats.push(
+        <span key="total" className="flex items-center gap-1">
+          <Hash className="h-3 w-3" />
+          {totalTokens} tokens
+        </span>,
+      );
+    }
   }
 
   // Time to first token
@@ -90,19 +127,6 @@ export function MessageStats({
       >
         <Brain className="h-3 w-3" />
         {thinkingDuration.toFixed(1)}s thinking
-      </span>,
-    );
-  }
-
-  // Thinking tokens
-  if (thinkingTokens !== undefined && thinkingTokens > 0) {
-    stats.push(
-      <span
-        key="thinking-tokens"
-        className="flex items-center gap-1 text-purple-600 dark:text-purple-400"
-      >
-        <Hash className="h-3 w-3" />
-        {thinkingTokens} thinking tok
       </span>,
     );
   }

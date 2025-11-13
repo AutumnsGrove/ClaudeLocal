@@ -3,6 +3,7 @@
 This document provides usage examples for the newly created components in ClaudeLocal.
 
 ## Table of Contents
+
 - [ModelPicker](#modelpicker)
 - [MarkdownPreview](#markdownpreview)
 - [CodeBlock](#codeblock)
@@ -22,7 +23,9 @@ A dropdown component for selecting AI models with context window and token infor
 import { ModelPicker } from "@/components/model/ModelPicker";
 
 function MyComponent() {
-  const [selectedModel, setSelectedModel] = useState("claude-sonnet-3-5-20241022");
+  const [selectedModel, setSelectedModel] = useState(
+    "claude-sonnet-3-5-20241022",
+  );
 
   return (
     <ModelPicker
@@ -35,11 +38,13 @@ function MyComponent() {
 ```
 
 ### Props
+
 - `selectedModel: string` - Currently selected model ID
 - `onModelChange: (modelId: string) => void` - Callback when model changes
 - `className?: string` - Optional CSS classes
 
 ### Features
+
 - Fetches models from `/api/models` endpoint
 - Displays model name and description
 - Shows context window and max tokens info
@@ -76,10 +81,12 @@ This is **bold** and this is *italic*.
 ```
 
 ### Props
+
 - `content: string` - Markdown content to render
 - `className?: string` - Optional CSS classes
 
 ### Features
+
 - GitHub Flavored Markdown (tables, strikethrough, task lists)
 - Syntax-highlighted code blocks
 - Automatic external link handling (opens in new tab)
@@ -107,23 +114,21 @@ function hello() {
 
   return (
     <ToastProvider>
-      <CodeBlock
-        code={code}
-        language="javascript"
-        showLineNumbers={true}
-      />
+      <CodeBlock code={code} language="javascript" showLineNumbers={true} />
     </ToastProvider>
   );
 }
 ```
 
 ### Props
+
 - `code: string` - Source code to display
 - `language: string` - Programming language (js, ts, python, jsx, tsx, css, json, etc.)
 - `showLineNumbers?: boolean` - Show line numbers (default: false)
 - `className?: string` - Optional CSS classes
 
 ### Supported Languages
+
 - JavaScript (js)
 - TypeScript (ts)
 - Python (python)
@@ -141,6 +146,7 @@ function hello() {
 - Java (java)
 
 ### Features
+
 - Syntax highlighting via Prism.js
 - Copy to clipboard button
 - Toast notification on copy
@@ -172,10 +178,12 @@ function MyComponent() {
 ```
 
 ### Props
+
 - `file: string | File | Blob` - PDF file path, File object, or Blob
 - `className?: string` - Optional CSS classes
 
 ### Features
+
 - Page navigation (previous/next)
 - Zoom controls (50% - 300%)
 - Page number display
@@ -184,6 +192,7 @@ function MyComponent() {
 - Responsive layout
 
 ### Worker Setup
+
 The component automatically loads the PDF.js worker from unpkg CDN. For production, consider hosting the worker locally.
 
 ---
@@ -210,6 +219,7 @@ function MyComponent() {
 ```
 
 ### Props
+
 - `src: string` - Image source URL
 - `alt: string` - Alt text for accessibility
 - `className?: string` - Optional CSS classes
@@ -217,6 +227,7 @@ function MyComponent() {
 - `enableLightbox?: boolean` - Enable lightbox on click (default: true)
 
 ### Features
+
 - Zoom in/out (100% - 300%)
 - Pan by dragging when zoomed
 - Lightbox/fullscreen view
@@ -225,6 +236,7 @@ function MyComponent() {
 - Responsive design
 
 ### Supported Formats
+
 - JPG/JPEG
 - PNG
 - SVG
@@ -249,9 +261,7 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
@@ -289,9 +299,11 @@ function MyComponent() {
 ```
 
 ### API
+
 - `showToast(message: string, type?: "success" | "error" | "info")` - Display a toast notification
 
 ### Features
+
 - Auto-dismiss after 3 seconds
 - Manual dismiss with close button
 - Three types: success, error, info
@@ -307,7 +319,12 @@ Use barrel exports for cleaner imports:
 
 ```tsx
 // Preview components
-import { CodeBlock, ImagePreview, MarkdownPreview, PDFPreview } from "@/components/preview";
+import {
+  CodeBlock,
+  ImagePreview,
+  MarkdownPreview,
+  PDFPreview,
+} from "@/components/preview";
 
 // Model components
 import { ModelPicker } from "@/components/model";
@@ -325,6 +342,7 @@ import { useToast, ToastProvider } from "@/components/ui/toast";
 2. **PDF.js Worker:** The `PDFPreview` component loads the worker from unpkg CDN. For production, download and host it locally.
 
 3. **Prism.js Themes:** The `CodeBlock` component uses the "tomorrow" theme. To change themes, modify the import in `CodeBlock.tsx`:
+
    ```tsx
    import "prismjs/themes/prism-okaidia.css"; // or other themes
    ```

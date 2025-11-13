@@ -5,6 +5,7 @@
 This guide provides a systematic approach to research-only tasks. When activated as a research subagent, focus exclusively on gathering, analyzing, and synthesizing information - not implementing solutions.
 
 ### Research Philosophy
+
 - Research and report, don't implement
 - Multiple sources beat single sources
 - Document confidence levels for all findings
@@ -56,22 +57,26 @@ This guide provides a systematic approach to research-only tasks. When activated
 For each research topic, answer these questions:
 
 **Current State Assessment**
+
 - What exists today?
 - What are established patterns?
 - What tools/libraries are available?
 
 **Best Practices Investigation**
+
 - What do experts recommend?
 - What patterns have proven successful?
 - What anti-patterns should be avoided?
 - What are performance considerations?
 
 **Trade-off Analysis**
+
 - What are the alternatives?
 - What are pros/cons of each option?
 - What constraints influence choices?
 
 **Risk Identification**
+
 - What could go wrong?
 - What are common pitfalls?
 - What edge cases exist?
@@ -100,14 +105,17 @@ Always specify confidence level with each finding. Never present speculation as 
 # Research Report: [Topic Name]
 
 ## Executive Summary
+
 [2-3 paragraphs summarizing key findings, main recommendation, and confidence level]
 
 ## Research Questions
+
 1. [Specific question 1]
 2. [Specific question 2]
 3. [Specific question 3]
 
 ## Methodology
+
 - Sources consulted: [Number and types]
 - Research depth: [Comprehensive/Moderate/Surface]
 - Date conducted: [When research was performed]
@@ -115,10 +123,12 @@ Always specify confidence level with each finding. Never present speculation as 
 ## Key Findings
 
 ### Finding 1: [Descriptive Title]
+
 **Confidence**: [HIGH/MEDIUM/LOW/SPECULATIVE]
 **Sources**: [List 2-3 primary sources with links]
 
 [Detailed explanation of the finding, including:
+
 - What was discovered
 - Why it matters
 - How it compares to alternatives
@@ -127,17 +137,18 @@ Always specify confidence level with each finding. Never present speculation as 
 **Implications**: [How this affects project decisions]
 
 ### Finding 2: [Title]
+
 [Repeat structure for each major finding]
 
 ## Comparative Analysis
 
-| Aspect | Option A | Option B | Option C |
-|--------|----------|----------|----------|
-| Performance | [Details] | [Details] | [Details] |
-| Learning Curve | [Details] | [Details] | [Details] |
+| Aspect            | Option A  | Option B  | Option C  |
+| ----------------- | --------- | --------- | --------- |
+| Performance       | [Details] | [Details] | [Details] |
+| Learning Curve    | [Details] | [Details] | [Details] |
 | Community Support | [Details] | [Details] | [Details] |
-| Maturity | [Details] | [Details] | [Details] |
-| **Recommended** | Yes/No | Yes/No | Yes/No |
+| Maturity          | [Details] | [Details] | [Details] |
+| **Recommended**   | Yes/No    | Yes/No    | Yes/No    |
 
 ## Best Practices Identified
 
@@ -152,12 +163,14 @@ Always specify confidence level with each finding. Never present speculation as 
 ## Risks and Concerns
 
 ### Risk 1: [Risk Title]
+
 - **Severity**: [High/Medium/Low]
 - **Likelihood**: [High/Medium/Low]
 - **Impact**: [Description of potential damage]
 - **Mitigation**: [Suggested preventive approach]
 
 ### Risk 2: [Risk Title]
+
 [Continue for all identified risks]
 
 ## Knowledge Gaps
@@ -171,37 +184,43 @@ Always specify confidence level with each finding. Never present speculation as 
 ## Implementation Recommendations
 
 ### Architecture Approach
+
 [High-level architectural suggestions based on findings]
 
 ### Technology Stack
+
 - **Recommended**: [Technology/library name] because [specific reasons]
 - **Alternatives**: [Other viable options] if [conditions]
 - **Avoid**: [Technologies to avoid] due to [specific concerns]
 
 ### Development Approach
+
 [Recommended methodology, workflow, or process based on research]
 
 ## Decision Matrix
 
-| Decision Point | Recommendation | Confidence | Rationale |
-|---------------|---------------|------------|-----------|
-| [Technology choice] | [Specific choice] | [HIGH/MED/LOW] | [Brief explanation] |
-| [Architecture pattern] | [Pattern name] | [Level] | [Brief explanation] |
-| [Implementation approach] | [Approach] | [Level] | [Brief explanation] |
+| Decision Point            | Recommendation    | Confidence     | Rationale           |
+| ------------------------- | ----------------- | -------------- | ------------------- |
+| [Technology choice]       | [Specific choice] | [HIGH/MED/LOW] | [Brief explanation] |
+| [Architecture pattern]    | [Pattern name]    | [Level]        | [Brief explanation] |
+| [Implementation approach] | [Approach]        | [Level]        | [Brief explanation] |
 
 ## Sources and References
 
 ### Primary Sources
+
 1. [Official docs/specs] - [URL] - [What it provided]
 2. [Continue listing]
 
 ### Secondary Sources
+
 1. [Blog/article] - [URL] - [What it contributed]
 2. [Continue listing]
 
 ---
 
 **Research Completion Checklist:**
+
 - [ ] All research questions answered
 - [ ] Confidence levels assigned
 - [ ] Sources documented
@@ -221,6 +240,7 @@ Always specify confidence level with each finding. Never present speculation as 
 # Library Research: [Library Name]
 
 ## Overview
+
 - **Purpose**: [What it does in one sentence]
 - **Maturity**: [Stable/Beta/Experimental]
 - **Maintenance**: [Active - last commit date / Moderate / Abandoned]
@@ -228,6 +248,7 @@ Always specify confidence level with each finding. Never present speculation as 
 - **License**: [License type and any restrictions]
 
 ## Technical Assessment
+
 - **Performance**: [Benchmark results, comparisons with alternatives]
 - **Scalability**: [Tested limits, known scaling challenges]
 - **Dependencies**: [Number and quality of dependencies]
@@ -235,6 +256,7 @@ Always specify confidence level with each finding. Never present speculation as 
 - **Bundle Size**: [Size impact on production builds]
 
 ## Developer Experience
+
 - **Documentation Quality**: [Excellent/Good/Fair/Poor - with examples]
 - **Learning Curve**: [Steep/Moderate/Gentle - time to productivity]
 - **TypeScript Support**: [Built-in/DefinitelyTyped/None]
@@ -242,20 +264,24 @@ Always specify confidence level with each finding. Never present speculation as 
 - **Testing Support**: [Integration with test frameworks]
 
 ## Ecosystem
+
 - **Plugins/Extensions**: [Number and quality of available additions]
 - **Integrations**: [Compatibility with other popular tools]
 - **Migration Path**: [How to migrate from/to alternatives]
 
 ## Adoption Metrics
+
 - **GitHub Stars**: [Number and trend]
 - **Weekly Downloads**: [NPM/PyPI statistics]
 - **Production Users**: [Known companies using it]
 - **Trend**: [Growing/Stable/Declining - based on data]
 
 ## Comparative Analysis
+
 [Compare with 2-3 main alternatives using table format]
 
 ## Verdict
+
 **Recommendation**: [Use / Don't Use / Conditional Use]
 **Confidence**: [HIGH/MEDIUM/LOW]
 **Rationale**: [3-4 sentence explanation of recommendation]
@@ -269,6 +295,7 @@ Always specify confidence level with each finding. Never present speculation as 
 # Security Research: [Component/Feature Name]
 
 ## Threat Model
+
 - **Assets to Protect**: [Data, systems, user information]
 - **Potential Threats**: [Types of attacks relevant to this component]
 - **Known Vulnerabilities**: [CVEs, common weakness patterns]
@@ -277,6 +304,7 @@ Always specify confidence level with each finding. Never present speculation as 
 ## Common Vulnerabilities
 
 ### 1. [Vulnerability Type - e.g., SQL Injection]
+
 - **CVE/CWE Reference**: [Identifier if applicable]
 - **Risk Level**: [Critical/High/Medium/Low]
 - **Attack Vector**: [How this vulnerability is exploited]
@@ -285,6 +313,7 @@ Always specify confidence level with each finding. Never present speculation as 
 - **Source**: [OWASP/NIST reference]
 
 ### 2. [Vulnerability Type]
+
 [Repeat structure]
 
 ## Security Best Practices
@@ -299,17 +328,20 @@ Always specify confidence level with each finding. Never present speculation as 
    [Continue for key practices]
 
 ## Compliance Requirements
+
 - **Applicable Standards**: [GDPR, HIPAA, PCI-DSS, etc.]
 - **Key Requirements**: [Specific obligations]
 - **Audit Trail**: [What needs to be logged]
 
 ## Recommended Security Tools
+
 - **Static Analysis**: [SAST tools for this technology]
 - **Dynamic Testing**: [DAST approaches]
 - **Dependency Scanning**: [Tools to check for vulnerable dependencies]
 - **Runtime Protection**: [WAF, monitoring solutions]
 
 ## Incident Response Plan
+
 - **Detection Indicators**: [Signs of a breach]
 - **Immediate Response**: [First 24 hours action steps]
 - **Recovery Process**: [How to restore secure operations]
@@ -323,6 +355,7 @@ Always specify confidence level with each finding. Never present speculation as 
 Before submitting research, verify:
 
 ### Completeness
+
 - [ ] All research questions have clear answers
 - [ ] Multiple sources consulted for each topic (minimum 2-3)
 - [ ] Both advantages and disadvantages investigated
@@ -330,6 +363,7 @@ Before submitting research, verify:
 - [ ] Future implications assessed
 
 ### Accuracy
+
 - [ ] Sources are authoritative and current
 - [ ] Publication/update dates checked (prefer recent)
 - [ ] Conflicting information acknowledged and explained
@@ -337,6 +371,7 @@ Before submitting research, verify:
 - [ ] Confidence levels assigned to every finding
 
 ### Clarity
+
 - [ ] Executive summary provides clear overview
 - [ ] Technical jargon defined or avoided
 - [ ] Complex concepts broken down simply
@@ -344,6 +379,7 @@ Before submitting research, verify:
 - [ ] Recommendations are unambiguous
 
 ### Actionability
+
 - [ ] Findings translate to specific next steps
 - [ ] Implementation path suggested (without implementing)
 - [ ] Risks quantified where possible
@@ -355,6 +391,7 @@ Before submitting research, verify:
 ## Common Research Patterns
 
 ### Pattern 1: Technology Selection Research
+
 1. Define technical and business requirements
 2. Identify all viable technology options (3-5 candidates)
 3. Create weighted evaluation criteria
@@ -363,6 +400,7 @@ Before submitting research, verify:
 6. Provide recommendation with rationale and alternatives
 
 ### Pattern 2: Problem Investigation Research
+
 1. Deeply understand the problem domain
 2. Research how others have solved similar problems
 3. Analyze why existing solutions may not fit
@@ -371,6 +409,7 @@ Before submitting research, verify:
 6. Validate feasibility through documentation and case studies
 
 ### Pattern 3: Best Practice Discovery Research
+
 1. Survey current industry standards and guidelines
 2. Analyze documented successful implementations
 3. Identify recurring patterns across sources
@@ -385,26 +424,32 @@ Before submitting research, verify:
 ### Critical Mistakes to Never Make:
 
 **Single Source Syndrome**
+
 - ❌ "According to this one article..."
 - ✅ "Multiple sources agree (Source A, B, C)..."
 
 **Premature Implementation**
+
 - ❌ "Here's the code to implement this..."
 - ✅ "Implementation would follow this approach based on [pattern]..."
 
 **Assumption Stacking**
+
 - ❌ "This probably works like X..."
 - ✅ "Documentation confirms this works like X (Source)..."
 
 **Missing Confidence Levels**
+
 - ❌ "This is the way to do it."
 - ✅ "HIGH confidence: This is recommended by [sources]..."
 
 **Outdated Information**
+
 - ❌ Using 2020 best practices without checking updates
 - ✅ Verifying current practices and noting any recent changes
 
 **Ignoring Trade-offs**
+
 - ❌ "Option A is clearly the best."
 - ✅ "Option A excels at X but sacrifices Y, while Option B..."
 
@@ -418,27 +463,32 @@ When starting a research task, structure your mission:
 ## Research Mission: [Topic]
 
 **Scope**:
+
 - In Scope: [What to research]
 - Out of Scope: [What to skip]
 - Depth: [Surface/Moderate/Deep]
 
 **Questions**:
+
 1. [Specific question 1]
 2. [Specific question 2]
 3. [Specific question 3]
 
 **Context**:
+
 - Requirements: [Key project needs]
 - Constraints: [Technical/business limitations]
 - Timeline: [Any time-sensitive factors]
 
 **Deliverables**:
+
 - Main research report with confidence levels
 - Comparative analysis if multiple options
 - Risk assessment
 - Clear recommendations
 
 **Success Criteria**:
+
 - All questions answered with sources
 - Multiple perspectives considered
 - No implementation code written

@@ -3,6 +3,7 @@
 ## Overview
 
 This guide covers the languages used in this workspace:
+
 - **Python (90%)** - Primary language for most projects
 - **Go** - Performance-critical tools and concurrent systems
 - **Node.js** - Web frontends and JavaScript APIs
@@ -10,16 +11,16 @@ This guide covers the languages used in this workspace:
 
 ## Quick Reference Table
 
-| Operation | Python (UV) | Go | Node.js | Rust |
-|-----------|-------------|-----|---------|------|
-| **Init Project** | `uv init` | `go mod init` | `npm init` | `cargo new` |
-| **Add Dependency** | `uv add package` | `go get pkg` | `npm install pkg` | `cargo add crate` |
-| **Install Deps** | `uv sync` | `go mod download` | `npm install` | `cargo build` |
-| **Run Code** | `uv run script.py` | `go run main.go` | `node script.js` | `cargo run` |
-| **Run Tests** | `uv run pytest` | `go test ./...` | `npm test` | `cargo test` |
-| **Build Binary** | N/A | `go build` | N/A | `cargo build --release` |
-| **Format Code** | `uv run ruff format` | `go fmt ./...` | `npm run format` | `cargo fmt` |
-| **Lint Code** | `uv run ruff check` | `go vet ./...` | `npm run lint` | `cargo clippy` |
+| Operation          | Python (UV)          | Go                | Node.js           | Rust                    |
+| ------------------ | -------------------- | ----------------- | ----------------- | ----------------------- |
+| **Init Project**   | `uv init`            | `go mod init`     | `npm init`        | `cargo new`             |
+| **Add Dependency** | `uv add package`     | `go get pkg`      | `npm install pkg` | `cargo add crate`       |
+| **Install Deps**   | `uv sync`            | `go mod download` | `npm install`     | `cargo build`           |
+| **Run Code**       | `uv run script.py`   | `go run main.go`  | `node script.js`  | `cargo run`             |
+| **Run Tests**      | `uv run pytest`      | `go test ./...`   | `npm test`        | `cargo test`            |
+| **Build Binary**   | N/A                  | `go build`        | N/A               | `cargo build --release` |
+| **Format Code**    | `uv run ruff format` | `go fmt ./...`    | `npm run format`  | `cargo fmt`             |
+| **Lint Code**      | `uv run ruff check`  | `go vet ./...`    | `npm run lint`    | `cargo clippy`          |
 
 ## Python (Primary Language)
 
@@ -100,6 +101,7 @@ with open(config_file) as f:
 ## Go Basics
 
 ### When to Use Go
+
 - Performance-critical CLI tools
 - Concurrent/parallel processing
 - Network services and APIs
@@ -163,6 +165,7 @@ project/
 ## Node.js Basics
 
 ### When to Use Node.js
+
 - Web application frontends (React, Vue, Svelte)
 - REST/GraphQL APIs (Express, Fastify)
 - Build tools and bundlers
@@ -219,6 +222,7 @@ npx tsc --init             # Initialize TypeScript
 ## Rust Basics
 
 ### When to Use Rust
+
 - Maximum performance requirements
 - Memory safety critical systems
 - Python extensions (PyO3)
@@ -268,14 +272,14 @@ cargo doc --open          # Generate and open docs
 
 ### Decision Framework
 
-| Use Case | Language | Reason |
-|----------|----------|--------|
-| Data analysis, ML, automation | Python | Rich ecosystem, readability |
-| CLI tools, concurrent processing | Go | Fast, simple concurrency |
-| Web frontends, Node APIs | Node.js | JavaScript ecosystem |
-| Maximum performance, safety | Rust | Zero-cost abstractions |
-| Quick scripts | Python | Fastest to write |
-| Cross-platform binaries | Go or Rust | Easy distribution |
+| Use Case                         | Language   | Reason                      |
+| -------------------------------- | ---------- | --------------------------- |
+| Data analysis, ML, automation    | Python     | Rich ecosystem, readability |
+| CLI tools, concurrent processing | Go         | Fast, simple concurrency    |
+| Web frontends, Node APIs         | Node.js    | JavaScript ecosystem        |
+| Maximum performance, safety      | Rust       | Zero-cost abstractions      |
+| Quick scripts                    | Python     | Fastest to write            |
+| Cross-platform binaries          | Go or Rust | Easy distribution           |
 
 ### Language Strengths
 
@@ -387,25 +391,25 @@ result = my_rust_module.fast_calculation(1_000_000)
 ### Node.js Calling Child Processes
 
 ```javascript
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
 // Call Go binary
-const output = execSync('./bin/go-tool arg1 arg2', {
-  encoding: 'utf-8'
+const output = execSync("./bin/go-tool arg1 arg2", {
+  encoding: "utf-8",
 });
 console.log(output);
 ```
 
 ## Build Tool Comparison
 
-| Feature | UV (Python) | Go Modules | npm/pnpm | Cargo (Rust) |
-|---------|-------------|------------|----------|--------------|
-| **Speed** | Very Fast | Fast | Medium/Fast | Fast |
-| **Lock File** | uv.lock | go.sum | package-lock.json | Cargo.lock |
-| **Global Cache** | Yes | Yes | Yes (pnpm) | Yes |
-| **Virtual Env** | Automatic | N/A | N/A | N/A |
-| **Version Resolution** | Automatic | Minimal | npm/pnpm | Smart |
-| **Offline Mode** | Yes | Yes | Yes | Yes |
+| Feature                | UV (Python) | Go Modules | npm/pnpm          | Cargo (Rust) |
+| ---------------------- | ----------- | ---------- | ----------------- | ------------ |
+| **Speed**              | Very Fast   | Fast       | Medium/Fast       | Fast         |
+| **Lock File**          | uv.lock     | go.sum     | package-lock.json | Cargo.lock   |
+| **Global Cache**       | Yes         | Yes        | Yes (pnpm)        | Yes          |
+| **Virtual Env**        | Automatic   | N/A        | N/A               | N/A          |
+| **Version Resolution** | Automatic   | Minimal    | npm/pnpm          | Smart        |
+| **Offline Mode**       | Yes         | Yes        | Yes               | Yes          |
 
 ### Key Differences
 
@@ -438,4 +442,4 @@ cargo new app && cd app && cargo run
 
 ---
 
-*This guide prioritizes Python while providing essential references for other languages used in polyglot projects.*
+_This guide prioritizes Python while providing essential references for other languages used in polyglot projects._

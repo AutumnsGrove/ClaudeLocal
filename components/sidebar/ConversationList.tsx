@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { ConversationData } from '@/types';
-import { ConversationItem } from './ConversationItem';
-import { MessageSquare } from 'lucide-react';
+import { ConversationData } from "@/types";
+import { ConversationItem } from "./ConversationItem";
+import { MessageSquare } from "lucide-react";
 
 interface ConversationListProps {
   conversations: ConversationData[];
@@ -20,7 +20,9 @@ interface GroupedConversations {
   older: ConversationData[];
 }
 
-function groupConversationsByDate(conversations: ConversationData[]): GroupedConversations {
+function groupConversationsByDate(
+  conversations: ConversationData[],
+): GroupedConversations {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today);
@@ -37,7 +39,11 @@ function groupConversationsByDate(conversations: ConversationData[]): GroupedCon
 
   conversations.forEach((conv) => {
     const convDate = new Date(conv.updatedAt);
-    const convDay = new Date(convDate.getFullYear(), convDate.getMonth(), convDate.getDate());
+    const convDay = new Date(
+      convDate.getFullYear(),
+      convDate.getMonth(),
+      convDate.getDate(),
+    );
 
     if (convDay.getTime() === today.getTime()) {
       grouped.today.push(conv);
@@ -66,7 +72,9 @@ export function ConversationList({
       <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
         <MessageSquare className="h-12 w-12 text-muted-foreground/50" />
         <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">No conversations yet</p>
+          <p className="text-sm font-medium text-muted-foreground">
+            No conversations yet
+          </p>
           <p className="text-xs text-muted-foreground/70">
             Start a new chat to begin
           </p>
@@ -81,7 +89,9 @@ export function ConversationList({
     <div className="space-y-6">
       {grouped.today.length > 0 && (
         <div className="space-y-1">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground">Today</h3>
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">
+            Today
+          </h3>
           {grouped.today.map((conv) => (
             <ConversationItem
               key={conv.id}
@@ -98,7 +108,9 @@ export function ConversationList({
 
       {grouped.yesterday.length > 0 && (
         <div className="space-y-1">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground">Yesterday</h3>
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">
+            Yesterday
+          </h3>
           {grouped.yesterday.map((conv) => (
             <ConversationItem
               key={conv.id}
@@ -115,7 +127,9 @@ export function ConversationList({
 
       {grouped.lastWeek.length > 0 && (
         <div className="space-y-1">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground">Last 7 days</h3>
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">
+            Last 7 days
+          </h3>
           {grouped.lastWeek.map((conv) => (
             <ConversationItem
               key={conv.id}
@@ -132,7 +146,9 @@ export function ConversationList({
 
       {grouped.older.length > 0 && (
         <div className="space-y-1">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground">Older</h3>
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">
+            Older
+          </h3>
           {grouped.older.map((conv) => (
             <ConversationItem
               key={conv.id}

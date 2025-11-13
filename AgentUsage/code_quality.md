@@ -12,11 +12,11 @@ These tools integrate seamlessly with UV and can be run via pre-commit hooks.
 
 ## Tool Comparison
 
-| Tool | Purpose | Speed | Auto-fix | Configuration |
-|------|---------|-------|----------|---------------|
-| **Black** | Code formatting | Fast | Yes (always) | Minimal |
-| **Ruff** | Linting & import sorting | Very Fast (Rust) | Yes (most rules) | Flexible |
-| **mypy** | Type checking | Moderate | No | Gradual adoption |
+| Tool      | Purpose                  | Speed            | Auto-fix         | Configuration    |
+| --------- | ------------------------ | ---------------- | ---------------- | ---------------- |
+| **Black** | Code formatting          | Fast             | Yes (always)     | Minimal          |
+| **Ruff**  | Linting & import sorting | Very Fast (Rust) | Yes (most rules) | Flexible         |
+| **mypy**  | Type checking            | Moderate         | No               | Gradual adoption |
 
 ## Quick Reference
 
@@ -162,7 +162,7 @@ def find(user_id: int) -> Optional[dict]:
 - **Missing return type**: Add `-> Type` to functions
 - **Incompatible types**: Wrong parameter type
 - **Unhandled None**: Check Optional values
-- **Missing type stubs**: Install types-* packages
+- **Missing type stubs**: Install types-\* packages
 
 ## Unified Configuration (pyproject.toml)
 
@@ -236,7 +236,7 @@ Extensions: Black Formatter, Ruff, Pylance
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "editor.codeActionsOnSave": {"source.organizeImports": true}
+    "editor.codeActionsOnSave": { "source.organizeImports": true }
   }
 }
 ```
@@ -265,6 +265,7 @@ uv run black --check . && uv run ruff check . && uv run mypy --strict .
 ```
 
 **Gradual Adoption:**
+
 1. Start with Black (zero config)
 2. Add Ruff (basic rules first)
 3. Introduce mypy (lenient initially)
@@ -279,13 +280,14 @@ uv run black --check . && uv run ruff check . && uv run mypy --strict .
 
 ## Quick Summary
 
-| Tool | Purpose | When to Run | Auto-fix |
-|------|---------|-------------|----------|
-| Black | Code formatting | Before commit | Yes |
-| Ruff | Linting & imports | Before commit | Most issues |
-| mypy | Type checking | Before push/CI | No |
+| Tool  | Purpose           | When to Run    | Auto-fix    |
+| ----- | ----------------- | -------------- | ----------- |
+| Black | Code formatting   | Before commit  | Yes         |
+| Ruff  | Linting & imports | Before commit  | Most issues |
+| mypy  | Type checking     | Before push/CI | No          |
 
 **Key Takeaways:**
+
 - Black formats code with zero configuration
 - Ruff replaces dozens of linters with one fast tool
 - mypy catches type errors before runtime

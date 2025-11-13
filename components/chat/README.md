@@ -5,7 +5,9 @@ These components implement the chat interface for ClaudeLocal.
 ## Components
 
 ### ChatInterface.tsx
+
 Main chat container that orchestrates all chat functionality:
+
 - Manages conversation state and message history
 - Handles SSE streaming from `/api/chat`
 - Creates new conversations when needed
@@ -16,14 +18,18 @@ Main chat container that orchestrates all chat functionality:
   - `onToggleSidebar`: Callback to toggle sidebar (mobile)
 
 ### MessageList.tsx
+
 Displays the message history with auto-scroll:
+
 - Renders all messages in the conversation
 - Auto-scrolls to bottom on new messages
 - Shows loading indicator during streaming
 - Empty state when no messages exist
 
 ### MessageBubble.tsx
+
 Individual message display with markdown rendering:
+
 - Different styling for user vs assistant messages
 - Markdown rendering with `react-markdown` and `remark-gfm`
 - Syntax highlighting for code blocks using Prism.js
@@ -31,7 +37,9 @@ Individual message display with markdown rendering:
 - Avatar icons (user/bot)
 
 ### MessageInput.tsx
+
 Text input area with auto-expansion:
+
 - Auto-expanding textarea (60px - 200px)
 - Send on Enter, Shift+Enter for new line
 - Character counter
@@ -41,7 +49,7 @@ Text input area with auto-expansion:
 ## Usage Example
 
 ```tsx
-import { ChatInterface } from '@/components/chat';
+import { ChatInterface } from "@/components/chat";
 
 export default function Page() {
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -50,7 +58,7 @@ export default function Page() {
     <ChatInterface
       conversationId={conversationId}
       onConversationCreated={(id) => setConversationId(id)}
-      onToggleSidebar={() => console.log('Toggle sidebar')}
+      onToggleSidebar={() => console.log("Toggle sidebar")}
     />
   );
 }

@@ -30,7 +30,7 @@ export function MarkdownPreview({ content, className }: MarkdownPreviewProps) {
         "prose-td:border prose-td:border-border prose-td:px-4 prose-td:py-2",
         "prose-img:rounded-lg prose-img:shadow-md",
         "prose-hr:border-border prose-hr:my-8",
-        className
+        className,
       )}
     >
       <ReactMarkdown

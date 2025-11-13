@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { ConversationData } from '@/types';
+import { useState, useEffect } from "react";
+import { ConversationData } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { MessageSquare, MoreHorizontal, Pencil, Archive, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dropdown-menu";
+import {
+  MessageSquare,
+  MoreHorizontal,
+  Pencil,
+  Archive,
+  Trash2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ConversationItemProps {
   conversation: ConversationData;
@@ -45,9 +51,9 @@ export function ConversationItem({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleRename();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setNewTitle(conversation.title);
       setIsRenaming(false);
     }
@@ -56,8 +62,8 @@ export function ConversationItem({
   return (
     <div
       className={cn(
-        'group relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent',
-        isActive && 'bg-accent'
+        "group relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent",
+        isActive && "bg-accent",
       )}
     >
       <MessageSquare className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
@@ -86,8 +92,8 @@ export function ConversationItem({
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'flex-shrink-0 rounded-md p-1 opacity-0 transition-opacity hover:bg-accent-foreground/10 group-hover:opacity-100',
-              isActive && 'opacity-100'
+              "flex-shrink-0 rounded-md p-1 opacity-0 transition-opacity hover:bg-accent-foreground/10 group-hover:opacity-100",
+              isActive && "opacity-100",
             )}
             onClick={(e) => e.stopPropagation()}
           >

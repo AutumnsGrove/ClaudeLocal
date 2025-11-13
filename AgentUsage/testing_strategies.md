@@ -365,4 +365,4 @@ For automated testing in CI/CD pipelines, see [ci_cd_patterns.md](ci_cd_patterns
 
 ---
 
-*Last updated: 2025-10-19*
+_Last updated: 2025-10-19_

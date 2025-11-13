@@ -80,6 +80,7 @@ Now that all message statistics are being captured and stored in the database, w
 **Implementation**:
 
 Create a component that displays message statistics below assistant messages:
+
 - Tokens per second (e.g., "24.37 tok/sec")
 - Total tokens (e.g., "102 tokens")
 - Time to first token (e.g., "0.46s")
@@ -87,6 +88,7 @@ Create a component that displays message statistics below assistant messages:
 - Cost (e.g., "$0.0015")
 
 **Props interface**:
+
 ```typescript
 interface MessageStatsProps {
   tokensPerSecond?: number;
@@ -99,12 +101,14 @@ interface MessageStatsProps {
 ```
 
 **UI Requirements**:
+
 - Small, subtle text (text-xs, text-muted-foreground)
 - Horizontal layout with separators
 - Icons from lucide-react (Zap, Hash, Clock, DollarSign)
 - Only show stats that are available (conditional rendering)
 
 **Commit Message**:
+
 ```
 feat: Add message statistics display component
 
@@ -126,11 +130,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 **File to Modify**: `components/chat/MessageBubble.tsx`
 
 **Changes Needed**:
+
 1. Import MessageStats component
 2. Display MessageStats below message content for assistant messages
 3. Pass all statistics props from message object
 
 **Commit Message**:
+
 ```
 feat: Display message statistics in chat
 
@@ -155,6 +161,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 Ensure the messages API returns all the new statistics fields when fetching conversation messages. The fields should already be in the database from Phase 2, just need to make sure they're included in the query response.
 
 **Commit Message**:
+
 ```
 feat: Include message statistics in API responses
 
@@ -177,12 +184,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 **Implementation**:
 
 Create a component for top-left of UI that tracks total session cost:
+
 - Calculates sum of all message costs in current conversation
 - Displays total with dollar sign
 - Updates in real-time as messages are added
 - Small, unobtrusive design
 
 **Commit Message**:
+
 ```
 feat: Add session cost tracker component
 

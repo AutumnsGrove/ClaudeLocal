@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
 import { SessionCostTracker } from "./SessionCostTracker";
@@ -37,6 +37,8 @@ export function ChatInterface({
   >(conversationId);
   const [skipNextFetch, setSkipNextFetch] = useState(false);
   const [thinkingEnabled, setThinkingEnabled] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const shouldAutoSendRef = useRef(false);
 
   // Fetch messages when conversationId changes
   useEffect(() => {
@@ -52,7 +54,7 @@ export function ChatInterface({
       setMessages([]);
       setCurrentConversationId(null);
     }
-  }, [conversationId]);
+  }, [conversationId, skipNextFetch, currentConversationId]);
 
   const fetchMessages = async (convId: string) => {
     try {
@@ -71,6 +73,80 @@ export function ChatInterface({
       console.error("Error fetching messages:", error);
     }
   };
+
+  const handleStopStreaming = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleRegenerate = useCallback(
+    async (messageId: string) => {
+      if (isLoading || !currentConversationId) return;
+
+      // Find the message to regenerate
+      const messageIndex = messages.findIndex((m) => m.id === messageId);
+      if (messageIndex === -1 || messages[messageIndex].role !== "assistant") {
+        return;
+      }
+
+      // Find the previous user message
+      let userMessageIndex = messageIndex - 1;
+      while (
+        userMessageIndex >= 0 &&
+        messages[userMessageIndex].role === "assistant"
+      ) {
+        userMessageIndex--;
+      }
+
+      if (userMessageIndex < 0) {
+        console.error("Could not find user message to regenerate from");
+        return;
+      }
+
+      const userMessage = messages[userMessageIndex];
+      const userMessageContent = userMessage.content;
+
+      // Delete all messages from the message being regenerated onwards
+      const messageIdsToDelete = messages.slice(messageIndex).map((m) => m.id);
+
+      try {
+        setIsLoading(true);
+
+        // Delete messages from the API
+        const deleteResponse = await fetch(
+          `/api/conversations/${currentConversationId}/messages`,
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messageIds: messageIdsToDelete,
+            }),
+          },
+        );
+
+        if (!deleteResponse.ok) {
+          console.error("Failed to delete messages");
+          setIsLoading(false);
+          return;
+        }
+
+        // Remove the deleted messages from local state
+        setMessages((prev) =>
+          prev.filter((m) => !messageIdsToDelete.includes(m.id)),
+        );
+
+        // Set input and mark for auto-send
+        shouldAutoSendRef.current = true;
+        setInputValue(userMessageContent);
+      } catch (error) {
+        console.error("Error regenerating message:", error);
+        setIsLoading(false);
+      }
+    },
+    [messages, isLoading, currentConversationId],
+  );
 
   const handleSendMessage = useCallback(async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -116,10 +192,9 @@ export function ChatInterface({
       }
 
       // Send message with SSE streaming
-      console.log(
-        "[DEBUG] 🚀 Sending message to API with thinkingEnabled:",
-        thinkingEnabled,
-      );
+      // Create and store abort controller for this request
+      abortControllerRef.current = new AbortController();
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -129,6 +204,7 @@ export function ChatInterface({
           model: selectedModel,
           thinkingEnabled,
         }),
+        signal: abortControllerRef.current.signal,
       });
 
       if (!response.ok) {
@@ -163,34 +239,20 @@ export function ChatInterface({
               const data = line.slice(6).trim();
 
               if (data === "[DONE]") {
-                console.log("[DEBUG] ✅ SSE stream completed [DONE]");
                 break;
               }
 
               try {
                 const parsed = JSON.parse(data);
-                console.log(
-                  "[DEBUG] 📨 SSE event received:",
-                  parsed.type,
-                  parsed,
-                );
 
                 if (parsed.type === "thinking") {
                   // Update thinking content in real-time
-                  console.log(
-                    "[DEBUG] Thinking chunk received:",
-                    parsed.content,
-                  );
                   setMessages((prev) => {
                     const updated = [...prev];
                     const lastMsg = updated[updated.length - 1];
                     if (lastMsg.role === "assistant") {
                       lastMsg.thinkingContent =
                         (lastMsg.thinkingContent || "") + parsed.content;
-                      console.log(
-                        "[DEBUG] Updated thinkingContent:",
-                        lastMsg.thinkingContent,
-                      );
                     }
                     return updated;
                   });
@@ -234,13 +296,6 @@ export function ChatInterface({
             const lastMsg = updated[updated.length - 1];
             if (lastMsg.role === "assistant") {
               lastMsg.id = assistantMessageId;
-              console.log("[DEBUG] 💬 Final message object:", {
-                id: lastMsg.id,
-                hasThinkingContent: !!lastMsg.thinkingContent,
-                thinkingContentLength: lastMsg.thinkingContent?.length || 0,
-                hasContent: !!lastMsg.content,
-                contentLength: lastMsg.content?.length || 0,
-              });
             }
             return updated;
           });
@@ -255,18 +310,24 @@ export function ChatInterface({
         }
       }
     } catch (error) {
-      console.error("Error sending message:", error);
-      // Add error message
-      const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
-        role: "assistant",
-        content:
-          "Sorry, there was an error processing your message. Please try again.",
-        createdAt: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      // Don't show error message if request was aborted (user clicked STOP)
+      if (error instanceof Error && error.name === "AbortError") {
+        // Request was aborted, no error to show
+      } else {
+        console.error("Error sending message:", error);
+        // Add error message
+        const errorMessage: ChatMessage = {
+          id: `error-${Date.now()}`,
+          role: "assistant",
+          content:
+            "Sorry, there was an error processing your message. Please try again.",
+          createdAt: new Date(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
     } finally {
       setIsLoading(false);
+      abortControllerRef.current = null;
     }
   }, [
     inputValue,
@@ -278,6 +339,14 @@ export function ChatInterface({
     onConversationUpdated,
     messages.length,
   ]);
+
+  // Auto-send message when regenerating
+  useEffect(() => {
+    if (shouldAutoSendRef.current && inputValue.trim() && !isLoading) {
+      shouldAutoSendRef.current = false;
+      handleSendMessage();
+    }
+  }, [inputValue, isLoading, handleSendMessage]);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -325,13 +394,18 @@ export function ChatInterface({
       </div>
 
       {/* Messages */}
-      <MessageList messages={messages} isLoading={isLoading} />
+      <MessageList
+        messages={messages}
+        isLoading={isLoading}
+        onRegenerate={handleRegenerate}
+      />
 
       {/* Input */}
       <MessageInput
         value={inputValue}
         onChange={setInputValue}
         onSubmit={handleSendMessage}
+        onStop={handleStopStreaming}
         disabled={isLoading}
         thinkingEnabled={thinkingEnabled}
         onThinkingToggle={setThinkingEnabled}

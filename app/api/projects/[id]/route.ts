@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET a specific project
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
@@ -15,30 +15,27 @@ export async function GET(
       include: {
         conversations: {
           orderBy: {
-            updatedAt: 'desc',
+            updatedAt: "desc",
           },
         },
         files: {
           orderBy: {
-            createdAt: 'desc',
+            createdAt: "desc",
           },
         },
       },
     });
 
     if (!project) {
-      return NextResponse.json(
-        { error: 'Project not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
     return NextResponse.json(project);
   } catch (error: any) {
-    console.error('Error fetching project:', error);
+    console.error("Error fetching project:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch project' },
-      { status: 500 }
+      { error: error.message || "Failed to fetch project" },
+      { status: 500 },
     );
   }
 }
@@ -46,7 +43,7 @@ export async function GET(
 // PATCH update a project
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
@@ -64,10 +61,10 @@ export async function PATCH(
 
     return NextResponse.json(project);
   } catch (error: any) {
-    console.error('Error updating project:', error);
+    console.error("Error updating project:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update project' },
-      { status: 500 }
+      { error: error.message || "Failed to update project" },
+      { status: 500 },
     );
   }
 }
@@ -75,7 +72,7 @@ export async function PATCH(
 // DELETE a project
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
@@ -85,10 +82,10 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting project:', error);
+    console.error("Error deleting project:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete project' },
-      { status: 500 }
+      { error: error.message || "Failed to delete project" },
+      { status: 500 },
     );
   }
 }

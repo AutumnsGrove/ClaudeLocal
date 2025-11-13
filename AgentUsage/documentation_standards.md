@@ -7,6 +7,7 @@ Good documentation is essential for maintainable code. This guide outlines when 
 ### Documentation Philosophy
 
 **Documentation exists at multiple levels:**
+
 - **Type hints**: Document function signatures and variable types
 - **Docstrings**: Explain what functions/classes do and how to use them
 - **Comments**: Explain why code does something (not what it does)
@@ -19,14 +20,14 @@ Good documentation is essential for maintainable code. This guide outlines when 
 
 ## Quick Reference: When to Document What
 
-| What | When | How |
-|------|------|-----|
-| **Functions** | All public functions | Docstring (Google style) |
-| **Classes** | All classes | Docstring with attributes |
-| **Type hints** | All function signatures | Python type annotations |
-| **Comments** | Complex logic, non-obvious decisions | Inline comments |
-| **README** | Every project | Markdown file in root |
-| **TODOS** | Active development | TODOS.md in project root |
+| What           | When                                 | How                       |
+| -------------- | ------------------------------------ | ------------------------- |
+| **Functions**  | All public functions                 | Docstring (Google style)  |
+| **Classes**    | All classes                          | Docstring with attributes |
+| **Type hints** | All function signatures              | Python type annotations   |
+| **Comments**   | Complex logic, non-obvious decisions | Inline comments           |
+| **README**     | Every project                        | Markdown file in root     |
+| **TODOS**      | Active development                   | TODOS.md in project root  |
 
 ---
 
@@ -108,12 +109,14 @@ class DataProcessor:
 ### When to Use Docstrings
 
 **ALWAYS write docstrings for:**
+
 - Public functions and methods
 - All classes
 - Complex private functions
 - Module-level documentation (top of file)
 
 **Skip docstrings for:**
+
 - Trivial getters/setters (unless they have side effects)
 - Private helper functions with obvious names
 - One-line utility functions with type hints
@@ -126,7 +129,7 @@ Every project should have a README.md in the root directory.
 
 ### Essential Sections
 
-```markdown
+````markdown
 # Project Name
 
 Brief one-sentence description of what this project does.
@@ -142,6 +145,7 @@ pip install -r requirements.txt
 # or
 npm install
 ```
+````
 
 ## Quick Start
 
@@ -184,7 +188,8 @@ Guidelines for contributions (if applicable).
 ## License
 
 License information.
-```
+
+````
 
 ---
 
@@ -218,7 +223,7 @@ def process_records(
         Tuple of (filtered_records, count).
     """
     pass
-```
+````
 
 ---
 
@@ -262,12 +267,14 @@ def get_user():
 ### When to Comment
 
 **DO comment when:**
+
 - Code implements a complex algorithm
 - There's a non-obvious reason for doing something
 - You're working around a bug or limitation
 - Business logic requires explanation
 
 **DON'T comment when:**
+
 - The code is self-explanatory
 - Variable/function names already explain intent
 - You're just restating what the code does
@@ -288,20 +295,25 @@ You MUST actively maintain the `TODOS.md` file in the project root. This is a cr
    - You discover subtasks or dependencies
 
 3. **Format for TODOS.md:**
+
    ```markdown
    # Project TODOs
 
    ## High Priority
+
    - [ ] Task description here
    - [x] Completed task (keep for reference)
 
    ## Medium Priority
+
    - [ ] Another task
 
    ## Low Priority / Future Ideas
+
    - [ ] Nice to have feature
 
    ## Blocked
+
    - [ ] Task blocked by X (waiting on...)
    ```
 
@@ -399,6 +411,7 @@ def filter_records_by_value(
 ```
 
 **What improved:**
+
 - Clear function name describes purpose
 - Type hints show data structures
 - Docstring explains behavior
@@ -415,4 +428,4 @@ def filter_records_by_value(
 
 ---
 
-*Remember: The best documentation is clear code. Document to add value, not to repeat what's obvious.*
+_Remember: The best documentation is clear code. Document to add value, not to repeat what's obvious._

@@ -53,14 +53,14 @@ Hooks live in `.git/hooks/` and must be executable. They exit with code 0 (succe
 
 Choose the right hooks for your project:
 
-| Project Type | Pre-Commit Hook | Additional Hooks | Security |
-|-------------|-----------------|------------------|----------|
-| **Python** | `pre-commit-python` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner` |
-| **JavaScript/Node** | `pre-commit-javascript` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner` |
-| **Go** | `pre-commit-go` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner` |
-| **Rust** | `pre-commit-multi-language` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner` |
-| **Multi-language** | `pre-commit-multi-language` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner` |
-| **Any project** | N/A (optional) | N/A | `pre-commit-secrets-scanner` ⭐ |
+| Project Type        | Pre-Commit Hook             | Additional Hooks            | Security                        |
+| ------------------- | --------------------------- | --------------------------- | ------------------------------- |
+| **Python**          | `pre-commit-python`         | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner`    |
+| **JavaScript/Node** | `pre-commit-javascript`     | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner`    |
+| **Go**              | `pre-commit-go`             | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner`    |
+| **Rust**            | `pre-commit-multi-language` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner`    |
+| **Multi-language**  | `pre-commit-multi-language` | `pre-push`, `post-checkout` | `pre-commit-secrets-scanner`    |
+| **Any project**     | N/A (optional)              | N/A                         | `pre-commit-secrets-scanner` ⭐ |
 
 **Always install:** `commit-msg` (validates commit format)
 **Highly recommended:** `pre-commit-secrets-scanner` (prevents leaked secrets)
@@ -83,6 +83,7 @@ cd /path/to/your/project
 ```
 
 The installer will:
+
 1. Auto-detect your project type (Python, JavaScript, Go, etc.)
 2. Recommend appropriate hooks
 3. Back up existing hooks
@@ -131,14 +132,18 @@ git commit -m "Test: verify hooks are working"
 ### Core Hooks (Recommended for All Projects)
 
 #### commit-msg
+
 Validates commit message format according to conventional commits:
+
 - Checks for proper commit types (feat, fix, docs, etc.)
 - Validates message structure
 - Supports both conventional and custom formats
 - See `AgentUsage/git_guide.md` for format details
 
 #### pre-commit-secrets-scanner
+
 **CRITICAL SECURITY**: Scans for API keys and secrets before commit:
+
 - Detects Anthropic, OpenAI, AWS, GitHub tokens
 - Prevents accidental exposure of credentials
 - Checks for hardcoded passwords
@@ -148,21 +153,27 @@ Validates commit message format according to conventional commits:
 ### Language-Specific Pre-Commit Hooks
 
 #### pre-commit-python
+
 Python code quality checks:
+
 - **Black**: Code formatting
 - **Ruff**: Fast linting
 - Runs only on staged `.py` files
 - Auto-formats when possible
 
 #### pre-commit-javascript
+
 JavaScript/TypeScript code quality checks:
+
 - **Prettier**: Code formatting
 - **ESLint**: Linting and style rules
 - **TypeScript**: Type checking (if `tsconfig.json` present)
 - Supports `.js`, `.jsx`, `.ts`, `.tsx` files
 
 #### pre-commit-go
+
 Go code quality checks:
+
 - **gofmt**: Code formatting
 - **go vet**: Static analysis
 - **golint**: Style suggestions (optional)
@@ -170,7 +181,9 @@ Go code quality checks:
 - **go mod verify**: Dependency verification
 
 #### pre-commit-multi-language
+
 Comprehensive checks for mixed-language projects:
+
 - Detects file types automatically
 - Runs appropriate tools per language
 - Validates JSON and YAML syntax
@@ -179,7 +192,9 @@ Comprehensive checks for mixed-language projects:
 ### Test & Deploy Hooks
 
 #### pre-push
+
 Runs tests before pushing to remote:
+
 - Auto-detects test framework (pytest, npm test, go test, cargo test)
 - Prevents broken code from reaching remote
 - Non-blocking if no tests configured
@@ -188,21 +203,27 @@ Runs tests before pushing to remote:
 ### Automation Hooks
 
 #### post-checkout
+
 Auto-updates dependencies when switching branches:
+
 - Detects changes in `package.json`, `pyproject.toml`, `go.mod`, etc.
 - Runs appropriate package manager (npm, uv, go mod, cargo)
 - Saves time and prevents "works on my branch" issues
 - **Recommended for team projects**
 
 #### prepare-commit-msg
+
 Adds context to commit messages automatically:
+
 - Extracts ticket number from branch name (ABC-123, #456)
 - Adds branch context to commits
 - Includes Claude co-authorship attribution
 - **Optional but useful for ticket-based workflows**
 
 #### post-commit
+
 Shows commit summary and scans for TODOs:
+
 - Displays commit details and stats
 - Scans committed files for TODO/FIXME comments
 - Shows project-wide TODO count
@@ -339,6 +360,7 @@ uv run ruff check .
 ### Environment Considerations
 
 Hooks run in Git's environment, not your shell's:
+
 - May not have your virtualenv active
 - PATH might be limited
 - Use absolute paths or UV for reliability

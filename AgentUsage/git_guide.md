@@ -5,12 +5,14 @@
 A comprehensive git workflow guide emphasizing safety, clean history, and standardized commit messages using Conventional Commits format.
 
 **Core Principles:**
+
 - **Safety First**: Always verify before operations, create backups for major changes
 - **Clean History**: Use atomic commits with descriptive messages
 - **Conventional Format**: Standard commit types for automated tooling
 - **Workflow Clarity**: Clear branching strategies and daily patterns
 
 **When to Use This Guide:**
+
 - Every session with code changes
 - Before making any git commit
 - When initializing new repositories
@@ -85,6 +87,7 @@ perf: Optimize database queries
 ```
 
 **Examples:**
+
 ```bash
 feat: Add dark mode toggle
 fix: Correct password validation
@@ -98,18 +101,18 @@ perf: Optimize query performance
 
 ### Commit Types
 
-| Type | Purpose | Changelog | Example |
-|------|---------|-----------|---------|
-| `feat` | New feature | Yes | `feat: Add user authentication` |
-| `fix` | Bug fix | Yes | `fix: Correct validation error` |
-| `docs` | Documentation | No | `docs: Update README` |
-| `style` | Code formatting | No | `style: Format with Black` |
-| `refactor` | Code restructure | No | `refactor: Extract helper function` |
-| `test` | Add/modify tests | No | `test: Add auth tests` |
-| `chore` | Maintenance | No | `chore: Update dependencies` |
-| `perf` | Performance | Yes | `perf: Optimize query speed` |
-| `build` | Build system | No | `build: Update webpack config` |
-| `ci` | CI/CD changes | No | `ci: Add GitHub Actions` |
+| Type       | Purpose          | Changelog | Example                             |
+| ---------- | ---------------- | --------- | ----------------------------------- |
+| `feat`     | New feature      | Yes       | `feat: Add user authentication`     |
+| `fix`      | Bug fix          | Yes       | `fix: Correct validation error`     |
+| `docs`     | Documentation    | No        | `docs: Update README`               |
+| `style`    | Code formatting  | No        | `style: Format with Black`          |
+| `refactor` | Code restructure | No        | `refactor: Extract helper function` |
+| `test`     | Add/modify tests | No        | `test: Add auth tests`              |
+| `chore`    | Maintenance      | No        | `chore: Update dependencies`        |
+| `perf`     | Performance      | Yes       | `perf: Optimize query speed`        |
+| `build`    | Build system     | No        | `build: Update webpack config`      |
+| `ci`       | CI/CD changes    | No        | `ci: Add GitHub Actions`            |
 
 ---
 
@@ -428,16 +431,19 @@ release/v1.0.0         # Releases
 For projects with ongoing development and production releases, consider a two-branch strategy:
 
 **`main` branch** - Production-ready code
+
 - Only receives merges from dev when stable
 - Always in deployable state
 - Users/clients clone from this branch
 
 **`dev` branch** - Active development
+
 - All development work happens here
 - Experimental features and work-in-progress
 - Testing and iteration
 
 **Workflow:**
+
 ```bash
 # Daily development in dev branch
 git checkout dev
@@ -464,12 +470,14 @@ git checkout dev
 ```
 
 **When to use:**
+
 - Template repositories
 - Projects with external users
 - Applications with production deployments
 - Open source projects with stable releases
 
 **When NOT to use:**
+
 - Simple personal projects
 - Rapid prototypes
 - Single-developer projects without production needs
@@ -488,6 +496,7 @@ test(parser): Add edge case coverage
 ```
 
 **Common scopes:**
+
 - Component names: `auth`, `api`, `cli`, `ui`
 - Module names: `parser`, `validator`, `renderer`
 - File types: `readme`, `config`, `tests`
@@ -685,6 +694,7 @@ git status
 ### Resolution
 
 **Option 1: Manual resolution**
+
 ```bash
 # Edit file, resolve conflicts between:
 # <<<<<<< HEAD
@@ -701,6 +711,7 @@ git commit
 ```
 
 **Option 2: Accept one side**
+
 ```bash
 # Accept current branch
 git checkout --ours file.py
@@ -758,6 +769,7 @@ Co-Authored-By: [Model Name] <agent@localhost>
 ### Footer (Optional)
 
 Use for:
+
 - Breaking changes (`BREAKING CHANGE:`)
 - Issue references (`Fixes #123`, `Closes #456`)
 - Co-authors (`Co-authored-by: Name <email>`)
@@ -834,6 +846,7 @@ refactor: Update config
 **Why bad**: Which config? What changed? Why?
 
 **Fix:**
+
 ```
 refactor(db): Update connection pooling configuration
 
@@ -907,13 +920,13 @@ git checkout -b recovery-branch
 
 Conventional Commits maps directly to SemVer:
 
-| Commit Type | Version Bump | Example |
-|-------------|--------------|---------|
-| `feat:` | Minor | 1.0.0 → 1.1.0 |
-| `fix:` | Patch | 1.0.0 → 1.0.1 |
-| `perf:` | Patch | 1.0.0 → 1.0.1 |
-| `BREAKING CHANGE:` | Major | 1.0.0 → 2.0.0 |
-| Others | No bump | - |
+| Commit Type        | Version Bump | Example       |
+| ------------------ | ------------ | ------------- |
+| `feat:`            | Minor        | 1.0.0 → 1.1.0 |
+| `fix:`             | Patch        | 1.0.0 → 1.0.1 |
+| `perf:`            | Patch        | 1.0.0 → 1.0.1 |
+| `BREAKING CHANGE:` | Major        | 1.0.0 → 2.0.0 |
+| Others             | No bump      | -             |
 
 ---
 
@@ -1000,5 +1013,5 @@ git push --tags
 
 ---
 
-*Last updated: 2025-11-02*
-*Unified from: git_commit_guide.md, git_workflow.md, git_conventional_commits.md*
+_Last updated: 2025-11-02_
+_Unified from: git_commit_guide.md, git_workflow.md, git_conventional_commits.md_

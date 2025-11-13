@@ -15,15 +15,18 @@ BaseProject now includes these production-ready hooks out of the box:
 ### Security Hooks
 
 #### pre-commit-secrets-scanner
+
 **Critical security hook** that prevents committing API keys, tokens, and credentials.
 
 **Features:**
+
 - Detects 15+ secret patterns (API keys, tokens, passwords)
 - Whitelists template files (`secrets_template.json`)
 - Checks for sensitive filenames (`.env`, `credentials.json`)
 - Provides actionable remediation steps
 
 **Example output when secret detected:**
+
 ```
 🔍 Scanning for secrets and sensitive data...
 
@@ -39,7 +42,7 @@ Recommended actions:
   1. Remove the secret from your code
   2. Store in secrets.json (which is gitignored)
   3. Use environment variables for sensitive data
-  4. Check AgentUsage/secrets_management.md for guidance
+  4. Check ClaudeUsage/secrets_management.md for guidance
 ```
 
 ---
@@ -47,9 +50,11 @@ Recommended actions:
 ### Language-Specific Quality Hooks
 
 #### pre-commit-python
+
 Runs Black formatting and Ruff linting on Python files.
 
 **Example output:**
+
 ```
 📦 Checking Python files...
 Files: src/main.py src/utils.py
@@ -66,9 +71,11 @@ Files: src/main.py src/utils.py
 ```
 
 #### pre-commit-javascript
+
 Runs Prettier formatting, ESLint linting, and TypeScript type checking.
 
 **Example output:**
+
 ```
 📦 Checking JavaScript/TypeScript files...
 Files: src/index.ts src/utils.js
@@ -88,9 +95,11 @@ Files: src/index.ts src/utils.js
 ```
 
 #### pre-commit-go
+
 Runs gofmt, go vet, golint, and go mod verify.
 
 **Example output:**
+
 ```
 📦 Checking Go files...
 Files: main.go utils.go
@@ -113,9 +122,11 @@ Files: main.go utils.go
 ```
 
 #### pre-commit-multi-language
+
 Automatically detects and checks Python, JavaScript, Go, Rust, JSON, and YAML files.
 
 **Example output:**
+
 ```
 🔍 Running multi-language pre-commit checks...
 
@@ -141,9 +152,11 @@ Automatically detects and checks Python, JavaScript, Go, Rust, JSON, and YAML fi
 ### Test Automation Hooks
 
 #### pre-push
+
 Auto-detects and runs tests before pushing to prevent broken builds.
 
 **Example output:**
+
 ```
 🧪 Running tests before push...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -166,9 +179,11 @@ tests/test_utils.py ✓✓
 ### Automation & Convenience Hooks
 
 #### post-checkout
+
 Automatically updates dependencies when switching branches.
 
 **Example output:**
+
 ```
 🔄 Post-checkout: Checking for dependency changes...
 
@@ -184,9 +199,11 @@ Automatically updates dependencies when switching branches.
 ```
 
 #### prepare-commit-msg
-Adds branch context and AI agent attribution to commits automatically.
+
+Adds branch context and Claude attribution to commits automatically.
 
 **Example workflow:**
+
 ```bash
 # Branch: feature/ABC-123-add-auth
 git commit -m "add JWT authentication"
@@ -197,14 +214,16 @@ git commit -m "add JWT authentication"
 # 🤖 Generated with Claude Code
 # via Happy
 #
-# Co-Authored-By: [Model Name] <agent@localhost>
+# Co-Authored-By: Claude <noreply@anthropic.com>
 # Co-Authored-By: Happy <yesreply@happy.engineering>
 ```
 
 #### post-commit
+
 Shows commit summary and scans for TODO comments.
 
 **Example output:**
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ Commit successful!
@@ -246,7 +265,9 @@ Project-wide summary:
 ## Additional Hook Ideas
 
 ### post-merge Hook
+
 Run database migrations after merging:
+
 ```bash
 #!/bin/bash
 echo "Checking for pending migrations..."
@@ -275,6 +296,7 @@ declare -A PATTERNS=(
 ### Customizing Code Quality Rules
 
 **Python (pre-commit-python):**
+
 ```bash
 # Add mypy type checking
 if command -v mypy &> /dev/null; then
@@ -284,6 +306,7 @@ fi
 ```
 
 **JavaScript (pre-commit-javascript):**
+
 ```bash
 # Add custom ESLint config
 eslint --config .eslintrc.custom.json $js_ts_files
@@ -292,6 +315,7 @@ eslint --config .eslintrc.custom.json $js_ts_files
 ### Modifying Test Timeout
 
 **pre-push:**
+
 ```bash
 # Add timeout to prevent hanging tests
 timeout 300 pytest tests/ || tests_failed=1  # 5 minute timeout
@@ -304,6 +328,7 @@ timeout 300 pytest tests/ || tests_failed=1  # 5 minute timeout
 ### What is pre-commit?
 
 Pre-commit is a Python package that manages git hooks using a configuration file. It provides:
+
 - Centralized hook configuration
 - Easy sharing across projects
 - Access to community hooks
@@ -365,13 +390,13 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: trailing-whitespace      # Remove trailing whitespace
-      - id: end-of-file-fixer        # Ensure files end with newline
-      - id: check-yaml                # Validate YAML syntax
-      - id: check-json                # Validate JSON syntax
-      - id: check-added-large-files  # Prevent large files
+      - id: trailing-whitespace # Remove trailing whitespace
+      - id: end-of-file-fixer # Ensure files end with newline
+      - id: check-yaml # Validate YAML syntax
+      - id: check-json # Validate JSON syntax
+      - id: check-added-large-files # Prevent large files
         args: [--maxkb=1000]
-      - id: mixed-line-ending        # Prevent mixed line endings
+      - id: mixed-line-ending # Prevent mixed line endings
         args: [--fix=lf]
 
   # Type checking with mypy
@@ -387,6 +412,7 @@ repos:
 ## When to Use Framework vs Custom Scripts
 
 ### Use pre-commit Framework When:
+
 - Working with Python projects
 - Need standard code quality tools (Black, Ruff, mypy)
 - Want to share configuration across projects
@@ -394,6 +420,7 @@ repos:
 - Need automatic tool updates
 
 ### Use Custom Scripts When:
+
 - Project-specific logic required
 - Non-standard workflows
 - Language-specific tools not in framework
@@ -401,6 +428,7 @@ repos:
 - Want complete control
 
 ### Hybrid Approach:
+
 Combine both! Use pre-commit for standard tools, custom scripts for project-specific needs:
 
 ```yaml

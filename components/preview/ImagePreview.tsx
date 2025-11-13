@@ -96,7 +96,7 @@ export function ImagePreview({
           className={cn(
             "relative overflow-hidden rounded-lg border bg-muted",
             enableLightbox && scale === 1.0 && "cursor-pointer",
-            scale > 1.0 && "cursor-move"
+            scale > 1.0 && "cursor-move",
           )}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -125,7 +125,7 @@ export function ImagePreview({
             className={cn(
               "max-w-full h-auto select-none transition-transform",
               loading && "hidden",
-              error && "hidden"
+              error && "hidden",
             )}
             style={{
               transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,

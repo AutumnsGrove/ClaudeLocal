@@ -156,22 +156,11 @@ export async function POST(request: NextRequest) {
 
     // Add thinking parameter if enabled
     if (thinkingEnabled) {
-      console.log(
-        "[API DEBUG] 🧠 Extended thinking ENABLED - configuring with 10k token budget",
-      );
       streamParams.thinking = {
         type: "enabled",
         budget_tokens: 10000,
       };
-    } else {
-      console.log("[API DEBUG] Extended thinking disabled");
     }
-
-    console.log("[API DEBUG] 📡 Creating Anthropic stream with params:", {
-      model: streamParams.model,
-      max_tokens: streamParams.max_tokens,
-      hasThinking: !!streamParams.thinking,
-    });
 
     const stream = (await anthropic.messages.create(
       streamParams,
@@ -186,6 +175,7 @@ export async function POST(request: NextRequest) {
       totalTokens: 0,
       inputTokens: 0,
       outputTokens: 0,
+      responseTokens: 0,
       cachedTokens: 0,
       stopReason: "",
       thinkingContent: [] as string[],
@@ -203,8 +193,6 @@ export async function POST(request: NextRequest) {
 
         try {
           for await (const event of stream) {
-            console.log("[API DEBUG] 📩 Anthropic event:", event.type, event);
-
             if (event.type === "message_start") {
               // Capture initial usage data from message start
               if (event.message?.usage) {
@@ -214,10 +202,6 @@ export async function POST(request: NextRequest) {
             } else if (event.type === "content_block_start") {
               // Track block type for thinking content
               currentBlockType = event.content_block.type;
-              console.log(
-                "[API DEBUG] 📝 Content block started:",
-                currentBlockType,
-              );
             } else if (event.type === "content_block_delta") {
               // Capture first token time
               if (metrics.firstTokenTime === null) {
@@ -231,13 +215,8 @@ export async function POST(request: NextRequest) {
                 // Track when thinking starts
                 if (metrics.thinkingStartTime === null) {
                   metrics.thinkingStartTime = Date.now();
-                  console.log("[API DEBUG] 💭 Thinking started");
                 }
 
-                console.log(
-                  "[API DEBUG] 💭 Thinking delta received:",
-                  thinkingText,
-                );
                 metrics.thinkingContent.push(thinkingText);
                 controller.enqueue(
                   encoder.encode(
@@ -269,22 +248,12 @@ export async function POST(request: NextRequest) {
                 const thinkingText = metrics.thinkingContent.join("");
                 metrics.thinkingTokens = Math.ceil(thinkingText.length / 4);
 
-                console.log("[API DEBUG] ✅ Thinking block completed:", {
-                  duration: metrics.thinkingDuration,
-                  tokens: metrics.thinkingTokens,
-                  chunks: metrics.thinkingContent.length,
-                });
-
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({ type: "thinking_done" })}\n\n`,
                   ),
                 );
               }
-              console.log(
-                "[API DEBUG] 🛑 Content block stopped:",
-                currentBlockType,
-              );
               currentBlockType = null;
             } else if (event.type === "message_delta") {
               // Capture cumulative output tokens from message delta
@@ -298,6 +267,12 @@ export async function POST(request: NextRequest) {
                 metrics.stopReason = event.delta.stop_reason;
               }
             } else if (event.type === "message_stop") {
+              // Calculate response tokens (output tokens minus thinking tokens)
+              metrics.responseTokens = Math.max(
+                0,
+                metrics.outputTokens - metrics.thinkingTokens,
+              );
+
               // Calculate performance metrics after message is complete
               const duration = (Date.now() - metrics.startTime) / 1000; // in seconds
               const tokensPerSecond =
@@ -324,6 +299,7 @@ export async function POST(request: NextRequest) {
                   totalTokens: metrics.totalTokens,
                   inputTokens: metrics.inputTokens,
                   outputTokens: metrics.outputTokens,
+                  responseTokens: metrics.responseTokens,
                   cachedTokens: metrics.cachedTokens,
                   timeToFirstToken,
                   stopReason: metrics.stopReason,
@@ -367,6 +343,7 @@ export async function POST(request: NextRequest) {
                       totalTokens: metrics.totalTokens,
                       inputTokens: metrics.inputTokens,
                       outputTokens: metrics.outputTokens,
+                      responseTokens: metrics.responseTokens,
                       cachedTokens: metrics.cachedTokens,
                       timeToFirstToken,
                       stopReason: metrics.stopReason,

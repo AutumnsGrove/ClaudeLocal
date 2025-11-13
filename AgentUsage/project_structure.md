@@ -76,6 +76,7 @@ my_project/
 ### Package vs Application Structure
 
 **Package** (for libraries/reusable code):
+
 ```
 MyLibrary/
 ├── src/
@@ -89,6 +90,7 @@ MyLibrary/
 ```
 
 **Application** (for standalone tools):
+
 ```
 MyApp/
 ├── MyApp/
@@ -146,6 +148,7 @@ VideoProcessor/
 ### Flat vs Nested Modules
 
 **Flat** (for simple projects):
+
 ```
 SimpleBot/
 └── SimpleBot/
@@ -157,6 +160,7 @@ SimpleBot/
 ```
 
 **Nested** (for complex projects):
+
 ```
 ApiServer/
 └── ApiServer/
@@ -178,6 +182,7 @@ ApiServer/
 ### When to Split Modules
 
 Split when:
+
 - A file exceeds 300-400 lines
 - A module has multiple distinct responsibilities
 - You need to share code between files
@@ -186,6 +191,7 @@ Split when:
 ## Where to Put Things
 
 ### tests/ Directory
+
 ```
 tests/
 ├── __init__.py
@@ -198,6 +204,7 @@ tests/
 ```
 
 ### Configuration Files
+
 ```
 ProjectRoot/
 ├── pyproject.toml           # Project metadata + build config
@@ -209,6 +216,7 @@ ProjectRoot/
 ```
 
 ### docs/ Directory
+
 ```
 docs/
 ├── README.md
@@ -218,6 +226,7 @@ docs/
 ```
 
 ### scripts/ Directory
+
 ```
 scripts/
 ├── setup_dev.py            # Development setup
@@ -226,6 +235,7 @@ scripts/
 ```
 
 ### data/ Directory
+
 ```
 data/
 ├── raw/
@@ -237,6 +247,7 @@ data/
 ## Single-File Scripts vs Full Projects
 
 ### When to Use Single-File Scripts
+
 - Quick automation tasks
 - One-off data processing
 - Simple CLI tools
@@ -257,6 +268,7 @@ if __name__ == "__main__":
 ```
 
 ### When to Use Full Project Structure
+
 - Multiple modules/files needed
 - Requires testing infrastructure
 - Will be distributed/shared
@@ -266,11 +278,13 @@ if __name__ == "__main__":
 ### Transitioning from Script to Project
 
 **Before** (single file):
+
 ```python
 # video_tool.py (300 lines)
 ```
 
 **After** (structured):
+
 ```
 VideoTool/
 ├── VideoTool/
@@ -283,21 +297,24 @@ VideoTool/
     └── test_processor.py
 ```
 
-## __init__.py Usage
+## **init**.py Usage
 
 ### When Required
+
 - Python 3.3+: Not strictly required but recommended
 - Makes directories importable as packages
 - Provides a clean public API
 
-### What to Put in __init__.py
+### What to Put in **init**.py
 
 **Minimal** (empty is fine):
+
 ```python
 # MyPackage/__init__.py
 ```
 
 **Version and metadata**:
+
 ```python
 # MyPackage/__init__.py
 __version__ = "1.0.0"
@@ -305,6 +322,7 @@ __author__ = "Your Name"
 ```
 
 **Re-exporting for convenience**:
+
 ```python
 # MyPackage/__init__.py
 from .core import Processor
@@ -315,6 +333,7 @@ __all__ = ["Processor", "validate_input", "load_config"]
 ```
 
 This allows users to do:
+
 ```python
 from MyPackage import Processor  # Instead of from MyPackage.core import Processor
 ```
@@ -322,6 +341,7 @@ from MyPackage import Processor  # Instead of from MyPackage.core import Process
 ## Example Structures
 
 ### Simple CLI Tool
+
 ```
 TextAnalyzer/
 ├── TextAnalyzer/
@@ -336,6 +356,7 @@ TextAnalyzer/
 ```
 
 ### Web API Project
+
 ```
 ApiService/
 ├── ApiService/
@@ -361,6 +382,7 @@ ApiService/
 ```
 
 ### Library/Package
+
 ```
 DataUtils/
 ├── src/
@@ -384,6 +406,7 @@ DataUtils/
 ## Common Patterns
 
 ### Pattern 1: Separate CLI from Logic
+
 ```
 MyTool/
 ├── MyTool/
@@ -393,6 +416,7 @@ MyTool/
 ```
 
 ### Pattern 2: Configuration Management
+
 ```
 MyApp/
 ├── MyApp/
@@ -406,6 +430,7 @@ MyApp/
 ```
 
 ### Pattern 3: Feature-Based Organization
+
 ```
 WebApp/
 └── WebApp/
@@ -424,6 +449,7 @@ WebApp/
 ## .gitignore Considerations
 
 Always include:
+
 ```gitignore
 # Secrets
 secrets.json

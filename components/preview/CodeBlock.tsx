@@ -83,7 +83,7 @@ export function CodeBlock({
       <pre
         className={cn(
           "rounded-b-lg border border-t-0 border-border overflow-x-auto p-4 bg-muted",
-          showLineNumbers && "line-numbers"
+          showLineNumbers && "line-numbers",
         )}
       >
         <code ref={codeRef} className={prismLanguage}>

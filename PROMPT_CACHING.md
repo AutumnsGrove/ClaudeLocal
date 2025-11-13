@@ -20,11 +20,13 @@ Prompt caching allows you to cache frequently used context (like conversation hi
 When a conversation belongs to a project with custom instructions:
 
 ```typescript
-const systemMessages = [{
-  type: 'text',
-  text: project.instructions,
-  cache_control: { type: 'ephemeral' }  // ← Cache this!
-}];
+const systemMessages = [
+  {
+    type: "text",
+    text: project.instructions,
+    cache_control: { type: "ephemeral" }, // ← Cache this!
+  },
+];
 ```
 
 **Savings**: If your project instructions are 2000 tokens, you pay full price once, then 90% less for every subsequent message in the next 5 minutes.
@@ -40,13 +42,15 @@ const formattedMessages = messages.map((msg, index) => {
 
   return {
     role: msg.role,
-    content: shouldCache ? [
-      {
-        type: 'text',
-        text: msg.content,
-        cache_control: { type: 'ephemeral' }  // ← Cache historical messages
-      }
-    ] : msg.content
+    content: shouldCache
+      ? [
+          {
+            type: "text",
+            text: msg.content,
+            cache_control: { type: "ephemeral" }, // ← Cache historical messages
+          },
+        ]
+      : msg.content,
   };
 });
 ```
@@ -56,6 +60,7 @@ const formattedMessages = messages.map((msg, index) => {
 ## Minimum Cache Size
 
 Anthropic requires **1024 tokens minimum** for caching. Our implementation:
+
 - ✅ Long project instructions (usually >1024 tokens)
 - ✅ Multi-turn conversations (accumulates >1024 tokens quickly)
 - ✅ Files uploaded to projects (typically >1024 tokens)
@@ -65,6 +70,7 @@ Anthropic requires **1024 tokens minimum** for caching. Our implementation:
 ### Scenario: 10-message conversation with project instructions
 
 **Without caching:**
+
 ```
 Message 1: 1500 tokens × $3/MTok = $0.0045
 Message 2: 3000 tokens × $3/MTok = $0.0090
@@ -75,6 +81,7 @@ Total: $0.15 (estimated)
 ```
 
 **With caching:**
+
 ```
 Message 1: 1500 tokens × $3/MTok = $0.0045
 Message 2: 1500 cached × $0.30/MTok + 1500 new = $0.0050
@@ -95,6 +102,7 @@ Total: $0.03 (estimated) - 80% savings!
 ### File: `app/api/chat/route.ts`
 
 Key sections:
+
 - Lines 75-93: Message caching logic
 - Lines 95-104: System message (project instructions) caching
 - Line 111: System messages passed to Anthropic API
@@ -102,7 +110,9 @@ Key sections:
 ### Cache Control Header
 
 ```typescript
-cache_control: { type: 'ephemeral' }
+cache_control: {
+  type: "ephemeral";
+}
 ```
 
 This tells Anthropic to cache this content block for 5 minutes.
@@ -123,6 +133,7 @@ The Anthropic API response includes cache performance metrics in the `usage` obj
 ```
 
 On subsequent requests:
+
 ```typescript
 {
   usage: {

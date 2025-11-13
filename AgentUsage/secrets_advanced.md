@@ -5,6 +5,7 @@
 This guide covers advanced patterns for secrets management in production environments. For basic usage, see [secrets_management.md](secrets_management.md).
 
 **Topics Covered:**
+
 - Advanced loading patterns with validation
 - .env file integration
 - Automated testing strategies
@@ -112,6 +113,7 @@ if not secrets.validate_required("anthropic_api_key", "openrouter_api_key"):
 For environments that prefer dotenv files:
 
 **Installation:**
+
 ```bash
 pip install python-dotenv
 # or with uv
@@ -119,6 +121,7 @@ uv add python-dotenv
 ```
 
 **.env File:**
+
 ```bash
 # API Keys
 ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
@@ -134,6 +137,7 @@ SECRET_KEY=your-secret-key-here
 ```
 
 **Loading .env:**
+
 ```python
 from dotenv import load_dotenv
 import os
@@ -281,6 +285,7 @@ If API keys are compromised or potentially exposed:
    - Copy new keys to secure location
 
 3. **Update all `secrets.json` files**
+
    ```bash
    # Find all secrets.json files
    find . -name "secrets.json" -type f
@@ -291,6 +296,7 @@ If API keys are compromised or potentially exposed:
    ```
 
 4. **Update any environment variables**
+
    ```bash
    # Update in shell config
    sed -i.bak 's/old-key/new-key/g' ~/.zshrc
@@ -303,6 +309,7 @@ If API keys are compromised or potentially exposed:
    ```
 
 5. **Test all affected applications**
+
    ```bash
    # Run test suite
    pytest tests/
@@ -408,6 +415,7 @@ if __name__ == "__main__":
 ### Prevention Checklist
 
 After rotation, verify:
+
 - [ ] Old keys are completely revoked
 - [ ] New keys work in all environments
 - [ ] No hardcoded old keys remain in code
@@ -423,6 +431,7 @@ After rotation, verify:
 ### Cloud Secret Management
 
 **AWS Secrets Manager:**
+
 ```python
 import boto3
 import json
@@ -444,6 +453,7 @@ ANTHROPIC_API_KEY = secrets.get("anthropic_api_key")
 ```
 
 **Google Cloud Secret Manager:**
+
 ```python
 from google.cloud import secretmanager
 
@@ -504,6 +514,7 @@ config = Config()
 ### Detecting Secret Exposure
 
 **Using git-secrets:**
+
 ```bash
 # Install
 brew install git-secrets
@@ -517,6 +528,7 @@ git secrets --scan
 ```
 
 **Using detect-secrets:**
+
 ```bash
 # Install
 pip install detect-secrets
@@ -529,13 +541,14 @@ detect-secrets audit .secrets.baseline
 ```
 
 **Pre-commit hook (.pre-commit-config.yaml):**
+
 ```yaml
 repos:
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
     hooks:
       - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
+        args: ["--baseline", ".secrets.baseline"]
 ```
 
 ---
@@ -558,4 +571,4 @@ repos:
 
 ---
 
-*Last updated: 2025-10-19*
+_Last updated: 2025-10-19_

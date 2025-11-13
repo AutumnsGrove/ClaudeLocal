@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,13 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Settings, DollarSign, Info, Palette } from 'lucide-react';
-import { PricingPanel } from './PricingPanel';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Settings, DollarSign, Info, Palette } from "lucide-react";
+import { PricingPanel } from "./PricingPanel";
+import { Separator } from "@/components/ui/separator";
 
-type TabType = 'pricing' | 'general' | 'appearance';
+type TabType = "pricing" | "general" | "appearance";
 
 interface SettingsDialogProps {
   children?: React.ReactNode;
@@ -22,8 +22,12 @@ interface SettingsDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function SettingsDialog({ children, open, onOpenChange }: SettingsDialogProps) {
-  const [activeTab, setActiveTab] = useState<TabType>('pricing');
+export function SettingsDialog({
+  children,
+  open,
+  onOpenChange,
+}: SettingsDialogProps) {
+  const [activeTab, setActiveTab] = useState<TabType>("pricing");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,25 +47,25 @@ export function SettingsDialog({ children, open, onOpenChange }: SettingsDialogP
           {/* Sidebar Tabs */}
           <div className="w-48 space-y-1 flex-shrink-0">
             <Button
-              variant={activeTab === 'pricing' ? 'secondary' : 'ghost'}
+              variant={activeTab === "pricing" ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveTab('pricing')}
+              onClick={() => setActiveTab("pricing")}
             >
               <DollarSign className="h-4 w-4 mr-2" />
               Pricing
             </Button>
             <Button
-              variant={activeTab === 'general' ? 'secondary' : 'ghost'}
+              variant={activeTab === "general" ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveTab('general')}
+              onClick={() => setActiveTab("general")}
             >
               <Info className="h-4 w-4 mr-2" />
               General
             </Button>
             <Button
-              variant={activeTab === 'appearance' ? 'secondary' : 'ghost'}
+              variant={activeTab === "appearance" ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveTab('appearance')}
+              onClick={() => setActiveTab("appearance")}
             >
               <Palette className="h-4 w-4 mr-2" />
               Appearance
@@ -72,9 +76,9 @@ export function SettingsDialog({ children, open, onOpenChange }: SettingsDialogP
 
           {/* Content Area */}
           <div className="flex-1 overflow-y-auto pr-2">
-            {activeTab === 'pricing' && <PricingPanel />}
+            {activeTab === "pricing" && <PricingPanel />}
 
-            {activeTab === 'general' && (
+            {activeTab === "general" && (
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-medium mb-2">General Settings</h3>
@@ -86,21 +90,27 @@ export function SettingsDialog({ children, open, onOpenChange }: SettingsDialogP
                 <div className="space-y-4">
                   <div>
                     <h4 className="text-sm font-medium mb-1">Version</h4>
-                    <p className="text-sm text-muted-foreground">ClaudeLocal v0.1.0</p>
+                    <p className="text-sm text-muted-foreground">
+                      ClaudeLocal v0.1.0
+                    </p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium mb-1">Database</h4>
-                    <p className="text-sm text-muted-foreground">SQLite (local)</p>
+                    <p className="text-sm text-muted-foreground">
+                      SQLite (local)
+                    </p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium mb-1">API Provider</h4>
-                    <p className="text-sm text-muted-foreground">Anthropic Claude API</p>
+                    <p className="text-sm text-muted-foreground">
+                      Anthropic Claude API
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {activeTab === 'appearance' && (
+            {activeTab === "appearance" && (
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-medium mb-2">Appearance</h3>
@@ -113,7 +123,8 @@ export function SettingsDialog({ children, open, onOpenChange }: SettingsDialogP
                   <div>
                     <h4 className="text-sm font-medium mb-2">Theme</h4>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Use the theme toggle in the sidebar to switch between light and dark modes
+                      Use the theme toggle in the sidebar to switch between
+                      light and dark modes
                     </p>
                   </div>
                   <div>

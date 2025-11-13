@@ -21,6 +21,7 @@
 ### 2. Extended Thinking - Full Implementation ✅ COMPLETED!
 
 #### Backend (✅ COMPLETED)
+
 - [x] Add thinking toggle button to MessageInput (Brain icon with purple highlight)
 - [x] Pass thinkingEnabled to chat API
 - [x] Configure extended thinking with Anthropic API (10k token budget)
@@ -32,6 +33,7 @@
 - [x] Database schema updated with thinkingDuration and thinkingTokens
 
 #### Frontend Display (✅ WORKING!)
+
 - [x] Thinking content displays in collapsible purple ThinkingSection
 - [x] SSE event handling for "thinking" and "thinking_done" events
 - [x] ThinkingSection auto-collapses after 1 second when content starts
@@ -39,6 +41,7 @@
 - [x] Thinking metrics display (duration, estimated tokens)
 
 #### Known Issues / Notes:
+
 - [ ] **Thinking token count is estimate only** - Anthropic includes thinking tokens in `output_tokens`, not separate
 - [ ] **Consider removing thinking token estimate** - redundant since included in output_tokens
 - [ ] Debug logs still active - remove after final testing
@@ -302,6 +305,7 @@ Features needed:
 **Feature**: Add retry button to regenerate assistant responses from a specific point in the conversation.
 
 **Requirements**:
+
 - [ ] Add "Regenerate" button below each assistant message
 - [ ] When clicked, regenerates response from that point forward
 - [ ] Discards all messages after the clicked message
@@ -310,12 +314,14 @@ Features needed:
 - [ ] Works for both successful and failed messages
 
 **Use Cases**:
+
 - User wants a different response to the same question
 - Response was cut off or incomplete
 - User wants to try again with thinking enabled/disabled
 - Original response had an error
 
 **UI/UX**:
+
 - Small button below message (similar to MessageStats)
 - Icon: RefreshCw from lucide-react
 - Text: "Regenerate response"

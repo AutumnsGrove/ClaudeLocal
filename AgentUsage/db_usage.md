@@ -5,6 +5,7 @@
 **MANDATORY** database architecture for all projects using databases in this suite. This guide establishes a standardized approach to database management using SQLite with complete SQL isolation.
 
 **Core Principles:**
+
 - **SQLite Only**: Use SQLite as the default database for all projects
 - **Single Interface Module**: All database operations through `database.py`
 - **Function-Based Abstraction**: Simple, reusable function interface
@@ -12,6 +13,7 @@
 - **Programmatic Access**: Rest of codebase uses simple function calls
 
 **When to Use This Guide:**
+
 - **MANDATORY**: Every project that requires database functionality
 - Before implementing any database features
 - When designing data persistence layer
@@ -836,5 +838,5 @@ def get_db_connection():
 
 ---
 
-*Last updated: 2025-11-02*
-*Database Standard: SQLite with database.py interface*
+_Last updated: 2025-11-02_
+_Database Standard: SQLite with database.py interface_

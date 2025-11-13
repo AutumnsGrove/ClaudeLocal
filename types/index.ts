@@ -65,6 +65,7 @@ export interface ChatMessage {
   totalTokens?: number;
   inputTokens?: number;
   outputTokens?: number;
+  responseTokens?: number;
   cachedTokens?: number;
   timeToFirstToken?: number;
   stopReason?: string;

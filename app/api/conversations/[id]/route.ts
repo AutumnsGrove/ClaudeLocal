@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET a specific conversation with messages
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
@@ -15,7 +15,7 @@ export async function GET(
       include: {
         messages: {
           orderBy: {
-            createdAt: 'asc',
+            createdAt: "asc",
           },
           include: {
             attachments: true,
@@ -33,17 +33,17 @@ export async function GET(
 
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Conversation not found' },
-        { status: 404 }
+        { error: "Conversation not found" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json(conversation);
   } catch (error: any) {
-    console.error('Error fetching conversation:', error);
+    console.error("Error fetching conversation:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch conversation' },
-      { status: 500 }
+      { error: error.message || "Failed to fetch conversation" },
+      { status: 500 },
     );
   }
 }
@@ -51,7 +51,7 @@ export async function GET(
 // PATCH update a conversation
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
@@ -68,10 +68,10 @@ export async function PATCH(
 
     return NextResponse.json(conversation);
   } catch (error: any) {
-    console.error('Error updating conversation:', error);
+    console.error("Error updating conversation:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update conversation' },
-      { status: 500 }
+      { error: error.message || "Failed to update conversation" },
+      { status: 500 },
     );
   }
 }
@@ -79,7 +79,7 @@ export async function PATCH(
 // DELETE a conversation
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
@@ -89,10 +89,10 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting conversation:', error);
+    console.error("Error deleting conversation:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete conversation' },
-      { status: 500 }
+      { error: error.message || "Failed to delete conversation" },
+      { status: 500 },
     );
   }
 }

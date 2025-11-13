@@ -150,6 +150,7 @@ Before writing ANY code, spawn these subagents:
 Every subagent MUST commit its work before producing the completion artifact.
 
 **Process Flow:**
+
 1. Complete your assigned task
 2. Review all files created/modified (`git diff`)
 3. Read `GIT_COMMIT_STYLE_GUIDE.md`
@@ -163,21 +164,21 @@ Every subagent MUST commit its work before producing the completion artifact.
 
 ### Commit Type Mapping by Subagent
 
-| Subagent Type | Commit Type | Example Message |
-|---------------|-------------|-----------------|
-| **Research Phase** |
-| Requirements/Technical/Architecture/Edge Cases | `docs` | `docs: Add requirements analysis and success criteria` |
-| **Development Phase** |
-| Core Infrastructure | `feat` or `chore` | `feat: Set up project structure with configuration` |
-| Component Development | `feat` | `feat: Implement JWT authentication module` |
-| Bug Fix | `fix` | `fix: Correct token expiration validation logic` |
-| Integration | `feat` or `refactor` | `feat: Integrate auth module with API endpoints` |
-| Code Refactoring | `refactor` | `refactor: Extract validation logic into helpers` |
-| Documentation | `docs` | `docs: Add API documentation with usage examples` |
-| **Testing Phase** |
-| Test Planning | `docs` | `docs: Add comprehensive test plan for auth system` |
-| Unit/Integration Tests | `test` | `test: Add unit tests for authentication module` |
-| Test Execution | `docs` or `chore` | `docs: Add test execution results` |
+| Subagent Type                                  | Commit Type          | Example Message                                        |
+| ---------------------------------------------- | -------------------- | ------------------------------------------------------ |
+| **Research Phase**                             |
+| Requirements/Technical/Architecture/Edge Cases | `docs`               | `docs: Add requirements analysis and success criteria` |
+| **Development Phase**                          |
+| Core Infrastructure                            | `feat` or `chore`    | `feat: Set up project structure with configuration`    |
+| Component Development                          | `feat`               | `feat: Implement JWT authentication module`            |
+| Bug Fix                                        | `fix`                | `fix: Correct token expiration validation logic`       |
+| Integration                                    | `feat` or `refactor` | `feat: Integrate auth module with API endpoints`       |
+| Code Refactoring                               | `refactor`           | `refactor: Extract validation logic into helpers`      |
+| Documentation                                  | `docs`               | `docs: Add API documentation with usage examples`      |
+| **Testing Phase**                              |
+| Test Planning                                  | `docs`               | `docs: Add comprehensive test plan for auth system`    |
+| Unit/Integration Tests                         | `test`               | `test: Add unit tests for authentication module`       |
+| Test Execution                                 | `docs` or `chore`    | `docs: Add test execution results`                     |
 
 ### Commit Message Template
 
@@ -249,6 +250,7 @@ Implementation Details (+ commit hashes)
 ### Token Optimization
 
 Each subagent should receive:
+
 - Core requirements (< 500 tokens)
 - Phase-specific context (< 2000 tokens)
 - Relevant previous outputs (< 1000 tokens)
@@ -264,6 +266,7 @@ Each subagent should receive:
 ### Subagent Output Format
 
 Every subagent MUST produce a completion artifact with:
+
 - **Git Commit Information**: Hash (full), type, message, files changed
 - **Summary**: 2-3 sentences of accomplishments
 - **Key Outputs**: Created files, decisions, critical findings
@@ -318,6 +321,7 @@ After coordinator analysis, spawn new implementation subagent which WILL commit.
 ## Best Practices
 
 ### DO
+
 - Complete research before coding; use subagents for components > 100 lines
 - Provide structured handoff artifacts; validate phase completion
 - Read `GIT_COMMIT_STYLE_GUIDE.md`; commit before completion artifact
@@ -325,6 +329,7 @@ After coordinator analysis, spawn new implementation subagent which WILL commit.
 - Pass only essential context; reference commits not code; keep context < 4000 tokens
 
 ### DON'T
+
 - Mix research and implementation; skip research phase; test before development complete
 - Commit with "WIP"/"temp" or vague messages; commit failed/incomplete work
 - Use past tense; exceed 50 chars in subject; commit during error recovery
@@ -335,6 +340,7 @@ After coordinator analysis, spawn new implementation subagent which WILL commit.
 ## Quick Reference Card
 
 ### Subagent Workflow
+
 ```
 1. Read GIT_COMMIT_STYLE_GUIDE.md
 2. Receive context (≤4000 tokens)
@@ -349,6 +355,7 @@ After coordinator analysis, spawn new implementation subagent which WILL commit.
 ```
 
 ### Phase → Commit Type Mapping
+
 - **Research Phase** → `docs:`
 - **Development Phase** → `feat:`, `fix:`, `refactor:`
 - **Testing Phase** → `test:`, `docs:`
@@ -357,6 +364,7 @@ After coordinator analysis, spawn new implementation subagent which WILL commit.
 - **Styling** → `style:`
 
 ### Commit Message Format
+
 ```
 <type>: <description (≤50 chars)>
 
@@ -367,6 +375,7 @@ Phase: [Phase]
 ```
 
 ### Emergency Commands
+
 ```bash
 # Revert last commit
 git revert HEAD
@@ -406,4 +415,4 @@ The effectiveness of subagents lies in:
 
 ---
 
-*This guide ensures that subagent-driven development produces not only high-quality code, but also a high-quality, navigable git history that serves as living documentation of the development process.*
+_This guide ensures that subagent-driven development produces not only high-quality code, but also a high-quality, navigable git history that serves as living documentation of the development process._

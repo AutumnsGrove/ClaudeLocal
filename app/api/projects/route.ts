@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // GET all projects
 export async function GET(request: NextRequest) {
@@ -16,16 +16,16 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: {
-        updatedAt: 'desc',
+        updatedAt: "desc",
       },
     });
 
     return NextResponse.json(projects);
   } catch (error: any) {
-    console.error('Error fetching projects:', error);
+    console.error("Error fetching projects:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch projects' },
-      { status: 500 }
+      { error: error.message || "Failed to fetch projects" },
+      { status: 500 },
     );
   }
 }
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
 
     if (!name) {
       return NextResponse.json(
-        { error: 'Project name is required' },
-        { status: 400 }
+        { error: "Project name is required" },
+        { status: 400 },
       );
     }
 
@@ -53,10 +53,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(project, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating project:', error);
+    console.error("Error creating project:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create project' },
-      { status: 500 }
+      { error: error.message || "Failed to create project" },
+      { status: 500 },
     );
   }
 }

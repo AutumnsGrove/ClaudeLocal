@@ -19,6 +19,7 @@ chmod +x .git/hooks/*
 ## "Command not found" Errors
 
 **Black/Ruff not found (Python):**
+
 ```bash
 pip install black ruff
 # or
@@ -26,11 +27,13 @@ uv add --dev black ruff
 ```
 
 **Prettier/ESLint not found (JavaScript):**
+
 ```bash
 npm install -D prettier eslint
 ```
 
 **gofmt not found (Go):**
+
 ```bash
 # gofmt comes with Go, install Go first
 brew install go  # macOS
@@ -41,6 +44,7 @@ brew install go  # macOS
 ## Commit Blocked - Format Issues
 
 **Python:**
+
 ```bash
 # Auto-fix formatting
 black .
@@ -51,6 +55,7 @@ git commit -m "your message"
 ```
 
 **JavaScript:**
+
 ```bash
 # Auto-fix formatting
 npx prettier --write .
@@ -61,6 +66,7 @@ git commit -m "your message"
 ```
 
 **Go:**
+
 ```bash
 # Auto-fix formatting
 gofmt -w .
@@ -122,6 +128,7 @@ git push --no-verify
 ## Hook Runs Too Slowly
 
 **pre-push taking too long:**
+
 ```bash
 # Run only fast tests
 # Edit .git/hooks/pre-push and add:

@@ -10,11 +10,11 @@ For detailed directory structure patterns, see [project_structure.md](project_st
 
 ### Setup Methods
 
-| Method | Best For | Time Required |
-|--------|----------|---------------|
-| **Automated Script** | Quick starts, standard projects | 2-3 minutes |
-| **Claude One-Liner** | Interactive setup with AI guidance | 3-5 minutes |
-| **Manual Setup** | Custom configurations, learning | 10-15 minutes |
+| Method               | Best For                           | Time Required |
+| -------------------- | ---------------------------------- | ------------- |
+| **Automated Script** | Quick starts, standard projects    | 2-3 minutes   |
+| **Claude One-Liner** | Interactive setup with AI guidance | 3-5 minutes   |
+| **Manual Setup**     | Custom configurations, learning    | 10-15 minutes |
 
 ## Automated Setup (Recommended)
 
@@ -30,6 +30,7 @@ bash setup_new_project.sh
 ```
 
 **The script handles:**
+
 - Removes old git history
 - Updates AGENT.md with project details
 - Creates fresh TODOS.md
@@ -66,9 +67,11 @@ nano AGENT.md
 
 ```markdown
 ## Project Purpose
+
 A REST API for managing inventory across multiple warehouses with real-time stock updates.
 
 ## Tech Stack
+
 - Language: Python 3.11+
 - Framework: FastAPI
 - Key Libraries: SQLAlchemy, Pydantic, Redis
@@ -76,6 +79,7 @@ A REST API for managing inventory across multiple warehouses with real-time stoc
 - Database: PostgreSQL 14+
 
 ## Architecture Notes
+
 - Microservices architecture with event-driven updates
 - Redis for caching frequently accessed inventory
 - PostgreSQL for persistent storage
@@ -459,6 +463,7 @@ echo 'console.log("Hello, World!");' > src/index.js
 ### 4. Review Relevant Guides
 
 Based on your tech stack, review:
+
 - [uv_usage.md](uv_usage.md) - Python/UV
 - [testing_strategies.md](testing_strategies.md) - Testing
 - [git_guide.md](git_guide.md) - Git practices and commit standards
@@ -521,6 +526,7 @@ cargo clean
 ## Summary
 
 **Key Takeaways:**
+
 - Use automated setup script for standard projects
 - Customize AGENT.md with project-specific details
 - Set up secrets management before writing code

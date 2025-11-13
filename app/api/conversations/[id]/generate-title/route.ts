@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { generateConversationTitle } from '@/lib/generate-title';
+import { NextRequest, NextResponse } from "next/server";
+import { generateConversationTitle } from "@/lib/generate-title";
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -15,8 +15,8 @@ export async function POST(
 
     if (!title) {
       return NextResponse.json(
-        { error: 'Failed to generate title' },
-        { status: 500 }
+        { error: "Failed to generate title" },
+        { status: 500 },
       );
     }
 
@@ -25,10 +25,10 @@ export async function POST(
       generated: true,
     });
   } catch (error: any) {
-    console.error('Title generation error:', error);
+    console.error("Title generation error:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to generate title' },
-      { status: 500 }
+      { error: error.message || "Failed to generate title" },
+      { status: 500 },
     );
   }
 }

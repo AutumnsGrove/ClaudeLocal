@@ -8,9 +8,14 @@ import { Loader2 } from "lucide-react";
 interface MessageListProps {
   messages: ChatMessage[];
   isLoading?: boolean;
+  onRegenerate?: (messageId: string) => void;
 }
 
-export function MessageList({ messages, isLoading = false }: MessageListProps) {
+export function MessageList({
+  messages,
+  isLoading = false,
+  onRegenerate,
+}: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +48,11 @@ export function MessageList({ messages, isLoading = false }: MessageListProps) {
           content={message.content}
           thinkingContent={message.thinkingContent}
           error={message.error}
+          onRegenerate={
+            message.role === "assistant" && !message.error
+              ? () => onRegenerate?.(message.id)
+              : undefined
+          }
           // Statistics props
           tokensPerSecond={message.tokensPerSecond}
           totalTokens={message.totalTokens}

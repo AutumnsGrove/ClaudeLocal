@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { getAllModelPricing, getModelsByGeneration } from '@/lib/pricing';
-import { getOpenRouterApiKey } from '@/lib/secrets';
+import { NextResponse } from "next/server";
+import { getAllModelPricing, getModelsByGeneration } from "@/lib/pricing";
+import { getOpenRouterApiKey } from "@/lib/secrets";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 3600; // Cache for 1 hour
 
 /**
@@ -16,8 +16,8 @@ export const revalidate = 3600; // Cache for 1 hour
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const grouped = searchParams.get('grouped') === 'true';
-    const useLive = searchParams.get('live') === 'true';
+    const grouped = searchParams.get("grouped") === "true";
+    const useLive = searchParams.get("live") === "true";
 
     // Fetch from OpenRouter if requested
     if (useLive) {
@@ -29,14 +29,17 @@ export async function GET(request: Request) {
             data: openRouterData,
             metadata: {
               lastUpdated: new Date().toISOString(),
-              source: 'OpenRouter API (Live)',
-              currency: 'USD',
-              unit: 'per million tokens',
+              source: "OpenRouter API (Live)",
+              currency: "USD",
+              unit: "per million tokens",
             },
           });
         }
       } catch (error) {
-        console.warn('OpenRouter fetch failed, falling back to local pricing:', error);
+        console.warn(
+          "OpenRouter fetch failed, falling back to local pricing:",
+          error,
+        );
       }
     }
 
@@ -47,10 +50,10 @@ export async function GET(request: Request) {
         success: true,
         data: pricingByGeneration,
         metadata: {
-          lastUpdated: '2025-01-30',
-          source: 'Local Pricing Database',
-          currency: 'USD',
-          unit: 'per million tokens',
+          lastUpdated: "2025-01-30",
+          source: "Local Pricing Database",
+          currency: "USD",
+          unit: "per million tokens",
         },
       });
     }
@@ -60,20 +63,20 @@ export async function GET(request: Request) {
       success: true,
       data: allPricing,
       metadata: {
-        lastUpdated: '2025-01-30',
-        source: 'Local Pricing Database',
-        currency: 'USD',
-        unit: 'per million tokens',
+        lastUpdated: "2025-01-30",
+        source: "Local Pricing Database",
+        currency: "USD",
+        unit: "per million tokens",
       },
     });
   } catch (error: any) {
-    console.error('Error fetching pricing:', error);
+    console.error("Error fetching pricing:", error);
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to fetch pricing',
+        error: error.message || "Failed to fetch pricing",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -87,15 +90,15 @@ async function fetchOpenRouterPricing() {
 
   // If no API key, return null to use local pricing
   if (!apiKey) {
-    console.log('No OpenRouter API key found, using local pricing');
+    console.log("No OpenRouter API key found, using local pricing");
     return null;
   }
 
-  const response = await fetch('https://openrouter.ai/api/v1/models', {
+  const response = await fetch("https://openrouter.ai/api/v1/models", {
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://localhost:3000',
-      'X-Title': 'ClaudeLocal',
+      Authorization: `Bearer ${apiKey}`,
+      "HTTP-Referer": "https://localhost:3000",
+      "X-Title": "ClaudeLocal",
     },
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
@@ -108,14 +111,18 @@ async function fetchOpenRouterPricing() {
 
   // Filter and map Claude models
   const claudeModels = data.data
-    .filter((model: any) => model.id.includes('anthropic/claude'))
+    .filter((model: any) => model.id.includes("anthropic/claude"))
     .map((model: any) => {
       // Extract generation from model ID
-      let generation: 'Claude 4' | 'Claude 3.5' | 'Claude 3' = 'Claude 3';
-      if (model.id.includes('claude-4') || model.id.includes('claude-sonnet-4') || model.id.includes('claude-opus-4')) {
-        generation = 'Claude 4';
-      } else if (model.id.includes('3.5') || model.id.includes('3-5')) {
-        generation = 'Claude 3.5';
+      let generation: "Claude 4" | "Claude 3.5" | "Claude 3" = "Claude 3";
+      if (
+        model.id.includes("claude-4") ||
+        model.id.includes("claude-sonnet-4") ||
+        model.id.includes("claude-opus-4")
+      ) {
+        generation = "Claude 4";
+      } else if (model.id.includes("3.5") || model.id.includes("3-5")) {
+        generation = "Claude 3.5";
       }
 
       // OpenRouter prices are per token, convert to per million
@@ -124,7 +131,7 @@ async function fetchOpenRouterPricing() {
       const cachedInputPrice = inputPrice * 0.1; // 90% off
 
       return {
-        id: model.id.replace('anthropic/', ''),
+        id: model.id.replace("anthropic/", ""),
         name: model.name,
         inputPrice,
         outputPrice,
@@ -137,9 +144,9 @@ async function fetchOpenRouterPricing() {
 
   // Group by generation
   const grouped: Record<string, any[]> = {
-    'Claude 4': [],
-    'Claude 3.5': [],
-    'Claude 3': [],
+    "Claude 4": [],
+    "Claude 3.5": [],
+    "Claude 3": [],
   };
 
   claudeModels.forEach((model: any) => {

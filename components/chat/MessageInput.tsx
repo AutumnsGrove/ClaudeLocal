@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState, KeyboardEvent } from "react";
-import { Send, Paperclip, Brain } from "lucide-react";
+import { Send, Paperclip, Brain, StopCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ interface MessageInputProps {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
+  onStop?: () => void;
   disabled?: boolean;
   placeholder?: string;
   thinkingEnabled?: boolean;
@@ -20,6 +21,7 @@ export function MessageInput({
   value,
   onChange,
   onSubmit,
+  onStop,
   disabled = false,
   placeholder = "Type your message...",
   thinkingEnabled = false,
@@ -115,14 +117,25 @@ export function MessageInput({
           </div>
         </div>
 
-        <Button
-          onClick={handleSubmit}
-          disabled={disabled || !value.trim()}
-          size="icon"
-          className="flex-shrink-0"
-        >
-          <Send className="h-5 w-5" />
-        </Button>
+        {disabled ? (
+          <Button
+            onClick={onStop}
+            size="icon"
+            className="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white"
+            title="Stop streaming (ESC)"
+          >
+            <StopCircle className="h-5 w-5" />
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSubmit}
+            disabled={!value.trim()}
+            size="icon"
+            className="flex-shrink-0"
+          >
+            <Send className="h-5 w-5" />
+          </Button>
+        )}
       </div>
       <p className="text-xs text-muted-foreground mt-2 ml-14">
         Press Enter to send, Shift+Enter for new line

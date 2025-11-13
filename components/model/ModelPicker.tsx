@@ -63,11 +63,17 @@ export function ModelPicker({
 
   return (
     <div className={className}>
-      <Select value={selectedModel} onValueChange={onModelChange} disabled={loading || !!error}>
+      <Select
+        value={selectedModel}
+        onValueChange={onModelChange}
+        disabled={loading || !!error}
+      >
         <SelectTrigger className="w-full">
           <div className="flex items-center gap-2">
             <Cpu className="h-4 w-4 text-muted-foreground" />
-            <SelectValue placeholder={loading ? "Loading models..." : "Select a model"} />
+            <SelectValue
+              placeholder={loading ? "Loading models..." : "Select a model"}
+            />
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -103,16 +109,23 @@ export function ModelPicker({
         </SelectContent>
       </Select>
 
-      {selectedModelData && (selectedModelData.context_window || selectedModelData.max_tokens) && (
-        <div className="mt-2 text-xs text-muted-foreground space-y-1">
-          {selectedModelData.context_window && (
-            <div>Context Window: {selectedModelData.context_window.toLocaleString()} tokens</div>
-          )}
-          {selectedModelData.max_tokens && (
-            <div>Max Output: {selectedModelData.max_tokens.toLocaleString()} tokens</div>
-          )}
-        </div>
-      )}
+      {selectedModelData &&
+        (selectedModelData.context_window || selectedModelData.max_tokens) && (
+          <div className="mt-2 text-xs text-muted-foreground space-y-1">
+            {selectedModelData.context_window && (
+              <div>
+                Context Window:{" "}
+                {selectedModelData.context_window.toLocaleString()} tokens
+              </div>
+            )}
+            {selectedModelData.max_tokens && (
+              <div>
+                Max Output: {selectedModelData.max_tokens.toLocaleString()}{" "}
+                tokens
+              </div>
+            )}
+          </div>
+        )}
     </div>
   );
 }

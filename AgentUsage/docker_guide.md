@@ -3,6 +3,7 @@
 ## Overview
 
 ### When to Use Docker
+
 - Ensuring consistent environments across development, staging, and production
 - Isolating application dependencies from the host system
 - Simplifying deployment and scaling
@@ -10,6 +11,7 @@
 - Creating reproducible builds
 
 ### Benefits
+
 - **Consistency**: Same environment everywhere
 - **Isolation**: No dependency conflicts
 - **Portability**: Run anywhere Docker runs
@@ -106,6 +108,7 @@ docs/
 ## Multi-Stage Builds
 
 ### Why Use Multi-Stage Builds?
+
 - **Smaller final images**: Only include runtime dependencies (50-70% size reduction)
 - **Better security**: Fewer tools in production image
 - **Faster deployments**: Less data to transfer
@@ -156,6 +159,7 @@ CMD ["python", "main.py"]
 ## Docker Compose
 
 ### When to Use Docker Compose
+
 - Running multiple containers together (app + database + cache)
 - Development environments with multiple services
 - Simplified container orchestration
@@ -164,7 +168,7 @@ CMD ["python", "main.py"]
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -176,7 +180,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./app:/app  # Development: mount code for live reload
+      - ./app:/app # Development: mount code for live reload
 
   db:
     image: postgres:15-alpine
@@ -185,12 +189,12 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=myapp
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Persist database
+      - postgres_data:/var/lib/postgresql/data # Persist database
     ports:
       - "5432:5432"
 
 volumes:
-  postgres_data:  # Named volume for data persistence
+  postgres_data: # Named volume for data persistence
 ```
 
 ### Common Commands
@@ -218,6 +222,7 @@ docker-compose down -v
 ## Best Practices
 
 ### Layer Caching
+
 Order Dockerfile commands from least to most frequently changing:
 
 ```dockerfile
@@ -232,6 +237,7 @@ RUN uv sync --frozen --no-dev
 ```
 
 ### Security Essentials
+
 - **Use official base images** (e.g., `python:3.11-slim`)
 - **Run as non-root user** (see multi-stage example above)
 - **Don't include secrets in images** (use runtime env vars)
@@ -239,6 +245,7 @@ RUN uv sync --frozen --no-dev
 - **Multi-stage builds** to minimize attack surface
 
 ### Image Size Optimization
+
 ```dockerfile
 # Use slim base images
 FROM python:3.11-slim  # Not python:3.11 (400MB smaller)
@@ -257,16 +264,19 @@ RUN apt-get update && \
 ### Volume Types
 
 **Named Volumes** (recommended for data persistence):
+
 ```bash
 docker run -v postgres_data:/var/lib/postgresql/data postgres:15-alpine
 ```
 
 **Bind Mounts** (for development):
+
 ```bash
 docker run -v $(pwd)/app:/app my-app:dev  # Live code reload
 ```
 
 ### Volume Management
+
 ```bash
 # List volumes
 docker volume ls
@@ -308,6 +318,7 @@ services:
 ### Common Issues and Solutions
 
 **Container exits immediately**
+
 ```bash
 # Check logs for errors
 docker logs container_name
@@ -317,6 +328,7 @@ docker run -it app:v1 bash
 ```
 
 **Can't connect to container**
+
 ```bash
 # Verify port mapping
 docker ps
@@ -326,6 +338,7 @@ docker inspect container_name | grep -A 10 ExposedPorts
 ```
 
 **Dependencies not found**
+
 ```bash
 # Exec into container
 docker exec -it container_name bash
@@ -335,6 +348,7 @@ uv pip list
 ```
 
 **Out of disk space**
+
 ```bash
 # Check disk usage
 docker system df
@@ -365,25 +379,26 @@ docker cp ./config.json container_name:/app/
 
 ## Common Commands Reference
 
-| Command | Purpose |
-|---------|---------|
-| `docker build -t app:v1 .` | Build image |
-| `docker run -d -p 8000:8000 app:v1` | Run container (detached) |
-| `docker ps -a` | List all containers |
-| `docker logs -f container_name` | View container logs |
-| `docker exec -it app bash` | Execute command in container |
-| `docker stop container_name` | Stop running container |
-| `docker rm container_name` | Remove container |
-| `docker rmi app:v1` | Remove image |
-| `docker system prune -a` | Clean up unused resources |
-| `docker-compose up -d` | Start all services |
-| `docker-compose down -v` | Stop services and remove volumes |
+| Command                             | Purpose                          |
+| ----------------------------------- | -------------------------------- |
+| `docker build -t app:v1 .`          | Build image                      |
+| `docker run -d -p 8000:8000 app:v1` | Run container (detached)         |
+| `docker ps -a`                      | List all containers              |
+| `docker logs -f container_name`     | View container logs              |
+| `docker exec -it app bash`          | Execute command in container     |
+| `docker stop container_name`        | Stop running container           |
+| `docker rm container_name`          | Remove container                 |
+| `docker rmi app:v1`                 | Remove image                     |
+| `docker system prune -a`            | Clean up unused resources        |
+| `docker-compose up -d`              | Start all services               |
+| `docker-compose down -v`            | Stop services and remove volumes |
 
 ## Related Guides
+
 - **UV Usage**: See `uv_usage.md` for detailed UV package management and Docker integration
 - **Secrets Management**: See `secrets_management.md` for secure API key handling
 - **CI/CD**: See `ci_cd_patterns.md` for Docker in deployment pipelines
 
 ---
 
-*Last updated: 2025-10-19*
+_Last updated: 2025-10-19_

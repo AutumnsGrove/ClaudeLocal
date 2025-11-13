@@ -5,6 +5,7 @@
 Continuous Integration and Continuous Deployment (CI/CD) automates testing, quality checks, and deployment processes. Every push to your repository can trigger automated tests, linting, and builds, catching issues before they reach production.
 
 **When to use CI/CD:**
+
 - Multi-developer projects requiring consistent quality gates
 - Open source projects accepting external contributions
 - Projects with comprehensive test suites worth automating
@@ -12,6 +13,7 @@ Continuous Integration and Continuous Deployment (CI/CD) automates testing, qual
 - Any codebase where manual testing becomes tedious
 
 **When to skip CI/CD:**
+
 - Quick prototypes or proof-of-concepts
 - Solo projects with simple test requirements
 - Learning projects where setup overhead exceeds benefit
@@ -40,6 +42,7 @@ jobs:
 GitHub Actions are automation workflows that run in response to repository events. They execute on GitHub's servers, providing free CI/CD for public repositories.
 
 **Where workflows live:**
+
 ```
 your-project/
   .github/
@@ -50,6 +53,7 @@ your-project/
 ```
 
 **Common triggers:**
+
 - `on: push` - Every commit
 - `on: pull_request` - PRs only
 - `on: [push, pull_request]` - Both
@@ -104,6 +108,7 @@ jobs:
 ```
 
 **Explanation:**
+
 - `runs-on: ubuntu-latest` - Uses Ubuntu runner
 - `actions/checkout@v4` - Clones your repository
 - UV installation via official install script
@@ -131,12 +136,14 @@ jobs:
 ```
 
 **Key options:**
+
 - `--cov=src` - Measure coverage for src directory
 - `--cov-report=xml` - Generate XML report for Codecov
 - `--junitxml` - Create test results file
 - `--verbose` or `-v` - Detailed output
 
 **Test organization:**
+
 ```
 tests/
   test_unit.py       # Fast unit tests
@@ -144,6 +151,7 @@ tests/
 ```
 
 Run different test suites:
+
 ```yaml
 - name: Unit tests
   run: uv run pytest tests/test_unit.py -v
@@ -182,6 +190,7 @@ quality:
 ```
 
 **Options explained:**
+
 - `--output-format=github` - Annotates PR with inline errors
 - `--check --diff` - Shows what Black would change without modifying
 - Separate job ensures quality checks run independently
@@ -227,6 +236,7 @@ jobs:
 ```
 
 **When to automate:**
+
 - Package releases to PyPI
 - Docker image updates on new releases
 - Documentation deployment
@@ -245,12 +255,14 @@ jobs:
 ```
 
 **Setting up secrets:**
+
 1. Repository Settings > Secrets and variables > Actions
 2. Click "New repository secret"
 3. Add name (e.g., `ANTHROPIC_API_KEY`) and value
 4. Reference in workflows as `${{ secrets.SECRET_NAME }}`
 
 **Best practices:**
+
 - Never commit secrets to repository
 - Use separate secrets for different environments
 - Rotate secrets regularly
@@ -276,6 +288,7 @@ jobs:
 ```
 
 **Benefits:**
+
 - 2-5x faster workflow runs
 - Reduced GitHub Actions minutes usage
 - Cache invalidates when `pyproject.toml` changes
@@ -291,7 +304,7 @@ test:
   strategy:
     matrix:
       os: [ubuntu-latest, macos-latest, windows-latest]
-      python-version: ['3.10', '3.11', '3.12']
+      python-version: ["3.10", "3.11", "3.12"]
 
   steps:
     - uses: actions/checkout@v4
@@ -312,6 +325,7 @@ test:
 ```
 
 **Matrix strategy:**
+
 - Creates 9 jobs (3 OS × 3 Python versions)
 - Runs in parallel for speed
 - Ensures cross-platform compatibility
@@ -321,10 +335,10 @@ test:
 strategy:
   matrix:
     os: [ubuntu-latest, macos-latest]
-    python-version: ['3.11', '3.12']
+    python-version: ["3.11", "3.12"]
     exclude:
       - os: macos-latest
-        python-version: '3.11'
+        python-version: "3.11"
 ```
 
 ## Status Badges
@@ -341,22 +355,26 @@ Replace `username/repo` with your GitHub repository path. The badge shows green 
 ## When to Use CI/CD
 
 **Automate first:**
+
 1. Running tests on every push
 2. Code quality checks (linting, formatting)
 3. Security vulnerability scanning
 
 **Automate later:**
+
 1. Deployment to staging/production
 2. Docker image building
 3. Documentation generation
 4. Performance benchmarking
 
 **Personal projects:**
+
 - Start simple with tests + linting
 - Add complexity as project matures
 - Free for public repositories
 
 **Team projects:**
+
 - Essential for code review process
 - Prevents broken code from merging
 - Enforces consistent code quality

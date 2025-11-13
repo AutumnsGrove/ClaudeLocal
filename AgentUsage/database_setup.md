@@ -5,6 +5,7 @@
 This guide focuses on SQLite as the default database choice for most projects. SQLite is a self-contained, serverless database that works perfectly for development, testing, and many production applications.
 
 **Database Options:**
+
 - **SQLite** (Recommended): File-based, zero-configuration, perfect for most projects
 - **PostgreSQL**: For projects requiring advanced features, high concurrency, or multi-user access
 - **MySQL/MariaDB**: Alternative to PostgreSQL with similar capabilities
@@ -37,6 +38,7 @@ conn.close()
 ## When to Use SQLite
 
 ### Perfect For:
+
 - **Single-user applications** (desktop apps, CLI tools, personal projects)
 - **Development and testing** (fast, no setup required)
 - **Small to medium web applications** (< 100k requests/day)
@@ -45,6 +47,7 @@ conn.close()
 - **File-based storage needs** (configuration, caches, local data)
 
 ### Advantages:
+
 - Zero configuration required
 - No separate server process
 - Single file database (easy backup, versioning, deployment)
@@ -55,6 +58,7 @@ conn.close()
 - Works great with version control (small databases)
 
 ### Consider PostgreSQL Instead When:
+
 - Multiple concurrent writers (> 10 simultaneous write operations)
 - Database size > 100 GB
 - Need advanced features (full-text search, JSON operations, array types)
@@ -115,7 +119,6 @@ with get_db_connection() as conn:
     cursor.execute("SELECT * FROM users")
     users = cursor.fetchall()
 ```
-
 
 ## Schema Migration
 
@@ -272,6 +275,7 @@ def backup_database(db_path='app.db', backup_path=None):
 ```
 
 **Command line backups:**
+
 ```bash
 sqlite3 app.db ".backup backup.db"              # Binary backup
 sqlite3 app.db .dump > backup.sql               # SQL dump
@@ -281,6 +285,7 @@ sqlite3 new_app.db < backup.sql                 # Restore
 ## When to Consider PostgreSQL
 
 **Key Differences:**
+
 - **Concurrency**: PostgreSQL handles 100+ concurrent writers; SQLite struggles with 10+
 - **Size**: PostgreSQL scales to terabytes; SQLite optimal under 100 GB
 - **Features**: PostgreSQL offers full-text search, JSON operations, advanced indexing
@@ -288,7 +293,6 @@ sqlite3 new_app.db < backup.sql                 # Restore
 - **Permissions**: PostgreSQL has user-level access control; SQLite uses file permissions
 - **Replication**: PostgreSQL supports replication/clustering; SQLite requires custom solutions
 - **Data Types**: PostgreSQL has arrays, JSONB, geometric types; SQLite has basic types only
-
 
 ## Performance Optimization
 

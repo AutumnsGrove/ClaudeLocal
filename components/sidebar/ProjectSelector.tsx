@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { ProjectData } from '@/types';
+import { useState, useEffect } from "react";
+import { ProjectData } from "@/types";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Folder } from 'lucide-react';
+} from "@/components/ui/select";
+import { Folder } from "lucide-react";
 
 interface ProjectSelectorProps {
   selectedProjectId: string | null;
@@ -30,20 +30,20 @@ export function ProjectSelector({
   const fetchProjects = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/projects');
+      const response = await fetch("/api/projects");
       if (response.ok) {
         const data = await response.json();
         setProjects(data);
       }
     } catch (error) {
-      console.error('Failed to fetch projects:', error);
+      console.error("Failed to fetch projects:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleValueChange = (value: string) => {
-    if (value === 'all') {
+    if (value === "all") {
       onProjectChange(null);
     } else {
       onProjectChange(value);
@@ -53,7 +53,7 @@ export function ProjectSelector({
   return (
     <div className="px-3">
       <Select
-        value={selectedProjectId || 'all'}
+        value={selectedProjectId || "all"}
         onValueChange={handleValueChange}
         disabled={isLoading}
       >

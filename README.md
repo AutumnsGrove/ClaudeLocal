@@ -10,6 +10,7 @@ A fully functional, feature-complete local clone of Claude.ai that runs entirely
 ## ✨ Features
 
 ### Chat & Messaging
+
 - ✅ **Real-time streaming** responses with Server-Sent Events (SSE)
 - ✅ **All Claude 4 models** (Sonnet 4.5, Opus 4.1, Opus 4, Sonnet 4) + Claude 3.5 & 3
 - ✅ **Prompt caching** for 90% cost reduction on repeated context
@@ -19,6 +20,7 @@ A fully functional, feature-complete local clone of Claude.ai that runs entirely
 - ✅ **Auto-scrolling** message list
 
 ### Organization
+
 - ✅ **Projects** with custom instructions and knowledge base
 - ✅ **Conversation management** (create, rename, archive, delete)
 - ✅ **Search & filter** conversations
@@ -26,6 +28,7 @@ A fully functional, feature-complete local clone of Claude.ai that runs entirely
 - ✅ **Project filtering** to organize chats
 
 ### File Handling
+
 - ✅ **PDF viewer** with zoom and page navigation
 - ✅ **Image preview** with zoom and lightbox mode
 - ✅ **Markdown preview** with live rendering
@@ -33,6 +36,7 @@ A fully functional, feature-complete local clone of Claude.ai that runs entirely
 - ✅ **File attachments** (coming soon)
 
 ### UI/UX
+
 - ✅ **Dark/light theme** toggle
 - ✅ **Responsive design** (desktop and mobile)
 - ✅ **Collapsible sidebar** with persistent state
@@ -41,18 +45,18 @@ A fully functional, feature-complete local clone of Claude.ai that runs entirely
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|-----------|
-| **Framework** | Next.js 15 (App Router) |
-| **Language** | TypeScript 5.7 |
-| **Styling** | Tailwind CSS 3.4 |
-| **Database** | SQLite with Prisma ORM |
-| **AI** | Anthropic SDK + Claude API |
-| **UI Components** | Shadcn UI (Radix UI primitives) |
-| **State Management** | React Hooks |
-| **Markdown** | react-markdown + remark-gfm |
-| **Code Highlighting** | Prism.js |
-| **PDF Rendering** | pdfjs-dist |
+| Category              | Technology                      |
+| --------------------- | ------------------------------- |
+| **Framework**         | Next.js 15 (App Router)         |
+| **Language**          | TypeScript 5.7                  |
+| **Styling**           | Tailwind CSS 3.4                |
+| **Database**          | SQLite with Prisma ORM          |
+| **AI**                | Anthropic SDK + Claude API      |
+| **UI Components**     | Shadcn UI (Radix UI primitives) |
+| **State Management**  | React Hooks                     |
+| **Markdown**          | react-markdown + remark-gfm     |
+| **Code Highlighting** | Prism.js                        |
+| **PDF Rendering**     | pdfjs-dist                      |
 
 ## 🚀 Quick Start
 

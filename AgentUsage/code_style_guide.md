@@ -7,6 +7,7 @@ This guide covers general code style principles and best practices that apply ac
 ## Core Principles
 
 ### 1. Clarity Over Cleverness
+
 Write code that's easy to understand, not code that impresses with complexity.
 
 ```python
@@ -20,9 +21,11 @@ result = [x for x in even_numbers if x > 5]
 ```
 
 ### 2. Consistency Matters
+
 Follow the established patterns in your codebase. When in Rome, do as the Romans do.
 
 ### 3. Meaningful Names
+
 Use descriptive names that reveal intent.
 
 ```python
@@ -260,12 +263,14 @@ except json.JSONDecodeError as e:
 ### When to Comment
 
 **Do comment:**
+
 - Complex algorithms or business logic
 - Non-obvious workarounds or hacks
 - "Why" something is done a certain way
 - Public API functions (docstrings)
 
 **Don't comment:**
+
 - What the code obviously does
 - Outdated information
 - Commented-out code (delete it instead)
@@ -484,6 +489,7 @@ def process_file():
 ## Language-Specific Guides
 
 For detailed patterns in specific languages:
+
 - **Python**: [code_quality.md](code_quality.md) - Black, Ruff, mypy
 - **Multi-language**: [multi_language_guide.md](multi_language_guide.md) - Python, JS, Go, Rust
 
