@@ -78,9 +78,16 @@ export function MessageStats({
   }
 
   // Thinking duration
-  if (thinkingDuration !== undefined && thinkingDuration !== null && thinkingDuration > 0) {
+  if (
+    thinkingDuration !== undefined &&
+    thinkingDuration !== null &&
+    thinkingDuration > 0
+  ) {
     stats.push(
-      <span key="thinking-duration" className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+      <span
+        key="thinking-duration"
+        className="flex items-center gap-1 text-purple-600 dark:text-purple-400"
+      >
         <Brain className="h-3 w-3" />
         {thinkingDuration.toFixed(1)}s thinking
       </span>,
@@ -90,7 +97,10 @@ export function MessageStats({
   // Thinking tokens
   if (thinkingTokens !== undefined && thinkingTokens > 0) {
     stats.push(
-      <span key="thinking-tokens" className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+      <span
+        key="thinking-tokens"
+        className="flex items-center gap-1 text-purple-600 dark:text-purple-400"
+      >
         <Hash className="h-3 w-3" />
         {thinkingTokens} thinking tok
       </span>,

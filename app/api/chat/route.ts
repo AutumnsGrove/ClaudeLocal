@@ -156,7 +156,9 @@ export async function POST(request: NextRequest) {
 
     // Add thinking parameter if enabled
     if (thinkingEnabled) {
-      console.log("[API DEBUG] 🧠 Extended thinking ENABLED - configuring with 10k token budget");
+      console.log(
+        "[API DEBUG] 🧠 Extended thinking ENABLED - configuring with 10k token budget",
+      );
       streamParams.thinking = {
         type: "enabled",
         budget_tokens: 10000,
@@ -212,7 +214,10 @@ export async function POST(request: NextRequest) {
             } else if (event.type === "content_block_start") {
               // Track block type for thinking content
               currentBlockType = event.content_block.type;
-              console.log("[API DEBUG] 📝 Content block started:", currentBlockType);
+              console.log(
+                "[API DEBUG] 📝 Content block started:",
+                currentBlockType,
+              );
             } else if (event.type === "content_block_delta") {
               // Capture first token time
               if (metrics.firstTokenTime === null) {
@@ -229,7 +234,10 @@ export async function POST(request: NextRequest) {
                   console.log("[API DEBUG] 💭 Thinking started");
                 }
 
-                console.log("[API DEBUG] 💭 Thinking delta received:", thinkingText);
+                console.log(
+                  "[API DEBUG] 💭 Thinking delta received:",
+                  thinkingText,
+                );
                 metrics.thinkingContent.push(thinkingText);
                 controller.enqueue(
                   encoder.encode(
@@ -253,7 +261,8 @@ export async function POST(request: NextRequest) {
               if (currentBlockType === "thinking") {
                 // Calculate thinking duration
                 if (metrics.thinkingStartTime !== null) {
-                  metrics.thinkingDuration = (Date.now() - metrics.thinkingStartTime) / 1000; // Convert to seconds
+                  metrics.thinkingDuration =
+                    (Date.now() - metrics.thinkingStartTime) / 1000; // Convert to seconds
                 }
 
                 // Estimate thinking tokens (rough approximation: 1 token ≈ 4 characters)
@@ -272,7 +281,10 @@ export async function POST(request: NextRequest) {
                   ),
                 );
               }
-              console.log("[API DEBUG] 🛑 Content block stopped:", currentBlockType);
+              console.log(
+                "[API DEBUG] 🛑 Content block stopped:",
+                currentBlockType,
+              );
               currentBlockType = null;
             } else if (event.type === "message_delta") {
               // Capture cumulative output tokens from message delta

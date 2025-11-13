@@ -20,7 +20,10 @@ export function ThinkingSection({
   // Auto-collapse when regular content starts streaming (with delay)
   useEffect(() => {
     if (hasContent) {
-      console.log("[DEBUG] ThinkingSection scheduling auto-collapse in 1s, hasContent:", hasContent);
+      console.log(
+        "[DEBUG] ThinkingSection scheduling auto-collapse in 1s, hasContent:",
+        hasContent,
+      );
       // Wait 1 second before collapsing to let user see thinking
       const timer = setTimeout(() => {
         console.log("[DEBUG] ThinkingSection auto-collapsing now");
@@ -31,7 +34,14 @@ export function ThinkingSection({
     }
   }, [hasContent]);
 
-  console.log("[DEBUG] ThinkingSection received content:", content, "length:", content?.length, "trimmed:", content?.trim().length);
+  console.log(
+    "[DEBUG] ThinkingSection received content:",
+    content,
+    "length:",
+    content?.length,
+    "trimmed:",
+    content?.trim().length,
+  );
 
   // Return null if content is empty or whitespace
   if (!content || !content.trim()) {

@@ -53,7 +53,10 @@ export function MessageInput({
 
   const handleThinkingToggle = () => {
     const newValue = !isThinkingEnabled;
-    console.log("[DEBUG] Brain icon clicked! Thinking mode:", newValue ? "ENABLED" : "DISABLED");
+    console.log(
+      "[DEBUG] Brain icon clicked! Thinking mode:",
+      newValue ? "ENABLED" : "DISABLED",
+    );
     setIsThinkingEnabled(newValue);
     onThinkingToggle?.(newValue);
   };
@@ -79,11 +82,18 @@ export function MessageInput({
           disabled={disabled}
           className={cn(
             "h-10 w-10 flex-shrink-0 transition-all",
-            isThinkingEnabled && "bg-purple-500/20 text-purple-600 dark:bg-purple-500/30 dark:text-purple-400 hover:bg-purple-500/30",
+            isThinkingEnabled &&
+              "bg-purple-500/20 text-purple-600 dark:bg-purple-500/30 dark:text-purple-400 hover:bg-purple-500/30",
           )}
-          title={isThinkingEnabled ? "Extended thinking enabled" : "Enable extended thinking"}
+          title={
+            isThinkingEnabled
+              ? "Extended thinking enabled"
+              : "Enable extended thinking"
+          }
         >
-          <Brain className={cn("h-5 w-5", isThinkingEnabled && "animate-pulse")} />
+          <Brain
+            className={cn("h-5 w-5", isThinkingEnabled && "animate-pulse")}
+          />
         </Button>
 
         <div className="flex-1 relative">

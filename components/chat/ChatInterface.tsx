@@ -116,7 +116,10 @@ export function ChatInterface({
       }
 
       // Send message with SSE streaming
-      console.log("[DEBUG] 🚀 Sending message to API with thinkingEnabled:", thinkingEnabled);
+      console.log(
+        "[DEBUG] 🚀 Sending message to API with thinkingEnabled:",
+        thinkingEnabled,
+      );
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -166,18 +169,28 @@ export function ChatInterface({
 
               try {
                 const parsed = JSON.parse(data);
-                console.log("[DEBUG] 📨 SSE event received:", parsed.type, parsed);
+                console.log(
+                  "[DEBUG] 📨 SSE event received:",
+                  parsed.type,
+                  parsed,
+                );
 
                 if (parsed.type === "thinking") {
                   // Update thinking content in real-time
-                  console.log("[DEBUG] Thinking chunk received:", parsed.content);
+                  console.log(
+                    "[DEBUG] Thinking chunk received:",
+                    parsed.content,
+                  );
                   setMessages((prev) => {
                     const updated = [...prev];
                     const lastMsg = updated[updated.length - 1];
                     if (lastMsg.role === "assistant") {
                       lastMsg.thinkingContent =
                         (lastMsg.thinkingContent || "") + parsed.content;
-                      console.log("[DEBUG] Updated thinkingContent:", lastMsg.thinkingContent);
+                      console.log(
+                        "[DEBUG] Updated thinkingContent:",
+                        lastMsg.thinkingContent,
+                      );
                     }
                     return updated;
                   });
