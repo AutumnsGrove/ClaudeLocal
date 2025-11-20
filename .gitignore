@@ -51,3 +51,8 @@ Thumbs.db
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# BaseProject
+.claude/
+.baseproject-backup-*/
+baseproject-update-summary.md
